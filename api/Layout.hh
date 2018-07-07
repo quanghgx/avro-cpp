@@ -20,7 +20,7 @@
 #define avro_Layout_hh__
 
 #include <boost/noncopyable.hpp>
-#include "Boost.hh"
+#include <boost/ptr_container/ptr_vector.hpp>
 
 /// \file Layout.hh
 ///

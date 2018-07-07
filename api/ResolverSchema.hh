@@ -23,7 +23,6 @@
 #include <memory>
 #include <stdint.h>
 
-#include "Boost.hh"
 #include "Reader.hh"
 
 /// \file ResolverSchema.hh

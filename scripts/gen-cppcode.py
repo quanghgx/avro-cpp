@@ -24,7 +24,6 @@ headers = '''
 #include <string>
 #include <vector>
 #include <map>
-#include "Boost.hh"
 #include "Exception.hh"
 #include "AvroSerialize.hh"
 #include "AvroParse.hh"
