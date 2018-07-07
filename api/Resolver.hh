@@ -29,24 +29,29 @@
 
 namespace avro {
 
-class ValidSchema;
-class Layout;
-    
-class Resolver : private boost::noncopyable
-{
+    class ValidSchema;
+    class Layout;
 
-  public:
+    class Resolver {
+    public:
+        Resolver(const Resolver&) = delete;
+        const Resolver& operator=(const Resolver&) = delete;
 
-    virtual void parse(Reader &reader, uint8_t *address) const = 0;
-    virtual ~Resolver() {}
+        Resolver() {
+        }
 
-};
+        virtual void parse(Reader &reader, uint8_t *address) const = 0;
 
-Resolver *constructResolver(
-        const ValidSchema &rwriterSchema,
-        const ValidSchema &readerSchema,
-        const Layout &readerLayout
-    );
+        virtual ~Resolver() {
+        }
+
+    };
+
+    Resolver *constructResolver(
+            const ValidSchema &rwriterSchema,
+            const ValidSchema &readerSchema,
+            const Layout &readerLayout
+            );
 
 
 
