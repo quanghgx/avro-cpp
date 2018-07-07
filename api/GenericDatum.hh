@@ -131,7 +131,7 @@ public:
 
     /**
      * Constructs a datum corresponding to the given avro type.
-     * The value will the appropraite default corresponding to the
+     * The value will the appropriate default corresponding to the
      * data type.
      * \param schema The schema that defines the avro type.
      */
@@ -152,7 +152,7 @@ public:
 
     /**
      * Constructs a datum corresponding to the given avro type.
-     * The value will the appropraite default corresponding to the
+     * The value will the appropriate default corresponding to the
      * data type.
      * \param schema The schema that defines the avro type.
      */

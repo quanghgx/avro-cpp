@@ -40,11 +40,6 @@ namespace avro {
 enum Codec {
   NULL_CODEC,
   DEFLATE_CODEC,
-
-#ifdef SNAPPY_CODEC_AVAILABLE
-  SNAPPY_CODEC
-#endif
-
 };
 
 /**
