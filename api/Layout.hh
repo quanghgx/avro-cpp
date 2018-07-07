@@ -19,64 +19,63 @@
 #ifndef avro_Layout_hh__
 #define avro_Layout_hh__
 
-#include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
 /// \file Layout.hh
 ///
 
 namespace avro {
-    
-class Layout : private boost::noncopyable {
 
-  protected:
+    class Layout {
+    protected:
 
-    Layout(size_t offset = 0) :
-        offset_(offset)
-    {}
+        Layout(size_t offset = 0) :
+        offset_(offset) {
+        }
 
-  public:
+    public:
+        Layout(const Layout&) = delete;
+        const Layout& operator=(const Layout&) = delete;
 
-    size_t offset() const {
-        return offset_;
-    }
+        size_t offset() const {
+            return offset_;
+        }
 
-    virtual ~Layout() {}
+        virtual ~Layout() {
+        }
 
-  private:
+    private:
 
-    const size_t offset_;
-};
+        const size_t offset_;
+    };
 
-class PrimitiveLayout : public Layout {
+    class PrimitiveLayout : public Layout {
+    public:
 
-  public:
+        PrimitiveLayout(size_t offset = 0) :
+        Layout(offset) {
+        }
+    };
 
-    PrimitiveLayout(size_t offset = 0) :
-        Layout(offset)
-    {}
-};
+    class CompoundLayout : public Layout {
+    public:
 
-class CompoundLayout : public Layout {
+        CompoundLayout(size_t offset = 0) :
+        Layout(offset) {
+        }
 
-  public:
+        void add(Layout *layout) {
+            layouts_.push_back(layout);
+        }
 
-    CompoundLayout(size_t offset = 0) :
-        Layout(offset)
-    {}
+        const Layout &at(size_t idx) const {
+            return layouts_.at(idx);
+        }
 
-    void add(Layout *layout) {
-        layouts_.push_back(layout);
-    }
+    private:
 
-    const Layout &at (size_t idx) const {
-        return layouts_.at(idx);
-    }
-
-  private:
-
-    boost::ptr_vector<Layout> layouts_;
-};
+        boost::ptr_vector<Layout> layouts_;
+    };
 
 } // namespace avro
 
