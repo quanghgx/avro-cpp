@@ -26,9 +26,7 @@
 #include <sstream>
 
 #include <boost/any.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/make_shared.hpp>
+#include <memory>
 #include <boost/tuple/tuple.hpp>
 
 #include "Node.hh"
@@ -41,7 +39,7 @@ namespace parsing {
 class Symbol;
 
 typedef std::vector<Symbol> Production;
-typedef boost::shared_ptr<Production> ProductionPtr;
+typedef std::shared_ptr<Production> ProductionPtr;
 typedef boost::tuple<size_t, bool, ProductionPtr, ProductionPtr> RepeaterInfo;
 typedef boost::tuple<ProductionPtr, ProductionPtr> RootInfo;
 
@@ -135,7 +133,7 @@ public:
 
     static Symbol rootSymbol(ProductionPtr& s)
     {
-        return Symbol(Symbol::sRoot, RootInfo(s, boost::make_shared<Production>()));
+        return Symbol(Symbol::sRoot, RootInfo(s, std::make_shared<Production>()));
     }
 
     static Symbol rootSymbol(const ProductionPtr& main,
@@ -217,7 +215,7 @@ public:
         return Symbol(sRepeater, boost::make_tuple(s, isArray, read, skip));
     }
 
-    static Symbol defaultStartAction(boost::shared_ptr<std::vector<uint8_t> > bb)
+    static Symbol defaultStartAction(std::shared_ptr<std::vector<uint8_t> > bb)
     {
         return Symbol(sDefaultStart, bb);
     }
@@ -267,7 +265,7 @@ public:
         return Symbol(sIndirect, p);
     }
 
-    static Symbol symbolic(const boost::weak_ptr<Production>& p) {
+    static Symbol symbolic(const std::weak_ptr<Production>& p) {
         return Symbol(sSymbolic, p);
     }
 
@@ -358,12 +356,12 @@ void fixup(Symbol& s, const std::map<T, ProductionPtr> &m,
         break;
     case Symbol::sPlaceholder:
         {
-            typename std::map<T, boost::shared_ptr<Production> >::const_iterator it =
+            typename std::map<T, std::shared_ptr<Production> >::const_iterator it =
                 m.find(s.extra<T>());
             if (it == m.end()) {
                 throw Exception("Placeholder symbol cannot be resolved");
             }
-            s = Symbol::symbolic(boost::weak_ptr<Production>(it->second));
+            s = Symbol::symbolic(std::weak_ptr<Production>(it->second));
         }
         break;
     case Symbol::sUnionAdjust:
@@ -446,7 +444,7 @@ public:
                 case Symbol::sSymbolic:
                     {
                         ProductionPtr pp(
-                            s.extra<boost::weak_ptr<Production> >());
+                            s.extra<std::weak_ptr<Production> >());
                         parsingStack.pop();
                         append(pp);
                     }
@@ -599,7 +597,7 @@ public:
             case Symbol::sSymbolic:
                 {
                     ProductionPtr pp(
-                        t.extra<boost::weak_ptr<Production> >());
+                        t.extra<std::weak_ptr<Production> >());
                     parsingStack.pop();
                     append(pp);
                 }
@@ -786,7 +784,7 @@ inline std::ostream& operator<<(std::ostream& os, const Symbol s)
         case Symbol::sIndirect:
             {
                 os << '(' << Symbol::toString(s.kind()) << ' '
-                << *s.extra<boost::shared_ptr<Production> >() << ')';
+                << *s.extra<std::shared_ptr<Production> >() << ')';
             }
             break;
         default:

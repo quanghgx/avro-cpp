@@ -409,8 +409,8 @@ static NodePtr makeNode(const Entity& e, const Object& m,
             result = NodePtr(new NodeRecord());
             st[nm] = result;
             NodePtr r = makeRecordNode(e, nm, m, st, nm.ns());
-            (boost::dynamic_pointer_cast<NodeRecord>(r))->swap(
-                *boost::dynamic_pointer_cast<NodeRecord>(result));
+            (std::dynamic_pointer_cast<NodeRecord>(r))->swap(
+                *std::dynamic_pointer_cast<NodeRecord>(result));
         } else {
             result = (type == "enum") ? makeEnumNode(e, nm, m) :
                 makeFixedNode(e, nm, m);

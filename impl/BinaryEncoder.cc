@@ -23,8 +23,8 @@
 
 namespace avro {
 
-using boost::make_shared;
-using boost::shared_ptr;
+using std::make_shared;
+using std::shared_ptr;
 
 class BinaryEncoder : public Encoder {
     StreamWriter out_;

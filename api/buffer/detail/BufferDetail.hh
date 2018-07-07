@@ -19,7 +19,7 @@
 #ifndef avro_BufferDetail_hh__
 #define avro_BufferDetail_hh__
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/shared_array.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/function.hpp>
@@ -94,7 +94,7 @@ class Chunk
 
   public:
 
-    typedef boost::shared_ptr<Chunk> SharedPtr;
+    typedef std::shared_ptr<Chunk> SharedPtr;
 
     /// Default constructor, allocates a new underlying block for this chunk.
     Chunk(size_type size) :
@@ -115,7 +115,7 @@ class Chunk
 
   private:
     // reference counted object will call a functor when it's destroyed
-    boost::shared_ptr<CallOnDestroy> callOnDestroy_;
+    std::shared_ptr<CallOnDestroy> callOnDestroy_;
 
   public:
 
@@ -290,8 +290,8 @@ class BufferImpl : boost::noncopyable
   public:
 
     typedef std::deque<Chunk> ChunkList;
-    typedef boost::shared_ptr<BufferImpl> SharedPtr;
-    typedef boost::shared_ptr<const BufferImpl> ConstSharedPtr;
+    typedef std::shared_ptr<BufferImpl> SharedPtr;
+    typedef std::shared_ptr<const BufferImpl> ConstSharedPtr;
 
     /// Default constructor, creates a buffer without any chunks
     BufferImpl() :

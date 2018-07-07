@@ -24,7 +24,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "boost/any.hpp"
 
@@ -71,9 +71,9 @@ public:
     Entity(Bool v, size_t line = 0) : type_(etBool), value_(v), line_(line) { }
     Entity(Long v, size_t line = 0) : type_(etLong), value_(v), line_(line) { }
     Entity(Double v, size_t line = 0) : type_(etDouble), value_(v), line_(line) { }
-    Entity(const boost::shared_ptr<String>& v, size_t line = 0) : type_(etString), value_(v), line_(line) { }
-    Entity(const boost::shared_ptr<Array>& v, size_t line = 0) : type_(etArray), value_(v), line_(line) { }
-    Entity(const boost::shared_ptr<Object>& v, size_t line = 0) : type_(etObject), value_(v), line_(line) { }
+    Entity(const std::shared_ptr<String>& v, size_t line = 0) : type_(etString), value_(v), line_(line) { }
+    Entity(const std::shared_ptr<Array>& v, size_t line = 0) : type_(etArray), value_(v), line_(line) { }
+    Entity(const std::shared_ptr<Object>& v, size_t line = 0) : type_(etObject), value_(v), line_(line) { }
     
     EntityType type() const { return type_; }
 
@@ -96,17 +96,17 @@ public:
 
     const String& stringValue() const {
         ensureType(etString);
-        return **boost::any_cast<boost::shared_ptr<String> >(&value_);
+        return **boost::any_cast<std::shared_ptr<String> >(&value_);
     }
     
     const Array& arrayValue() const {
         ensureType(etArray);
-        return **boost::any_cast<boost::shared_ptr<Array> >(&value_);
+        return **boost::any_cast<std::shared_ptr<Array> >(&value_);
     }
 
     const Object& objectValue() const {
         ensureType(etObject);
-        return **boost::any_cast<boost::shared_ptr<Object> >(&value_);
+        return **boost::any_cast<std::shared_ptr<Object> >(&value_);
     }
 
     std::string toString() const;

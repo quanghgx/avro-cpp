@@ -22,7 +22,7 @@
 
 #include <cassert>
 #include <boost/noncopyable.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "Exception.hh"
 #include "Types.hh"
@@ -33,7 +33,7 @@ namespace avro {
 class Node;
 class GenericDatum;
 
-typedef boost::shared_ptr<Node> NodePtr;
+typedef std::shared_ptr<Node> NodePtr;
 
 class Name {
     std::string ns_;

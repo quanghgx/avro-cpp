@@ -62,12 +62,12 @@ Entity readEntity(JsonParser& p)
         return Entity(p.doubleValue(), p.line());
     case JsonParser::tkString:
         p.advance();
-        return Entity(boost::make_shared<String>(p.stringValue()), p.line());
+        return Entity(std::make_shared<String>(p.stringValue()), p.line());
     case JsonParser::tkArrayStart:
         {
             size_t l = p.line();
             p.advance();
-            boost::shared_ptr<Array> v = boost::make_shared<Array>();
+            std::shared_ptr<Array> v = std::make_shared<Array>();
             while (p.peek() != JsonParser::tkArrayEnd) {
                 v->push_back(readEntity(p));
             }
@@ -78,7 +78,7 @@ Entity readEntity(JsonParser& p)
         {
             size_t l = p.line();
             p.advance();
-            boost::shared_ptr<Object> v = boost::make_shared<Object>();
+            std::shared_ptr<Object> v = std::make_shared<Object>();
             while (p.peek() != JsonParser::tkObjectEnd) {
                 p.advance();
                 std::string k = p.stringValue();

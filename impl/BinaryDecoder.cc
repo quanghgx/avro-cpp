@@ -27,7 +27,7 @@
 
 namespace avro {
 
-using boost::make_shared;
+using std::make_shared;
 
 class BinaryDecoder : public Decoder {
     StreamReader in_;

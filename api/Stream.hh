@@ -144,7 +144,7 @@ std::auto_ptr<InputStream> memoryInputStream(const OutputStream& source);
  * be a memory output stream. That is it must have been returned by a pervious
  * call to memoryOutputStream().
  */
-boost::shared_ptr<std::vector<uint8_t> > snapshot(const OutputStream& source);
+std::shared_ptr<std::vector<uint8_t> > snapshot(const OutputStream& source);
 
 /**
  * Returns a new OutputStream whose contents would be stored in a file.

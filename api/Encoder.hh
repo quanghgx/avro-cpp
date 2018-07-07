@@ -26,7 +26,7 @@
 #include "ValidSchema.hh"
 #include "Stream.hh"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 /// \file
 ///
@@ -140,7 +140,7 @@ public:
 /**
  * Shared pointer to Encoder.
  */
-typedef boost::shared_ptr<Encoder> EncoderPtr;
+typedef std::shared_ptr<Encoder> EncoderPtr;
 
 /**
  *  Returns an encoder that can encode binary Avro standard.
