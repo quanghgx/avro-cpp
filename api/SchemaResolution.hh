@@ -19,7 +19,6 @@
 #ifndef avro_SchemaResolution_hh__
 #define avro_SchemaResolution_hh__
 
-#include "Config.hh"
 
 namespace avro {
 

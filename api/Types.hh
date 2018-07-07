@@ -21,7 +21,6 @@
 
 #include <iostream>
 
-#include "Config.hh"
 
 namespace avro {
 
@@ -91,15 +90,15 @@ inline bool isAvroTypeOrPseudoType(Type t) {
 /**
  * Converts the given type into a string. Useful for generating messages.
  */
-AVRO_DECL const std::string& toString(Type type);
+const std::string& toString(Type type);
 
 /**
  * Writes a string form of the given type into the given ostream.
  */
-AVRO_DECL std::ostream &operator<< (std::ostream &os, avro::Type type);
+std::ostream &operator<< (std::ostream &os, avro::Type type);
 
 /// define a type to identify Null in template functions
-struct AVRO_DECL Null { };
+struct Null { };
 
 /**
  * Writes schema for null \p null type to \p os.

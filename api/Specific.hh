@@ -28,7 +28,6 @@
 #include "boost/blank.hpp"
 
 #include "AvroTraits.hh"
-#include "Config.hh"
 #include "Encoder.hh"
 #include "Decoder.hh"
 

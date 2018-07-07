@@ -19,12 +19,11 @@
 #ifndef avro_ValidSchema_hh__ 
 #define avro_ValidSchema_hh__ 
 
-#include "Config.hh"
 #include "Node.hh"
 
 namespace avro {
 
-class AVRO_DECL Schema;
+class Schema;
 
 /// A ValidSchema is basically a non-mutable Schema that has passed some
 /// minumum of sanity checks.  Once valididated, any Schema that is part of
@@ -37,7 +36,7 @@ class AVRO_DECL Schema;
 /// parsers/serializers, converted to a json schema, etc.
 ///
 
-class AVRO_DECL ValidSchema {
+class ValidSchema {
 public:
     explicit ValidSchema(const NodePtr &root);
     explicit ValidSchema(const Schema &schema);

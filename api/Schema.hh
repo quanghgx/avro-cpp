@@ -19,7 +19,6 @@
 #ifndef avro_Schema_hh__ 
 #define avro_Schema_hh__ 
 
-#include "Config.hh"
 #include "NodeImpl.hh"
 
 /// \file
@@ -33,7 +32,7 @@ namespace avro {
 
 /// The root Schema object is a base class.  Nobody constructs this class directly.
 
-class AVRO_DECL Schema {
+class Schema {
 public:
 
     virtual ~Schema();
@@ -58,80 +57,80 @@ public:
     NodePtr node_;
 };
 
-class AVRO_DECL NullSchema : public Schema {
+class NullSchema : public Schema {
 public:
     NullSchema(): Schema(new NodePrimitive(AVRO_NULL)) {}
 };
 
-class AVRO_DECL BoolSchema : public Schema {
+class BoolSchema : public Schema {
 public:
     BoolSchema(): Schema(new NodePrimitive(AVRO_BOOL)) {}
 };
 
-class AVRO_DECL IntSchema : public Schema {
+class IntSchema : public Schema {
 public:
     IntSchema(): Schema(new NodePrimitive(AVRO_INT)) {}
 };
 
-class AVRO_DECL LongSchema : public Schema {
+class LongSchema : public Schema {
 public:
     LongSchema(): Schema(new NodePrimitive(AVRO_LONG)) {}
 };
 
-class AVRO_DECL FloatSchema : public Schema {
+class FloatSchema : public Schema {
 public:
     FloatSchema(): Schema(new NodePrimitive(AVRO_FLOAT)) {}
 };
 
-class AVRO_DECL DoubleSchema : public Schema {
+class DoubleSchema : public Schema {
 public:
     DoubleSchema(): Schema(new NodePrimitive(AVRO_DOUBLE)) {}
 };
 
-class AVRO_DECL StringSchema : public Schema {
+class StringSchema : public Schema {
 public:
     StringSchema(): Schema(new NodePrimitive(AVRO_STRING)) {}
 };
 
-class AVRO_DECL BytesSchema : public Schema {
+class BytesSchema : public Schema {
 public:
     BytesSchema(): Schema(new NodePrimitive(AVRO_BYTES)) {}
 };
 
-class AVRO_DECL RecordSchema : public Schema {
+class RecordSchema : public Schema {
 public:
     RecordSchema(const std::string &name);
     void addField(const std::string &name, const Schema &fieldSchema);
 };
 
-class AVRO_DECL EnumSchema : public Schema {
+class EnumSchema : public Schema {
 public:
     EnumSchema(const std::string &name);
     void addSymbol(const std::string &symbol);
 };
 
-class AVRO_DECL ArraySchema : public Schema {
+class ArraySchema : public Schema {
 public:
     ArraySchema(const Schema &itemsSchema);
 };
 
-class AVRO_DECL MapSchema : public Schema {
+class MapSchema : public Schema {
 public:
     MapSchema(const Schema &valuesSchema);
 };
 
-class AVRO_DECL UnionSchema : public Schema {
+class UnionSchema : public Schema {
 public:
     UnionSchema();
     void addType(const Schema &typeSchema);
 };
 
-class AVRO_DECL FixedSchema : public Schema {
+class FixedSchema : public Schema {
 public:
     FixedSchema(int size, const std::string &name);
 };
 
-class AVRO_DECL SymbolicSchema : public Schema {
+class SymbolicSchema : public Schema {
 public:
     SymbolicSchema(const Name& name, const NodePtr& link);
 };

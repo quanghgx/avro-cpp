@@ -21,7 +21,6 @@
 
 #include <boost/utility.hpp>
 
-#include "Config.hh"
 #include "Types.hh"
 #include "Encoder.hh"
 #include "Decoder.hh"
@@ -31,7 +30,7 @@ namespace avro {
 /**
  * A utility class to read generic datum from decoders.
  */
-class AVRO_DECL GenericReader : boost::noncopyable {
+class GenericReader : boost::noncopyable {
     const ValidSchema schema_;
     const bool isResolving_;
     const DecoderPtr decoder_;
@@ -71,7 +70,7 @@ public:
 /**
  * A utility class to write generic datum to encoders.
  */
-class AVRO_DECL GenericWriter : boost::noncopyable {
+class GenericWriter : boost::noncopyable {
     const ValidSchema schema_;
     const EncoderPtr encoder_;
 

@@ -19,7 +19,6 @@
 #ifndef avro_NodeImpl_hh__
 #define avro_NodeImpl_hh__
 
-#include "Config.hh"
 #include "GenericDatum.hh"
 
 #include <limits>
@@ -198,7 +197,7 @@ typedef NodeImpl< NoName,  MultiLeaves, NoLeafNames,  NoSize  > NodeImplMap;
 typedef NodeImpl< NoName,  MultiLeaves, NoLeafNames,  NoSize  > NodeImplUnion;
 typedef NodeImpl< HasName, NoLeaves,    NoLeafNames,  HasSize > NodeImplFixed;
 
-class AVRO_DECL NodePrimitive : public NodeImplPrimitive
+class NodePrimitive : public NodeImplPrimitive
 {
   public:
 
@@ -215,7 +214,7 @@ class AVRO_DECL NodePrimitive : public NodeImplPrimitive
     }
 };
 
-class AVRO_DECL NodeSymbolic : public NodeImplSymbolic
+class NodeSymbolic : public NodeImplSymbolic
 {
     typedef boost::weak_ptr<Node> NodeWeakPtr;
 
@@ -262,7 +261,7 @@ class AVRO_DECL NodeSymbolic : public NodeImplSymbolic
 
 };
 
-class AVRO_DECL NodeRecord : public NodeImplRecord {
+class NodeRecord : public NodeImplRecord {
     std::vector<GenericDatum> defaultValues;
 public:
     NodeRecord() : NodeImplRecord(AVRO_RECORD) { } 
@@ -299,7 +298,7 @@ public:
     }
 };
 
-class AVRO_DECL NodeEnum : public NodeImplEnum
+class NodeEnum : public NodeImplEnum
 {
   public:
 
@@ -329,7 +328,7 @@ class AVRO_DECL NodeEnum : public NodeImplEnum
     }
 };
 
-class AVRO_DECL NodeArray : public NodeImplArray
+class NodeArray : public NodeImplArray
 {
   public:
 
@@ -350,7 +349,7 @@ class AVRO_DECL NodeArray : public NodeImplArray
     }
 };
 
-class AVRO_DECL NodeMap : public NodeImplMap
+class NodeMap : public NodeImplMap
 {
   public:
 
@@ -381,7 +380,7 @@ class AVRO_DECL NodeMap : public NodeImplMap
     }
 };
 
-class AVRO_DECL NodeUnion : public NodeImplUnion
+class NodeUnion : public NodeImplUnion
 {
   public:
 
@@ -455,7 +454,7 @@ class AVRO_DECL NodeUnion : public NodeImplUnion
     }
 };
 
-class AVRO_DECL NodeFixed : public NodeImplFixed
+class NodeFixed : public NodeImplFixed
 {
   public:
 

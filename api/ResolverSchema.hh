@@ -23,7 +23,6 @@
 #include <boost/shared_ptr.hpp>
 #include <stdint.h>
 
-#include "Config.hh"
 #include "Boost.hh"
 #include "Reader.hh"
 
@@ -36,7 +35,7 @@ class ValidSchema;
 class Layout;
 class Resolver;
 
-class AVRO_DECL ResolverSchema {
+class ResolverSchema {
 
   public:
 

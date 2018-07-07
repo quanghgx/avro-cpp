@@ -27,7 +27,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/utility.hpp>
 
-#include "Config.hh"
 #include "Stream.hh"
 
 namespace avro {
@@ -38,7 +37,7 @@ inline char toHex(unsigned int n) {
 }
 
 
-class AVRO_DECL JsonParser : boost::noncopyable {
+class JsonParser : boost::noncopyable {
 public:
     enum Token {
         tkNull,
@@ -137,7 +136,7 @@ public:
     }
 };
 
-class AVRO_DECL JsonNullFormatter {
+class JsonNullFormatter {
 public:
     JsonNullFormatter(StreamWriter&) { }
 
@@ -147,7 +146,7 @@ public:
     void handleColon() {}
 };
 
-class AVRO_DECL JsonPrettyFormatter {
+class JsonPrettyFormatter {
     StreamWriter& out_;
     size_t level_;
     std::vector<uint8_t> indent_;
@@ -187,7 +186,7 @@ public:
 };
 
 template <class F>
-class AVRO_DECL JsonGenerator {
+class JsonGenerator {
     StreamWriter out_;
     F formatter_;
     enum State {

@@ -27,11 +27,10 @@
 #include <boost/shared_ptr.hpp>
 
 #include "boost/any.hpp"
-#include "Config.hh"
 
 namespace avro {
 
-class AVRO_DECL InputStream;
+class InputStream;
 
 namespace json {
 class Entity;
@@ -43,11 +42,11 @@ typedef std::string String;
 typedef std::vector<Entity> Array;
 typedef std::map<std::string, Entity> Object;
     
-class AVRO_DECL JsonParser;
+class JsonParser;
 class JsonNullFormatter;
 
 template<typename F = JsonNullFormatter>
-class AVRO_DECL JsonGenerator;
+class JsonGenerator;
 
 enum EntityType {
     etNull,
@@ -61,7 +60,7 @@ enum EntityType {
 
 const char* typeToString(EntityType t);
 
-class AVRO_DECL Entity {
+class Entity {
     EntityType type_;
     boost::any value_;
     const size_t line_;
@@ -147,11 +146,11 @@ template <> struct type_traits<std::map<std::string, Entity> > {
     static const char* name() { return "object"; }
 };
 
-AVRO_DECL Entity readEntity(JsonParser& p);
+Entity readEntity(JsonParser& p);
 
-AVRO_DECL Entity loadEntity(InputStream& in);
-AVRO_DECL Entity loadEntity(const char* text);
-AVRO_DECL Entity loadEntity(const uint8_t* text, size_t len);
+Entity loadEntity(InputStream& in);
+Entity loadEntity(const char* text);
+Entity loadEntity(const uint8_t* text, size_t len);
 
 void writeEntity(JsonGenerator<JsonNullFormatter>& g, const Entity& n);
 

@@ -16,15 +16,11 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required(VERSION 3.8)
 
-set (CMAKE_LEGACY_CYGWIN_WIN32 0)
-
-cmake_policy (SET CMP0042 NEW)
-
-if (NOT DEFINED CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS)
-    set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS ON)
-endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -Wall -Wextra")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set (AVRO_VERSION_MAJOR 1.8.2)
 set (AVRO_VERSION_MINOR "0")
@@ -32,31 +28,7 @@ set (AVRO_VERSION_MINOR "0")
 project (Avro-cpp)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
 
-if (WIN32 AND NOT CYGWIN AND NOT MSYS)
-add_definitions (/EHa)
-add_definitions (
-    -DBOOST_REGEX_DYN_LINK
-    -DBOOST_FILESYSTEM_DYN_LINK
-    -DBOOST_SYSTEM_DYN_LINK
-    -DBOOST_IOSTREAMS_DYN_LINK
-    -DBOOST_PROGRAM_OPTIONS_DYN_LINK
-    -DBOOST_ALL_NO_LIB)
-endif()
-
-if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "-Wall")
-    set(CMAKE_CXX_FLAGS_DEBUG "-fstack-protector-all -D_GLIBCXX_DEBUG")
-    # Unset _GLIBCXX_DEBUG for avrogencpp.cc because using Boost Program Options
-    # leads to linking errors when compiling with _GLIBCXX_DEBUG as described on
-    # http://stackoverflow.com/questions/19729036/
-    set_source_files_properties(impl/avrogencpp.cc PROPERTIES COMPILE_FLAGS "-U_GLIBCXX_DEBUG")
-endif ()
-
-
-find_package (Boost 1.38 REQUIRED
-    COMPONENTS filesystem system program_options iostreams)
-
-add_definitions (${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
+find_package (Boost 1.38 REQUIRED  COMPONENTS filesystem system program_options iostreams)
 
 include_directories (api ${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIRS})
 
@@ -78,25 +50,17 @@ set (AVRO_SOURCE_FILES
         )
 
 add_library (avrocpp SHARED ${AVRO_SOURCE_FILES})
-
-set_property (TARGET avrocpp
-    APPEND PROPERTY COMPILE_DEFINITIONS AVRO_DYN_LINK)
+set_property (TARGET avrocpp APPEND PROPERTY COMPILE_DEFINITIONS AVRO_DYN_LINK)
 
 add_library (avrocpp_s STATIC ${AVRO_SOURCE_FILES})
 
-set_property (TARGET avrocpp avrocpp_s
-    APPEND PROPERTY COMPILE_DEFINITIONS AVRO_SOURCE)
-
-set_target_properties (avrocpp PROPERTIES
-    VERSION ${AVRO_VERSION_MAJOR}.${AVRO_VERSION_MINOR})
-
-set_target_properties (avrocpp_s PROPERTIES
-    VERSION ${AVRO_VERSION_MAJOR}.${AVRO_VERSION_MINOR})
+set_property (TARGET avrocpp avrocpp_s APPEND PROPERTY COMPILE_DEFINITIONS AVRO_SOURCE)
+set_target_properties (avrocpp PROPERTIES  VERSION ${AVRO_VERSION_MAJOR}.${AVRO_VERSION_MINOR})
+set_target_properties (avrocpp_s PROPERTIES  VERSION ${AVRO_VERSION_MAJOR}.${AVRO_VERSION_MINOR})
 
 target_link_libraries (avrocpp ${Boost_LIBRARIES})
 
 add_executable (precompile test/precompile.cc)
-
 target_link_libraries (precompile avrocpp_s ${Boost_LIBRARIES})
 
 macro (gen file ns)
@@ -170,9 +134,3 @@ install (TARGETS avrogencpp RUNTIME DESTINATION bin)
 
 install (DIRECTORY api/ DESTINATION include/avro
     FILES_MATCHING PATTERN *.hh)
-
-if (NOT CMAKE_BUILD_TYPE)
-    set (CMAKE_BUILD_TYPE Release CACHE STRING
-      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-      FORCE)
-endif (NOT CMAKE_BUILD_TYPE)

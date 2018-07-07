@@ -19,7 +19,6 @@
 #ifndef avro_NodeConcepts_hh__
 #define avro_NodeConcepts_hh__
 
-#include "Config.hh"
 
 #include <vector>
 #include <map>

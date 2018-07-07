@@ -22,13 +22,12 @@
 #include <stdint.h>
 #include <boost/noncopyable.hpp>
 
-#include "Config.hh"
 #include "ResolverSchema.hh"
 #include "Reader.hh"
 
 namespace avro {
 
-class AVRO_DECL ResolvingReader : private boost::noncopyable
+class ResolvingReader : private boost::noncopyable
 {
 
   public:

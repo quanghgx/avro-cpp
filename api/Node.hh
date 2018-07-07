@@ -19,7 +19,6 @@
 #ifndef avro_Node_hh__
 #define avro_Node_hh__
 
-#include "Config.hh"
 
 #include <cassert>
 #include <boost/noncopyable.hpp>
@@ -36,7 +35,7 @@ class GenericDatum;
 
 typedef boost::shared_ptr<Node> NodePtr;
 
-class AVRO_DECL Name {
+class Name {
     std::string ns_;
     std::string simpleName_;
 public:
@@ -85,7 +84,7 @@ std::ostream& operator << (std::ostream& os, const Name& n) {
 /// different node types.
 ///
 
-class AVRO_DECL Node : private boost::noncopyable
+class Node : private boost::noncopyable
 {
   public:
 

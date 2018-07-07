@@ -39,7 +39,7 @@ namespace avro {
  * chunk boundaries.  May read from an InputBuffer or OutputBuffer.
  *
  **/
-class AVRO_DECL BufferReader : private boost::noncopyable 
+class BufferReader : private boost::noncopyable 
 {
 
   public:

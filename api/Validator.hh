@@ -23,13 +23,12 @@
 #include <vector>
 #include <stdint.h>
 
-#include "Config.hh"
 #include "Types.hh"
 #include "ValidSchema.hh"
 
 namespace avro {
 
-class AVRO_DECL NullValidator : private boost::noncopyable
+class NullValidator : private boost::noncopyable
 {
   public:
 
@@ -70,7 +69,7 @@ class AVRO_DECL NullValidator : private boost::noncopyable
 /// through all leaf nodes but a union only skips to one), and reports which
 /// type is next.
 
-class AVRO_DECL Validator : private boost::noncopyable
+class Validator : private boost::noncopyable
 {
   public:
 

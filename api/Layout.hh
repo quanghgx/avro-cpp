@@ -20,7 +20,6 @@
 #define avro_Layout_hh__
 
 #include <boost/noncopyable.hpp>
-#include "Config.hh"
 #include "Boost.hh"
 
 /// \file Layout.hh
@@ -28,7 +27,7 @@
 
 namespace avro {
     
-class AVRO_DECL Layout : private boost::noncopyable {
+class Layout : private boost::noncopyable {
 
   protected:
 
@@ -49,7 +48,7 @@ class AVRO_DECL Layout : private boost::noncopyable {
     const size_t offset_;
 };
 
-class AVRO_DECL PrimitiveLayout : public Layout {
+class PrimitiveLayout : public Layout {
 
   public:
 
@@ -58,7 +57,7 @@ class AVRO_DECL PrimitiveLayout : public Layout {
     {}
 };
 
-class AVRO_DECL CompoundLayout : public Layout {
+class CompoundLayout : public Layout {
 
   public:
 

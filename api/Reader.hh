@@ -23,7 +23,6 @@
 #include <vector>
 #include <boost/noncopyable.hpp>
 
-#include "Config.hh"
 #include "Zigzag.hh"
 #include "Types.hh"
 #include "Validator.hh"

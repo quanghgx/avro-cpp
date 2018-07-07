@@ -19,7 +19,6 @@
 #ifndef avro_DataFile_hh__
 #define avro_DataFile_hh__
 
-#include "Config.hh"
 #include "Encoder.hh"
 #include "buffer/Buffer.hh"
 #include "ValidSchema.hh"
@@ -58,7 +57,7 @@ typedef boost::array<uint8_t, 16> DataFileSync;
  *  At any given point in time, at most one file can be written using
  *  this object.
  */
-class AVRO_DECL DataFileWriterBase : boost::noncopyable {
+class DataFileWriterBase : boost::noncopyable {
     const std::string filename_;
     const ValidSchema schema_;
     const EncoderPtr encoderPtr_;
@@ -170,7 +169,7 @@ public:
 /**
  * The type independent portion of rader.
  */
-class AVRO_DECL DataFileReaderBase : boost::noncopyable {
+class DataFileReaderBase : boost::noncopyable {
     const std::string filename_;
     const std::auto_ptr<InputStream> stream_;
     const DecoderPtr decoder_;

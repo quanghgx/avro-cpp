@@ -17,9 +17,6 @@
  */
 
 #include <ctype.h>
-#ifndef _WIN32
-#include <sys/time.h>
-#endif
 #include <iostream>
 #include <fstream>
 #include <map>

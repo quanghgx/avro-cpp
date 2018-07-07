@@ -52,7 +52,7 @@ namespace avro {
  * types of the union.
  *
  */
-class AVRO_DECL GenericDatum {
+class GenericDatum {
     Type type_;
     boost::any value_;
 
@@ -162,7 +162,7 @@ public:
 /**
  * The base class for all generic type for containers.
  */
-class AVRO_DECL GenericContainer {
+class GenericContainer {
     NodePtr schema_;
     static void assertType(const NodePtr& schema, Type type);
 protected:
@@ -183,7 +183,7 @@ public:
 /**
  * Generic container for unions.
  */
-class AVRO_DECL GenericUnion : public GenericContainer {
+class GenericUnion : public GenericContainer {
     size_t curBranch_;
     GenericDatum datum_;
 
@@ -234,7 +234,7 @@ public:
 /**
  * The generic container for Avro records.
  */
-class AVRO_DECL GenericRecord : public GenericContainer {
+class GenericRecord : public GenericContainer {
     std::vector<GenericDatum> fields_;
 public:
     /**
@@ -312,7 +312,7 @@ public:
 /**
  * The generic container for Avro arrays.
  */
-class AVRO_DECL GenericArray : public GenericContainer {
+class GenericArray : public GenericContainer {
 public:
     /**
      * The contents type for the array.
@@ -346,7 +346,7 @@ private:
 /**
  * The generic container for Avro maps.
  */
-class AVRO_DECL GenericMap : public GenericContainer {
+class GenericMap : public GenericContainer {
 public:
     /**
      * The contents type for the map.
@@ -380,7 +380,7 @@ private:
 /**
  * Generic container for Avro enum.
  */
-class AVRO_DECL GenericEnum : public GenericContainer {
+class GenericEnum : public GenericContainer {
     size_t value_;
 
     static size_t index(const NodePtr& schema, const std::string& symbol) {
@@ -459,7 +459,7 @@ public:
 /**
  * Generic container for Avro fixed.
  */
-class AVRO_DECL GenericFixed : public GenericContainer {
+class GenericFixed : public GenericContainer {
     std::vector<uint8_t> value_;
 public:
     /**
