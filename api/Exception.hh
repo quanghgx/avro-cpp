@@ -24,9 +24,7 @@
 
 namespace avro {
 
-  /// Wrapper for std::runtime_error that provides convenience constructor
-  /// for boost::format objects
-
+  /* Wrapper for std::runtime_error that provides convenience constructor for boost::format objects*/
   class Exception : public virtual std::runtime_error {
   public:
 

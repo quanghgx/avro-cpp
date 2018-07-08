@@ -28,9 +28,7 @@
 
 namespace avro {
 
-  /**
-   * A utility class to read generic datum from decoders.
-   */
+  /* A utility class to read generic datum from decoders.*/
   class GenericReader {
     const ValidSchema schema_;
     const bool isResolving_;
@@ -40,38 +38,26 @@ namespace avro {
   public:
     GenericReader(const GenericReader&) = delete;
     const GenericReader& operator=(const GenericReader&) = delete;
-    /**
-     * Constructs a reader for the given schema using the given decoder.
-     */
+
+    /* Constructs a reader for the given schema using the given decoder.*/
     GenericReader(const ValidSchema& s, const DecoderPtr& decoder);
 
-    /**
-     * Constructs a reader for the given reader's schema \c readerSchema
-     * using the given
-     * decoder which holds data matching writer's schema \c writerSchema.
-     */
+    /* Constructs a reader for the given reader's schema \c readerSchema using the given decoder which holds data matching writer's schema 
+       writerSchema.*/
     GenericReader(const ValidSchema& writerSchema,
       const ValidSchema& readerSchema, const DecoderPtr& decoder);
 
-    /**
-     * Reads a value off the decoder.
-     */
+    /* Reads a value off the decoder.*/
     void read(GenericDatum& datum) const;
 
-    /**
-     * Reads a generic datum from the stream, using the given schema.
-     */
+    /* Reads a generic datum from the stream, using the given schema.*/
     static void read(Decoder& d, GenericDatum& g);
 
-    /**
-     * Reads a generic datum from the stream, using the given schema.
-     */
+    /* Reads a generic datum from the stream, using the given schema*/
     static void read(Decoder& d, GenericDatum& g, const ValidSchema& s);
   };
 
-  /**
-   * A utility class to write generic datum to encoders.
-   */
+  /* A utility class to write generic datum to encoders.*/
   class GenericWriter {
     const ValidSchema schema_;
     const EncoderPtr encoder_;
@@ -80,25 +66,17 @@ namespace avro {
   public:
     GenericWriter(const GenericWriter&) = delete;
     const GenericWriter& operator=(const GenericWriter&) = delete;
-    /**
-     * Constructs a writer for the given schema using the given encoder.
-     */
+    
+    /* Constructs a writer for the given schema using the given encoder.*/
     GenericWriter(const ValidSchema& s, const EncoderPtr& encoder);
 
-    /**
-     * Writes a value onto the encoder.
-     */
+    /* Writes a value onto the encoder.*/
     void write(const GenericDatum& datum) const;
 
-    /**
-     * Writes a generic datum on to the stream.
-     */
+    /* Writes a generic datum on to the stream.*/
     static void write(Encoder& e, const GenericDatum& g);
 
-    /**
-     * Writes a generic datum on to the stream, using the given schema.
-     * Retained for backward compatibility.
-     */
+    /* Writes a generic datum on to the stream, using the given schema. Retained for backward compatibility.*/
     static void write(Encoder& e, const GenericDatum& g, const ValidSchema&) {
       write(e, g);
     }
@@ -106,36 +84,31 @@ namespace avro {
 
   template <typename T> struct codec_traits;
 
-  /**
-   * Specialization of codec_traits for Generic datum along with its schema.
-   * This is maintained for compatibility with old code. Please use the
-   * cleaner codec_traits<GenericDatum> instead.
-   */
+  /* Specialization of codec_traits for Generic datum along with its schema. This is maintained for compatibility with old code. Please use 
+     the cleaner codec_traits<GenericDatum> instead.*/
   template <> struct codec_traits<std::pair<ValidSchema, GenericDatum> > {
 
-    /** Encodes */
+    /* Encodes */
     static void encode(Encoder& e,
       const std::pair<ValidSchema, GenericDatum>& p) {
       GenericWriter::write(e, p.second, p.first);
     }
 
-    /** Decodes */
+    /* Decodes */
     static void decode(Decoder& d, std::pair<ValidSchema, GenericDatum>& p) {
       GenericReader::read(d, p.second, p.first);
     }
   };
 
-  /**
-   * Specialization of codec_traits for GenericDatum.
-   */
+  /* Specialization of codec_traits for GenericDatum*/
   template <> struct codec_traits<GenericDatum> {
 
-    /** Encodes */
+    /* Encodes */
     static void encode(Encoder& e, const GenericDatum& g) {
       GenericWriter::write(e, g);
     }
 
-    /** Decodes */
+    /* Decodes */
     static void decode(Decoder& d, GenericDatum& g) {
       GenericReader::read(d, g);
     }

@@ -64,96 +64,62 @@ namespace avro {
 
     void init(const NodePtr& schema);
   public:
-    /**
-     * The avro data type this datum holds.
-     */
+
+    /* The avro data type this datum holds.*/
     Type type() const;
 
-    /**
-     * Returns the value held by this datum.
-     * T The type for the value. This must correspond to the
-     * avro type returned by type().
-     */
+    /* Returns the value held by this datum. T The type for the value. This must correspond to the avro type returned by type().*/
     template<typename T> const T& value() const;
 
-    /**
-     * Returns the reference to the value held by this datum, which
-     * can be used to change the contents. Please note that only
-     * value can be changed, the data type of the value held cannot
-     * be changed.
-     *
-     * T The type for the value. This must correspond to the
-     * avro type returned by type().
-     */
+    /* Returns the reference to the value held by this datum, which can be used to change the contents. Please note that only value can be 
+       changed, the data type of the value held cannot be changed. T The type for the value. This must correspond to the avro type returned 
+       by type().*/
     template<typename T> T& value();
 
-    /**
-     * Returns true if and only if this datum is a union.
-     */
+    /* Returns true if and only if this datum is a union.*/
     bool isUnion() const {
       return type_ == AVRO_UNION;
     }
 
-    /**
-     * Returns the index of the current branch, if this is a union.
-     * \sa isUnion().
-     */
+    /* Returns the index of the current branch, if this is a union. isUnion().*/
     size_t unionBranch() const;
 
-    /**
-     * Selects a new branch in the union if this is a union.
-     * \sa isUnion().
-     */
+    /* Selects a new branch in the union if this is a union. isUnion().*/
     void selectBranch(size_t branch);
 
-    /// Makes a new AVRO_NULL datum.
-
+    /* Makes a new AVRO_NULL datum.*/
     GenericDatum() : type_(AVRO_NULL) { }
 
-    /// Makes a new AVRO_BOOL datum whose value is of type bool.
-
+    /* Makes a new AVRO_BOOL datum whose value is of type bool.*/
     GenericDatum(bool v) : type_(AVRO_BOOL), value_(v) { }
 
-    /// Makes a new AVRO_INT datum whose value is of type int32_t.
-
+    /* Makes a new AVRO_INT datum whose value is of type int32_t.*/
     GenericDatum(int32_t v) : type_(AVRO_INT), value_(v) { }
 
-    /// Makes a new AVRO_LONG datum whose value is of type int64_t.
+    /* Makes a new AVRO_LONG datum whose value is of type int64_t*/
 
     GenericDatum(int64_t v) : type_(AVRO_LONG), value_(v) { }
 
-    /// Makes a new AVRO_FLOAT datum whose value is of type float.
-
+    /* Makes a new AVRO_FLOAT datum whose value is of type float*/
     GenericDatum(float v) : type_(AVRO_FLOAT), value_(v) { }
 
-    /// Makes a new AVRO_DOUBLE datum whose value is of type double.
-
+    /* Makes a new AVRO_DOUBLE datum whose value is of type double.*/
     GenericDatum(double v) : type_(AVRO_DOUBLE), value_(v) { }
 
-    /// Makes a new AVRO_STRING datum whose value is of type std::string.
-
+    /* Makes a new AVRO_STRING datum whose value is of type std::string.*/
     GenericDatum(const std::string& v) : type_(AVRO_STRING), value_(v) { }
 
-    /// Makes a new AVRO_BYTES datum whose value is of type
-    /// std::vector<uint8_t>.
-
+    /* Makes a new AVRO_BYTES datum whose value is of type std::vector<uint8_t>*/
     GenericDatum(const std::vector<uint8_t>& v) :
     type_(AVRO_BYTES), value_(v) { }
 
-    /**
-     * Constructs a datum corresponding to the given avro type.
-     * The value will the appropriate default corresponding to the
-     * data type.
-     * @param schema The schema that defines the avro type.
-     */
+    /* Constructs a datum corresponding to the given avro type. The value will the appropriate default corresponding to the data type.
+        @param schema The schema that defines the avro type.*/
     GenericDatum(const NodePtr& schema);
 
-    /**
-     * Constructs a datum corresponding to the given avro type and set
-     * the value. 
-     * @param schema The schema that defines the avro type.
-     * @param v The value for this type.
-     */
+    /* Constructs a datum corresponding to the given avro type and set the value. 
+        @param schema The schema that defines the avro type.
+        @param v The value for this type.*/
     template<typename T>
     GenericDatum(const NodePtr& schema, const T& v) :
     type_(schema->type()) {
@@ -161,68 +127,51 @@ namespace avro {
       *boost::any_cast<T>(&value_) = v;
     }
 
-    /**
-     * Constructs a datum corresponding to the given avro type.
-     * The value will the appropriate default corresponding to the
-     * data type.
-     * @param schema The schema that defines the avro type.
-     */
+    /* Constructs a datum corresponding to the given avro type. The value will the appropriate default corresponding to the data type.
+        @param schema The schema that defines the avro type.*/
     GenericDatum(const ValidSchema& schema);
   };
 
-  /**
-   * The base class for all generic type for containers.
-   */
+  /* The base class for all generic type for containers.*/
   class GenericContainer {
     NodePtr schema_;
     static void assertType(const NodePtr& schema, Type type);
   protected:
 
-    /**
-     * Constructs a container corresponding to the given schema.
-     */
+    /* Constructs a container corresponding to the given schema.*/
     GenericContainer(Type type, const NodePtr& s) : schema_(s) {
       assertType(s, type);
     }
 
   public:
-    /// Returns the schema for this object
 
+    /* Returns the schema for this object*/
     const NodePtr& schema() const {
       return schema_;
     }
   };
 
-  /**
-   * Generic container for unions.
-   */
+  /* Generic container for unions.*/
   class GenericUnion : public GenericContainer {
     size_t curBranch_;
     GenericDatum datum_;
 
   public:
 
-    /**
-     * Constructs a generic union corresponding to the given schema \p schema,
-     * and the given value. The schema should be of Avro type union
-     * and the value should correspond to one of the branches of the union.
-     */
+    /* Constructs a generic union corresponding to the given schema \p schema, and the given value. The schema should be of Avro type union
+       and the value should correspond to one of the branches of the union.*/
     GenericUnion(const NodePtr& schema) :
     GenericContainer(AVRO_UNION, schema), curBranch_(schema->leaves()) {
       selectBranch(0);
     }
 
-    /**
-     * Returns the index of the current branch.
-     */
+    /* Returns the index of the current branch.*/
     size_t currentBranch() const {
       return curBranch_;
     }
 
-    /**
-     * Selects a new branch. The type for the value is changed accordingly.
-     * @param branch The index for the selected branch.
-     */
+    /* Selects a new branch. The type for the value is changed accordingly.
+        @param branch The index for the selected branch.*/
     void selectBranch(size_t branch) {
       if (curBranch_ != branch) {
         datum_ = GenericDatum(schema()->leafAt(branch));
@@ -230,45 +179,31 @@ namespace avro {
       }
     }
 
-    /**
-     * Returns the datum corresponding to the currently selected branch
-     * in this union.
-     */
+    /* Returns the datum corresponding to the currently selected branch in this union.*/
     GenericDatum& datum() {
       return datum_;
     }
 
-    /**
-     * Returns the datum corresponding to the currently selected branch
-     * in this union.
-     */
+    /* Returns the datum corresponding to the currently selected branch in this union.*/
     const GenericDatum& datum() const {
       return datum_;
     }
   };
 
-  /**
-   * The generic container for Avro records.
-   */
+  /* The generic container for Avro records.*/
   class GenericRecord : public GenericContainer {
     std::vector<GenericDatum> fields_;
   public:
-    /**
-     * Constructs a generic record corresponding to the given schema \p schema,
-     * which should be of Avro type record.
-     */
+
+    /* Constructs a generic record corresponding to the given schema schema, which should be of Avro type record.*/
     GenericRecord(const NodePtr& schema);
 
-    /**
-     * Returns the number of fields in the current record.
-     */
+    /* Returns the number of fields in the current record.*/
     size_t fieldCount() const {
       return fields_.size();
     }
 
-    /**
-     * Returns index of the field with the given name \p name
-     */
+    /* Returns index of the field with the given name*/
     size_t fieldIndex(const std::string& name) const {
       size_t index = 0;
       if (!schema()->nameIndex(name, index)) {
@@ -277,18 +212,13 @@ namespace avro {
       return index;
     }
 
-    /**
-     * Returns true if a field with the given name \p name is located in this r
-     * false otherwise
-     */
+    /* Returns true if a field with the given name is located in this return false otherwise*/
     bool hasField(const std::string& name) const {
       size_t index = 0;
       return schema()->nameIndex(name, index);
     }
 
-    /**
-     * Returns the field with the given name \p name.
-     */
+    /* Returns the field with the given name.*/
     const GenericDatum& field(const std::string& name) const {
       return fieldAt(fieldIndex(name));
     }
