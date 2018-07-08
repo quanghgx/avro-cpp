@@ -102,10 +102,7 @@ namespace avro {
       pimpl_->reserveFreeSpace(reserveSize);
     }
 
-    /** 
-     * Write a block of data to the buffer.  The buffer size will automatically
-     * grow if the size is larger than what is currently free.  
-     **/
+    /*Write a block of data to the buffer.  The buffer size will automatically grow if the size is larger than what is currently free.  */
 
     size_type writeTo(const data_type *data, size_type size) {
       return pimpl_->writeTo(data, size);
@@ -146,17 +143,13 @@ namespace avro {
       return wrote;
     }
 
-    /**
-     * Does the buffer have any data? 
-     **/
+    /*Does the buffer have any data? */
 
     bool empty() const {
       return (pimpl_->size() == 0);
     }
 
-    /** 
-     *  Returns the size of the buffer, in bytes. 
-     */
+    /* Returns the size of the buffer, in bytes. */
 
     size_type size() const {
       return pimpl_->size();
@@ -186,35 +179,25 @@ namespace avro {
       }
     }
 
-    /** 
-     * Return an iterator pointing to the first data chunk of this buffer
-     * that may be written to. 
-     **/
+    /*Return an iterator pointing to the first data chunk of this buffer that may be written to. */
 
     const_iterator begin() const {
       return const_iterator(pimpl_->beginWrite());
     }
 
-    /** 
-     * Return the end iterator for writing. 
-     **/
+    /*Return the end iterator for writing. */
 
     const_iterator end() const {
       return const_iterator(pimpl_->endWrite());
     }
 
-    /** 
-     * Discard any data in this buffer.
-     **/
+    /*Discard any data in this buffer.*/
 
     void discardData() {
       pimpl_->discardData();
     }
 
-    /** 
-     * Discard the specified number of bytes from this data, starting at the beginning.
-     * Throws if the size is greater than the number of bytes.
-     **/
+    /*Discard the specified number of bytes from this data, starting at the beginning. Throws if the size is greater than the number of bytes.*/
 
     void discardData(size_t bytes) {
       if (bytes > 0) {
@@ -237,16 +220,11 @@ namespace avro {
 
     InputBuffer extractData(size_type bytes);
 
-    /** 
-     * Remove all bytes from this buffer, returning them in a new buffer.
-     * After removing data, some freeSpace may remain in this buffer.
-     **/
+    /*Remove all bytes from this buffer, returning them in a new buffer. After removing data, some freeSpace may remain in this buffer.*/
 
     InputBuffer extractData();
 
-    /** 
-     * Clone this buffer, creating a copy that contains the same data.
-     **/
+    /*Clone this buffer, creating a copy that contains the same data.*/
 
     OutputBuffer clone() const {
       detail::BufferImpl::SharedPtr newImpl(new detail::BufferImpl(*pimpl_));
@@ -263,17 +241,13 @@ namespace avro {
       pimpl_->appendForeignData(data, size, func);
     }
 
-    /** 
-     * Returns the number of chunks that contain free space.  
-     **/
+    /*Returns the number of chunks that contain free space.  */
 
     int numChunks() const {
       return pimpl_->numFreeChunks();
     }
 
-    /** 
-     * Returns the number of chunks that contain data
-     **/
+    /*Returns the number of chunks that contain data*/
 
     int numDataChunks() const {
       return pimpl_->numDataChunks();
@@ -342,42 +316,31 @@ namespace avro {
     InputBuffer(const OutputBuffer &src) :
     pimpl_(new detail::BufferImpl(*src.pimpl_)) { }
 
-    /** 
-     * Does the buffer have any data? 
-     **/
+    /*Does the buffer have any data? */
 
     bool empty() const {
       return (pimpl_->size() == 0);
     }
 
-    /** 
-     * Returns the size of the buffer, in bytes. 
-     **/
+    /*Returns the size of the buffer, in bytes. */
 
     size_type size() const {
       return pimpl_->size();
     }
 
-    /**
-     * Return an iterator pointing to the first data chunk of this buffer
-     * that contains data.
-     **/
+    /*Return an iterator pointing to the first data chunk of this buffer that contains data.*/
 
     const_iterator begin() const {
       return const_iterator(pimpl_->beginRead());
     }
 
-    /**
-     * Return the end iterator. 
-     **/
+    /*Return the end iterator. */
 
     const_iterator end() const {
       return const_iterator(pimpl_->endRead());
     }
 
-    /** 
-     * Returns the number of chunks containing data.
-     **/
+    /*Returns the number of chunks containing data.*/
 
     int numChunks() const {
       return pimpl_->numDataChunks();
@@ -407,10 +370,7 @@ namespace avro {
     class ShallowCopy {
     };
 
-    /** 
-     * Make a shallow copy of an OutputBuffer in order to read it without 
-     * causing conversion overhead.
-     **/
+    /*Make a shallow copy of an OutputBuffer in order to read it without  causing conversion overhead.*/
     InputBuffer(const OutputBuffer &src, const ShallowCopy &) :
     pimpl_(src.pimpl_) { }
 
@@ -428,10 +388,7 @@ namespace avro {
     detail::BufferImpl::ConstSharedPtr pimpl_; //Must never be null.
   };
 
-  /* 
-   * Implementations of some OutputBuffer functions are inlined here
-   * because InputBuffer definition was required before.
-   */
+/*Implementations of some OutputBuffer functions are inlined here because InputBuffer definition was required before.*/
 
   inline InputBuffer OutputBuffer::extractData() {
     detail::BufferImpl::SharedPtr newImpl(new detail::BufferImpl);

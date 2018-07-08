@@ -29,7 +29,8 @@
 #include "NodeConcepts.hh"
 
 namespace avro {
-/* Implementation details for Node.  NodeImpl represents all the avro types,  whose properties are enabled are disabled by selecting concept classes.*/
+
+  /* Implementation details for Node.  NodeImpl represents all the avro types,  whose properties are enabled are disabled by selecting concept classes.*/
   template
   <
   class NameConcept,
@@ -452,8 +453,7 @@ namespace avro {
   };
 
   template < class A, class B, class C, class D >
-  inline void
-  NodeImpl<A, B, C, D>::setLeafToSymbolic(int index, const NodePtr &node) {
+  inline void NodeImpl<A, B, C, D>::setLeafToSymbolic(int index, const NodePtr &node) {
     if (!B::hasAttribute) {
       throw Exception("Cannot change leaf node for nonexistent leaf");
     }
@@ -472,8 +472,7 @@ namespace avro {
   }
 
   template < class A, class B, class C, class D >
-  inline void
-  NodeImpl<A, B, C, D>::printBasicInfo(std::ostream &os) const {
+  inline void NodeImpl<A, B, C, D>::printBasicInfo(std::ostream &os) const {
     os << type();
     if (hasName()) {
       os << ' ' << nameAttribute_.get();

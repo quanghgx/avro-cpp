@@ -255,14 +255,10 @@ namespace avro {
     }
   };
 
-  /**
-   * The generic container for Avro arrays.
-   */
+/*The generic container for Avro arrays.*/
   class GenericArray : public GenericContainer {
   public:
-    /**
-     * The contents type for the array.
-     */
+/*The contents type for the array.*/
     typedef std::vector<GenericDatum> Value;
 
     /**
@@ -271,16 +267,12 @@ namespace avro {
      */
     GenericArray(const NodePtr& schema) : GenericContainer(AVRO_ARRAY, schema) { }
 
-    /**
-     * Returns the contents of this array.
-     */
+/*Returns the contents of this array.*/
     const Value& value() const {
       return value_;
     }
 
-    /**
-     * Returns the reference to the contents of this array.
-     */
+/*Returns the reference to the contents of this array.*/
     Value& value() {
       return value_;
     }
@@ -288,14 +280,10 @@ namespace avro {
     Value value_;
   };
 
-  /**
-   * The generic container for Avro maps.
-   */
+/*The generic container for Avro maps.*/
   class GenericMap : public GenericContainer {
   public:
-    /**
-     * The contents type for the map.
-     */
+/*The contents type for the map.*/
     typedef std::vector<std::pair<std::string, GenericDatum> > Value;
 
     /**
@@ -304,16 +292,12 @@ namespace avro {
      */
     GenericMap(const NodePtr& schema) : GenericContainer(AVRO_MAP, schema) { }
 
-    /**
-     * Returns the contents of this map.
-     */
+/*Returns the contents of this map.*/
     const Value& value() const {
       return value_;
     }
 
-    /**
-     * Returns the reference to the contents of this map.
-     */
+/*Returns the reference to the contents of this map.*/
     Value& value() {
       return value_;
     }
@@ -321,9 +305,7 @@ namespace avro {
     Value value_;
   };
 
-  /**
-   * Generic container for Avro enum.
-   */
+/*Generic container for Avro enum.*/
   class GenericEnum : public GenericContainer {
     size_t value_;
 
@@ -384,24 +366,18 @@ namespace avro {
       throw Exception("Not as many symbols");
     }
 
-    /**
-     * Returns the cardinal for the current value of this enum.
-     */
+/*Returns the cardinal for the current value of this enum.*/
     size_t value() const {
       return value_;
     }
 
-    /**
-     * Returns the symbol for the current value of this enum.
-     */
+/*Returns the symbol for the current value of this enum.*/
     const std::string& symbol() const {
       return schema()->nameAt(value_);
     }
   };
 
-  /**
-   * Generic container for Avro fixed.
-   */
+/*Generic container for Avro fixed.*/
   class GenericFixed : public GenericContainer {
     std::vector<uint8_t> value_;
   public:
@@ -417,16 +393,12 @@ namespace avro {
     GenericFixed(const NodePtr& schema, const std::vector<uint8_t>& v) :
     GenericContainer(AVRO_FIXED, schema), value_(v) { }
 
-    /**
-     * Returns the contents of this fixed.
-     */
+/*Returns the contents of this fixed.*/
     const std::vector<uint8_t>& value() const {
       return value_;
     }
 
-    /**
-     * Returns the reference to the contents of this fixed.
-     */
+/*Returns the reference to the contents of this fixed.*/
     std::vector<uint8_t>& value() {
       return value_;
     }

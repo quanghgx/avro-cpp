@@ -389,9 +389,7 @@ string CodeGen::generateUnionType(const NodePtr& n) {
     return result;
 }
 
-/**
- * Returns the type for the given schema node and emits code to os.
- */
+/*Returns the type for the given schema node and emits code to os.*/
 string CodeGen::generateType(const NodePtr& n) {
     NodePtr nn = (n->type() == avro::AVRO_SYMBOLIC) ? resolveSymbol(n) : n;
 

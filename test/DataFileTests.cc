@@ -371,9 +371,7 @@ public:
         BOOST_CHECK_EQUAL(i, count);
     }
 
-    /**
-     * Constructs the DataFileReader in two steps.
-     */
+    /*Constructs the DataFileReader in two steps.*/
     void testReadDoubleTwoStep() {
         auto_ptr<avro::DataFileReaderBase>
           base(new avro::DataFileReaderBase(filename));
@@ -418,9 +416,7 @@ public:
         BOOST_CHECK_EQUAL(i, count);
     }
 
-    /**
-     * Test writing DataFiles into other streams operations.
-     */
+    /*Test writing DataFiles into other streams operations.*/
     void testZip() {
         const size_t number_of_objects = 100;
         // first create a large file

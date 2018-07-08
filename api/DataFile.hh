@@ -72,18 +72,14 @@ namespace avro {
     void writeHeader();
     void setMetadata(const std::string& key, const std::string& value);
 
-    /**
-     * Generates a sync marker in the file.
-     */
+    /*Generates a sync marker in the file.*/
     void sync();
 
   public:
     DataFileWriterBase(const DataFileWriterBase&) = delete;
     const DataFileWriterBase& operator=(const DataFileWriterBase&) = delete;
 
-    /**
-     * Returns the current encoder for this writer.
-     */
+    /*Returns the current encoder for this writer.*/
     Encoder& encoder() const {
       return *encoderPtr_;
     }
@@ -94,15 +90,11 @@ namespace avro {
      */
     void syncIfNeeded();
 
-    /**
-     * Increments the object count.
-     */
+    /*Increments the object count.*/
     void incr() {
       ++objectCount_;
     }
-    /**
-     * Constructs a data file writer with the given sync interval and name.
-     */
+    /*Constructs a data file writer with the given sync interval and name.*/
     DataFileWriterBase(const char* filename, const ValidSchema& schema,
       size_t syncInterval, Codec codec = NULL_CODEC);
 
@@ -113,22 +105,16 @@ namespace avro {
      */
     void close();
 
-    /**
-     * Returns the schema for this data file.
-     */
+    /*Returns the schema for this data file.*/
     const ValidSchema& schema() const {
       return schema_;
     }
 
-    /**
-     * Flushes any unwritten data into the file.
-     */
+    /*Flushes any unwritten data into the file.*/
     void flush();
   };
 
-  /**
-   *  An Avro datafile that can store objects of type T.
-   */
+  /* An Avro datafile that can store objects of type T.*/
   template <typename T>
   class DataFileWriter {
     std::auto_ptr<DataFileWriterBase> base_;
@@ -137,16 +123,12 @@ namespace avro {
     DataFileWriter(const DataFileWriter&) = delete;
     const DataFileWriter& operator=(const DataFileWriter&) = delete;
 
-    /**
-     * Constructs a new data file.
-     */
+    /*Constructs a new data file.*/
     DataFileWriter(const char* filename, const ValidSchema& schema,
       size_t syncInterval = 16 * 1024, Codec codec = NULL_CODEC) :
     base_(new DataFileWriterBase(filename, schema, syncInterval, codec)) { }
 
-    /**
-     * Writes the given piece of data into the file.
-     */
+    /*Writes the given piece of data into the file.*/
     void write(const T& datum) {
       base_->syncIfNeeded();
       avro::encode(base_->encoder(), datum);
@@ -161,24 +143,18 @@ namespace avro {
       base_->close();
     }
 
-    /**
-     * Returns the schema for this data file.
-     */
+    /*Returns the schema for this data file.*/
     const ValidSchema& schema() const {
       return base_->schema();
     }
 
-    /**
-     * Flushes any unwritten data into the file.
-     */
+    /*Flushes any unwritten data into the file.*/
     void flush() {
       base_->flush();
     }
   };
 
-  /**
-   * The type independent portion of rader.
-   */
+  /*The type independent portion of reader.*/
   class DataFileReaderBase {
     const std::string filename_;
     const std::auto_ptr<InputStream> stream_;
@@ -208,21 +184,15 @@ namespace avro {
     DataFileReaderBase(const DataFileReaderBase&) = delete;
     const DataFileReaderBase& operator=(const DataFileReaderBase&) = delete;
 
-    /**
-     * Returns the current decoder for this reader.
-     */
+    /*Returns the current decoder for this reader.*/
     Decoder& decoder() {
       return *dataDecoder_;
     }
 
-    /**
-     * Returns true if and only if there is more to read.
-     */
+    /*Returns true if and only if there is more to read.*/
     bool hasMore();
 
-    /**
-     * Decrements the number of objects yet to read.
-     */
+    /*Decrements the number of objects yet to read.*/
     void decr() {
       --objectCount_;
     }
@@ -250,29 +220,21 @@ namespace avro {
      */
     void init(const ValidSchema& readerSchema);
 
-    /**
-     * Returns the schema for this object.
-     */
+    /*Returns the schema for this object.*/
     const ValidSchema& readerSchema() {
       return readerSchema_;
     }
 
-    /**
-     * Returns the schema stored with the data file.
-     */
+    /*Returns the schema stored with the data file.*/
     const ValidSchema& dataSchema() {
       return dataSchema_;
     }
 
-    /**
-     * Closes the reader. No further operation is possible on this reader.
-     */
+    /*Closes the reader. No further operation is possible on this reader.*/
     void close();
   };
 
-  /**
-   * Reads the contents of data file one after another.
-   */
+  /*Reads the contents of data file one after another.*/
   template <typename T>
   class DataFileReader {
     std::auto_ptr<DataFileReaderBase> base_;
@@ -340,23 +302,17 @@ namespace avro {
       return false;
     }
 
-    /**
-     * Returns the schema for this object.
-     */
+    /*Returns the schema for this object.*/
     const ValidSchema& readerSchema() {
       return base_->readerSchema();
     }
 
-    /**
-     * Returns the schema stored with the data file.
-     */
+    /*Returns the schema stored with the data file.*/
     const ValidSchema& dataSchema() {
       return base_->dataSchema();
     }
 
-    /**
-     * Closes the reader. No further operation is possible on this reader.
-     */
+    /*Closes the reader. No further operation is possible on this reader.*/
     void close() {
       return base_->close();
     }
