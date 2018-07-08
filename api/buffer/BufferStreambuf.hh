@@ -193,10 +193,7 @@ namespace avro {
     virtual pos_type seekpos(pos_type pos, std::ios_base::openmode) {
       return istreambuf::seekoff(pos, std::ios::beg, std::ios_base::openmode(0));
     }
-
-    /// Shows the number of bytes buffered in the current chunk, or next chunk if
-    /// current is exhausted.
-
+/* Shows the number of bytes buffered in the current chunk, or next chunk if  current is exhausted.*/
     virtual std::streamsize showmanyc() {
 
       // this function only gets called when the current buffer has been

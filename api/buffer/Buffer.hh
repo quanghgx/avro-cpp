@@ -287,7 +287,7 @@ namespace avro {
     explicit OutputBuffer(const detail::BufferImpl::SharedPtr &pimpl) :
     pimpl_(pimpl) { }
 
-    detail::BufferImpl::SharedPtr pimpl_; ///< Must never be null.
+    detail::BufferImpl::SharedPtr pimpl_; //Must never be null.
   };
 
   /** 
@@ -425,7 +425,7 @@ namespace avro {
     pimpl_(src.pimpl_) { }
 
 
-    detail::BufferImpl::ConstSharedPtr pimpl_; ///< Must never be null.
+    detail::BufferImpl::ConstSharedPtr pimpl_; //Must never be null.
   };
 
   /* 

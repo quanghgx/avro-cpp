@@ -56,7 +56,7 @@ namespace avro {
       }
 
 
-      BufferImpl::ChunkList::const_iterator iter_; ///< the current iterator
+      BufferImpl::ChunkList::const_iterator iter_; //the current iterator
     };
 
     /** 
@@ -88,7 +88,7 @@ namespace avro {
         return iter_->freeSize();
       }
 
-      BufferImpl::ChunkList::const_iterator iter_; ///< the current iterator
+      BufferImpl::ChunkList::const_iterator iter_; //the current iterator
     };
 
     /** 
@@ -135,9 +135,7 @@ namespace avro {
           return *this;
       }
        */
-
-      /// Construct iterator at the position in the buffer's chunk list.
-
+/* Construct iterator at the position in the buffer's chunk list.*/
       explicit BufferIterator(BufferImpl::ChunkList::const_iterator iter) :
       helper_(iter) { }
 

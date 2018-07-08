@@ -29,10 +29,7 @@
 #include "NodeConcepts.hh"
 
 namespace avro {
-
-  /// Implementation details for Node.  NodeImpl represents all the avro types,
-  /// whose properties are enabled are disabled by selecting concept classes.
-
+/* Implementation details for Node.  NodeImpl represents all the avro types,  whose properties are enabled are disabled by selecting concept classes.*/
   template
   <
   class NameConcept,

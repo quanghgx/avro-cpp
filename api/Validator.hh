@@ -140,8 +140,8 @@ namespace avro {
 
       explicit CompoundType(const NodePtr &n) :
       node(n), pos(0) { }
-      NodePtr node; ///< save the node
-      size_t pos; ///< track the leaf position to visit
+      NodePtr node; //save the node
+      size_t pos; //track the leaf position to visit
     };
 
     std::vector<CompoundType> compoundStack_;
