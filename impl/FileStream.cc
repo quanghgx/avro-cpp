@@ -300,4 +300,4 @@ namespace avro {
     }
 
 
-} // namespace avro
+}

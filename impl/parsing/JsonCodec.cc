@@ -658,5 +658,5 @@ namespace avro {
           parsing::SimpleParser<parsing::JsonHandler<avro::json::JsonPrettyFormatter> >, avro::json::JsonPrettyFormatter> >(schema);
     }
 
-} // namespace avro
+}
 

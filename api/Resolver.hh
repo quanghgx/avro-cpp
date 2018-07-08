@@ -20,12 +20,8 @@
 #define avro_Resolver_hh__
 
 #include <boost/noncopyable.hpp>
-#include <stdint.h>
-
 #include "Reader.hh"
-
-/// \file Resolver.hh
-///
+#include <cstdint>
 
 namespace avro {
 
@@ -53,6 +49,6 @@ namespace avro {
 
 
 
-} // namespace avro
+}
 
 #endif

@@ -35,4 +35,4 @@ namespace avro {
         resolver_->parse(reader, address);
     }
 
-} // namespace avro
+}

@@ -21,7 +21,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <memory>
-#include <stdint.h>
+#include <cstdint>
 
 #include "Reader.hh"
 
@@ -49,6 +49,6 @@ namespace avro {
 
   };
 
-} // namespace avro
+}
 
 #endif

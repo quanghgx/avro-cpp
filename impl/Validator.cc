@@ -274,4 +274,4 @@ namespace avro {
         return found;
     }
 
-} // namespace avro
+}

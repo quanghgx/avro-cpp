@@ -197,5 +197,5 @@ namespace avro {
         return result;
     }
 
-} // namespace avro
+}
 

@@ -477,4 +477,4 @@ namespace avro {
 
     }
 
-} // namespace avro
+}

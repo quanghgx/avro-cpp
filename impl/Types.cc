@@ -74,5 +74,5 @@ namespace avro {
         return os;
     }
 
-} // namespace avro
+}
 

@@ -541,5 +541,5 @@ namespace avro {
           parsing::SimpleParser<parsing::DummyHandler> > >(schema, base);
     }
 
-} // namespace avro
+}
 

@@ -181,6 +181,6 @@ namespace avro {
   typedef WriterImpl<NullValidator> Writer;
   typedef WriterImpl<Validator> ValidatingWriter;
 
-} // namespace avro
+}
 
 #endif

@@ -144,6 +144,6 @@ namespace avro {
     return p.reader_.nextFieldName(name);
   }
 
-} // namespace avro
+}
 
 #endif

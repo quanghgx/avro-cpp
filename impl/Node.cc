@@ -72,4 +72,4 @@ namespace avro {
         return ns_ == n.ns_ && simpleName_ == n.simpleName_;
     }
 
-} // namespace avro
+}

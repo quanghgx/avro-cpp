@@ -38,10 +38,6 @@ using namespace avro;
 
 static const uint8_t fixeddata[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-#ifdef max
-#undef max
-#endif
-
 struct TestSchema {
 
     TestSchema() {
@@ -88,7 +84,7 @@ struct TestSchema {
         bool caught = false;
         try {
             myenum.addSymbol("three");
-        }        catch (Exception &e) {
+        } catch (Exception &e) {
             std::cout << "(intentional) exception: " << e.what() << '\n';
             caught = true;
         }
@@ -115,7 +111,7 @@ struct TestSchema {
         caught = false;
         try {
             record.addField("mylong", LongSchema());
-        }        catch (Exception &e) {
+        } catch (Exception &e) {
             std::cout << "(intentional) exception: " << e.what() << '\n';
             caught = true;
         }

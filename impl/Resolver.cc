@@ -801,4 +801,4 @@ namespace avro {
         return factory.construct(writerSchema.root(), readerSchema.root(), readerLayout);
     }
 
-} // namespace avro
+}

@@ -19,7 +19,7 @@
 #ifndef avro_GenericDatum_hh__
 #define avro_GenericDatum_hh__
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 #include <map>
 #include <string>
@@ -528,5 +528,5 @@ namespace avro {
     boost::any_cast<GenericUnion>(&value_)->selectBranch(branch);
   }
 
-} // namespace avro
+}
 #endif // avro_GenericDatum_hh__

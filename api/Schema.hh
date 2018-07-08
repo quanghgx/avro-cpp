@@ -142,6 +142,6 @@ namespace avro {
   public:
     SymbolicSchema(const Name& name, const NodePtr& link);
   };
-} // namespace avro
+}
 
 #endif

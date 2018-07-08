@@ -108,7 +108,7 @@ namespace avro {
    */
   std::ostream& operator<<(std::ostream &os, const Null &null);
 
-} // namespace avro
+}
 
 
 #endif

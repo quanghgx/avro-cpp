@@ -37,6 +37,6 @@ namespace avro {
     std::runtime_error(boost::str(msg)) { }
   };
 
-} // namespace avro
+}
 
 #endif

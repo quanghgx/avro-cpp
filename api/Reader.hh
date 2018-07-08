@@ -19,7 +19,7 @@
 #ifndef avro_Reader_hh__
 #define avro_Reader_hh__
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 #include <boost/noncopyable.hpp>
 
@@ -202,6 +202,6 @@ namespace avro {
   typedef ReaderImpl<NullValidator> Reader;
   typedef ReaderImpl<Validator> ValidatingReader;
 
-} // namespace avro
+}
 
 #endif

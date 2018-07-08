@@ -105,6 +105,6 @@ DEFINE_PRIMITIVE(CTYPE, AVROTYPE)
   DEFINE_PRIMITIVE(std::vector<uint8_t>, AVRO_BYTES)
 
 
-} // namespace avro
+}
 
 #endif

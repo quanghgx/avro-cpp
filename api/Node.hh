@@ -196,7 +196,7 @@ namespace avro {
     bool locked_;
   };
 
-} // namespace avro
+}
 
 namespace std {
 

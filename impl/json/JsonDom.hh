@@ -20,7 +20,7 @@
 #define avro_json_JsonDom_hh__
 
 #include <iostream>
-#include <stdint.h>
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>

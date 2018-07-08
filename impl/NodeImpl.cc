@@ -263,4 +263,4 @@ namespace avro {
         os << indent(--depth) << '}';
     }
 
-} // namespace avro
+}

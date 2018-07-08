@@ -140,4 +140,4 @@ namespace avro {
         size_t size = encodeInt64(l, bytes);
         out_.writeBytes(bytes.data(), size);
     }
-} // namespace avro
+}

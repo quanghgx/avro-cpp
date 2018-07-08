@@ -509,6 +509,6 @@ namespace avro {
     return symNode->getNode();
   }
 
-} // namespace avro
+}
 
 #endif

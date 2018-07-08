@@ -106,4 +106,4 @@ namespace avro {
         }
 
     } // namespace parsing
-} // namespace avro
+}

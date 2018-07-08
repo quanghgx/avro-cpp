@@ -784,6 +784,6 @@ namespace avro {
       return os;
     }
   } // namespace parsing
-} // namespace avro
+}
 
 #endif

@@ -21,10 +21,6 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 #include <boost/scoped_array.hpp>
-
-#ifdef HAVE_BOOST_ASIO
-#include <boost/asio.hpp>
-#endif
 #include <fstream>
 #include <iostream>
 
@@ -236,7 +232,7 @@ void TestDiscard() {
 
         try {
             ob.discardData(ob.size() + 1);
-        }        catch (std::exception &e) {
+        } catch (std::exception &e) {
             std::cout << "Intentionally triggered exception: " << e.what() << std::endl;
         }
         ob.discardData(ob.size());
@@ -348,7 +344,7 @@ void TestExtractToInput() {
 
         try {
             ob.extractData(ob.size() + 1);
-        }        catch (std::exception &e) {
+        } catch (std::exception &e) {
             std::cout << "Intentionally triggered exception: " << e.what() << std::endl;
         }
 
@@ -612,116 +608,15 @@ void TestIterator() {
 
         try {
             ob.wroteTo(acc + 1);
-        }        catch (std::exception &e) {
+        } catch (std::exception &e) {
             std::cout << "Intentionally triggered exception: " << e.what() << std::endl;
         }
     }
 }
 
-#ifdef HAVE_BOOST_ASIO
-
-void server(boost::barrier &b) {
-    using boost::asio::ip::tcp;
-    boost::asio::io_service io_service;
-    tcp::acceptor a(io_service, tcp::endpoint(tcp::v4(), 33333));
-    tcp::socket sock(io_service);
-    a.listen();
-
-    b.wait();
-
-    a.accept(sock);
-    avro::OutputBuffer buf(100);
-
-    size_t length = sock.receive(buf);
-    buf.wroteTo(length);
-    cout << "Server got " << length << " bytes\n";
-
-    InputBuffer rbuf(buf);
-
-    std::string res;
-
-    avro::InputBuffer::const_iterator iter = rbuf.begin();
-    while (iter != rbuf.end()) {
-        res.append(boost::asio::buffer_cast<const char *>(*iter), boost::asio::buffer_size(*iter));
-        cout << "Received Buffer size: " << boost::asio::buffer_size(*iter) << endl;
-        BOOST_CHECK_EQUAL(length, boost::asio::buffer_size(*iter));
-        cout << "Received Buffer: \"" << res << '"' << endl;
-        ++iter;
-    }
-
-    BOOST_CHECK_EQUAL(res, "hello world");
-}
-
-void TestAsioBuffer() {
-    using boost::asio::ip::tcp;
-    BOOST_TEST_MESSAGE("TestAsioBuffer");
-    {
-        boost::barrier b(2);
-
-        boost::thread t(boost::bind(server, boost::ref(b)));
-
-        b.wait();
-
-        // set up the thing 
-        boost::asio::io_service io_service;
-
-        tcp::resolver resolver(io_service);
-        tcp::resolver::query query(tcp::v4(), "localhost", "33333");
-        tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-        tcp::resolver::iterator end;
-
-        tcp::socket socket(io_service);
-        boost::system::error_code error = boost::asio::error::host_not_found;
-        while (error && endpoint_iterator != end) {
-            socket.close();
-            socket.connect(*endpoint_iterator++, error);
-        }
-        if (error) {
-            throw error;
-        }
-
-        std::string hello = "hello ";
-        std::string world = "world";
-        avro::OutputBuffer buf;
-        buf.writeTo(hello.c_str(), hello.size());
-
-        BOOST_CHECK_EQUAL(buf.size(), hello.size());
-
-        avro::OutputBuffer buf2;
-        buf2.writeTo(world.c_str(), world.size());
-        BOOST_CHECK_EQUAL(buf2.size(), world.size());
-
-        buf.append(buf2);
-        BOOST_CHECK_EQUAL(buf.size(), hello.size() + world.size());
-
-        cout << "Distance " << std::distance(buf.begin(), buf.end()) << endl;
-        BOOST_CHECK_EQUAL(std::distance(buf.begin(), buf.end()), 1);
-
-        const avro::InputBuffer rbuf(buf);
-
-        avro::InputBuffer::const_iterator iter = rbuf.begin();
-        while (iter != rbuf.end()) {
-            std::string str(boost::asio::buffer_cast<const char *>(*iter), boost::asio::buffer_size(*iter));
-            cout << "Buffer size: " << boost::asio::buffer_size(*iter) << endl;
-            cout << "Buffer: \"" << str << '"' << endl;
-            ++iter;
-        }
-
-        cout << "Buffer size " << rbuf.size() << endl;
-
-        std::size_t wrote = boost::asio::write(socket, rbuf);
-        cout << "Wrote " << wrote << endl;
-        BOOST_CHECK_EQUAL(wrote, rbuf.size());
-
-        t.join();
-    }
-}
-#else
-
 void TestAsioBuffer() {
     cout << "Skipping asio test\n";
 }
-#endif // HAVE_BOOST_ASIO
 
 void TestSplit() {
     BOOST_TEST_MESSAGE("TestSplit");
@@ -947,13 +842,13 @@ void TestCopy() {
         try {
             BufferReader br(wb);
             br.seek(10);
-        }        catch (std::exception &e) {
+        } catch (std::exception &e) {
             cout << "Intentially triggered exception: " << e.what() << endl;
         }
         try {
             BufferReader br(wb);
             avro::InputBuffer ib = br.copyData(10);
-        }        catch (std::exception &e) {
+        } catch (std::exception &e) {
             cout << "Intentially triggered exception: " << e.what() << endl;
         }
 

@@ -209,5 +209,5 @@ namespace avro {
         return decodeZigzag64(encoded);
     }
 
-} // namespace avro
+}
 

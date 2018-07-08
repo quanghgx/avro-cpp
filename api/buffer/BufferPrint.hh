@@ -24,12 +24,7 @@
 #include <iomanip>
 #include "BufferReader.hh"
 
-/** 
- * \file BufferPrint.hh
- *
- * \brief Convenience functions for printing buffer contents
- **/
-
+/* Convenience functions for printing buffer contents*/
 namespace avro {
 
   namespace detail {

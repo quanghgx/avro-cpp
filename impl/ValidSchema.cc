@@ -118,5 +118,5 @@ namespace avro {
         root_->printBasicInfo(os);
     }
 
-} // namespace avro
+}
 

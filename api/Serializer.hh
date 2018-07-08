@@ -129,6 +129,6 @@ namespace avro {
 
   };
 
-} // namespace avro
+}
 
 #endif

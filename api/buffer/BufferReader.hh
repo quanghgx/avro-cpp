@@ -21,17 +21,7 @@
 
 #include "Buffer.hh"
 
-#ifdef min
-#undef min
-#endif
-/** 
- * \file BufferReader.hh 
- *
- * \brief Helper class for reading bytes from buffer in a streaming manner,
- * without the overhead of istreams.
- *
- **/
-
+/* Helper class for reading bytes from buffer in a streaming manner, without the overhead of istream.*/
 namespace avro {
 
   /** 

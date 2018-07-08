@@ -21,9 +21,6 @@
 
 #include <boost/ptr_container/ptr_vector.hpp>
 
-/// \file Layout.hh
-///
-
 namespace avro {
 
   class Layout {
@@ -73,6 +70,6 @@ namespace avro {
     boost::ptr_vector<Layout> layouts_;
   };
 
-} // namespace avro
+}
 
 #endif

@@ -56,6 +56,6 @@ namespace avro {
     NodePtr root_;
   };
 
-} // namespace avro
+}
 
 #endif

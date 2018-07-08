@@ -19,7 +19,7 @@
 #ifndef avro_ResolvingReader_hh__
 #define avro_ResolvingReader_hh__
 
-#include <stdint.h>
+#include <cstdint>
 #include <boost/noncopyable.hpp>
 
 #include "ResolverSchema.hh"
@@ -48,6 +48,6 @@ namespace avro {
     ResolverSchema schema_;
   };
 
-} // namespace avro
+}
 
 #endif

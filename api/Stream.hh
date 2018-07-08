@@ -21,7 +21,7 @@
 
 #include <memory>
 #include <string.h>
-#include <stdint.h>
+#include <cstdint>
 
 #include "boost/utility.hpp"
 #include "Exception.hh"
@@ -418,7 +418,7 @@ namespace avro {
     w.flush();
   }
 
-} // namespace avro
+}
 #endif
 
 

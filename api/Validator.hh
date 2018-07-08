@@ -21,7 +21,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <vector>
-#include <stdint.h>
+#include <cstdint>
 
 #include "Types.hh"
 #include "ValidSchema.hh"
@@ -155,6 +155,6 @@ namespace avro {
 
   };
 
-} // namespace avro
+}
 
 #endif

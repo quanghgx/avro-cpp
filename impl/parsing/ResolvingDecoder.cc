@@ -712,5 +712,5 @@ namespace avro {
           writer, reader, base);
     }
 
-} // namespace avro
+}
 

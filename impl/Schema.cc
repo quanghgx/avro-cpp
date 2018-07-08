@@ -106,4 +106,4 @@ namespace avro {
 
 
 
-} // namespace avro
+}

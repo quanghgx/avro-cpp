@@ -25,7 +25,7 @@
 #include "Generic.hh"
 #include "Specific.hh"
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 #include <stack>
 #include <string>
@@ -1608,7 +1608,7 @@ testSuite.add(BOOST_PARAM_TEST_CASE(&testFunc<Factory>,         \
         EncoderPtr e = jsonEncoder(schema);
     }
 
-} // namespace avro
+}
 
 boost::unit_test::test_suite*
 init_unit_test_suite(int argc, char* argv[]) {

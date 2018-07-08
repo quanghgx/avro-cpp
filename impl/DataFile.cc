@@ -373,4 +373,4 @@ namespace avro {
         avro::decode(*decoder_, sync_);
     }
 
-} // namespace avro
+}

@@ -19,7 +19,7 @@
 #ifndef avro_Compiler_hh__
 #define avro_Compiler_hh__
 
-#include <stdint.h>
+#include <cstdint>
 #include <istream>
 
 namespace avro {
@@ -46,6 +46,6 @@ namespace avro {
   ValidSchema compileJsonSchemaFromString(const std::string& input);
   ValidSchema compileJsonSchemaFromFile(const char* filename);
 
-} // namespace avro
+}
 
 #endif

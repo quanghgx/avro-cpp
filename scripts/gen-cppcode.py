@@ -20,7 +20,7 @@ license = '''/**
 '''
 
 headers = '''
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <map>
@@ -616,7 +616,7 @@ def writeHeader(filebase, namespace):
     for x in structNames:
         print 'template <> struct is_serializable<%s::%s> : public boost::true_type{};' % (namespace, x)
 
-    print "\n} // namespace avro\n"
+    print "\n}\n"
 
     print "#endif // %s" % headerstring
 

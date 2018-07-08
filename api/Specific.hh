@@ -350,7 +350,7 @@ namespace avro {
     codec_traits<T>::decode(d, t);
   }
 
-} // namespace avro
+}
 
 #endif // avro_Codec_hh__
 

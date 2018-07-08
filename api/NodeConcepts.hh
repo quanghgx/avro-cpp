@@ -204,6 +204,6 @@ namespace avro::concepts {
     IndexMap map_;
   };
 
-} // namespace avro::concept
+}
 
 #endif

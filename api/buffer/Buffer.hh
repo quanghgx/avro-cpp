@@ -25,13 +25,7 @@
 #include "detail/BufferDetail.hh"
 #include "detail/BufferDetailIterator.hh"
 
-/** 
- * \file Buffer.hh 
- *
- * \brief Definitions for InputBuffer and OutputBuffer classes
- *
- **/
-
+/* Definitions for InputBuffer and OutputBuffer classes*/
 namespace avro {
 
   class OutputBuffer;

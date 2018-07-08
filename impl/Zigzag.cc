@@ -75,4 +75,4 @@ namespace avro {
         return bytesOut;
     }
 
-} // namespace avro
+}

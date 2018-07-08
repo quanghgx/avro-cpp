@@ -247,4 +247,4 @@ namespace avro {
         write(g, e);
     }
 
-} // namespace avro
+}
