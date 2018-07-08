@@ -75,19 +75,16 @@ namespace avro {
     chunkPos_(0) { }
 
     /*How many bytes are still not read from this buffer.*/
-
     size_type bytesRemaining() const {
       return bytesRemaining_;
     }
 
     /*Read a block of data from the front of the buffer.*/
-
     size_type bytesRead() const {
       return bytes_ - bytesRemaining_;
     }
 
     /*Read a block of data from the buffer.*/
-
     size_type read(data_type *data, size_type size) {
 
       if (size > bytesRemaining_) {
@@ -107,7 +104,6 @@ namespace avro {
     }
 
     /*Read a block of data from the buffer.*/
-
     bool read(std::string &str, size_type size) {
       if (size > bytesRemaining_) {
         return false;
@@ -122,19 +118,14 @@ namespace avro {
       return true;
     }
 
-    /** 
-     * Read a single value from the buffer.  The value must be a "fundamental"
-     * type, e.g. int, float, etc.  (otherwise use the other writeTo tests).
-     *
-     **/
-
+    /* Read a single value from the buffer.  The value must be a "fundamental" type, e.g. int, float, etc.  (otherwise use the other writeTo 
+      tests).*/
     template<typename T>
     bool read(T &val) {
       return read(val, boost::is_fundamental<T>());
     }
 
     /*Skips a block of data from the buffer.*/
-
     bool skip(size_type bytes) {
       bool skipped = false;
       if (bytes <= bytesRemaining_) {
@@ -145,7 +136,6 @@ namespace avro {
     }
 
     /*Seek to a position in the buffer.*/
-
     bool seek(size_type pos) {
       if (pos > bytes_) {
         return false;
@@ -246,7 +236,6 @@ namespace avro {
     size_type bytesRemaining_;
     size_type chunkPos_;
   };
-
 
 } // namespace
 

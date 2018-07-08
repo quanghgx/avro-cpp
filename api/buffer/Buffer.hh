@@ -97,13 +97,11 @@ namespace avro {
      * available,  so this ensures there is enough room in the buffer before
      * the write operation.
      **/
-
     void reserve(size_type reserveSize) {
       pimpl_->reserveFreeSpace(reserveSize);
     }
 
-    /*Write a block of data to the buffer.  The buffer size will automatically grow if the size is larger than what is currently free.  */
-
+    /* Write a block of data to the buffer. The buffer size will automatically grow if the size is larger than what is currently free.*/
     size_type writeTo(const data_type *data, size_type size) {
       return pimpl_->writeTo(data, size);
     }
@@ -114,7 +112,6 @@ namespace avro {
      * "fundamental" type, e.g. int, float, etc.  (otherwise use the other
      * writeTo tests).
      **/
-
     template<typename T>
     void writeTo(T val) {
       pimpl_->writeTo(val, boost::is_fundamental<T>());
@@ -131,7 +128,6 @@ namespace avro {
      * cannot exceed the amount of free space.  Attempting to write more will
      * throw a std::length_error exception.
      **/
-
     size_type wroteTo(size_type size) {
       int wrote = 0;
       if (size) {
@@ -144,13 +140,11 @@ namespace avro {
     }
 
     /*Does the buffer have any data? */
-
     bool empty() const {
       return (pimpl_->size() == 0);
     }
 
     /* Returns the size of the buffer, in bytes. */
-
     size_type size() const {
       return pimpl_->size();
     }
@@ -160,7 +154,6 @@ namespace avro {
      * buffer, in bytes.  This is not a strict limit in size, as writeTo() can
      * automatically increase capacity if necessary.
      **/
-
     size_type freeSpace() const {
       return pimpl_->freeSpace();
     }
@@ -170,7 +163,6 @@ namespace avro {
      * argument can be either an InputBuffer or OutputBuffer.
      *
      **/
-
     template <class BufferType>
     void append(const BufferType &buf) {
       // don't append an empty buffer
@@ -180,25 +172,21 @@ namespace avro {
     }
 
     /*Return an iterator pointing to the first data chunk of this buffer that may be written to. */
-
     const_iterator begin() const {
       return const_iterator(pimpl_->beginWrite());
     }
 
     /*Return the end iterator for writing. */
-
     const_iterator end() const {
       return const_iterator(pimpl_->endWrite());
     }
 
     /*Discard any data in this buffer.*/
-
     void discardData() {
       pimpl_->discardData();
     }
 
     /*Discard the specified number of bytes from this data, starting at the beginning. Throws if the size is greater than the number of bytes.*/
-
     void discardData(size_t bytes) {
       if (bytes > 0) {
         if (bytes < pimpl_->size()) {
@@ -217,15 +205,12 @@ namespace avro {
      * the size of the buffer.  Data and freeSpace in the buffer after bytes
      * remains in this buffer.
      **/
-
     InputBuffer extractData(size_type bytes);
 
     /*Remove all bytes from this buffer, returning them in a new buffer. After removing data, some freeSpace may remain in this buffer.*/
-
     InputBuffer extractData();
 
     /*Clone this buffer, creating a copy that contains the same data.*/
-
     OutputBuffer clone() const {
       detail::BufferImpl::SharedPtr newImpl(new detail::BufferImpl(*pimpl_));
       return OutputBuffer(newImpl);
@@ -236,19 +221,16 @@ namespace avro {
      * free the data, but it will call the supplied function when the data is
      * no longer referenced by the buffer (or copies of the buffer).
      **/
-
     void appendForeignData(const data_type *data, size_type size, const detail::free_func &func) {
       pimpl_->appendForeignData(data, size, func);
     }
 
     /*Returns the number of chunks that contain free space.  */
-
     int numChunks() const {
       return pimpl_->numFreeChunks();
     }
 
     /*Returns the number of chunks that contain data*/
-
     int numDataChunks() const {
       return pimpl_->numDataChunks();
     }
@@ -277,7 +259,6 @@ namespace avro {
    * -# ASIO access: - iterate using const_iterator for sending messages
    *
    **/
-
   class InputBuffer {
   public:
 
@@ -297,7 +278,6 @@ namespace avro {
      * Destructor also uses the default, which resets a shared pointer,
      * deleting the underlying data if no other copies of exist.
      **/
-
     InputBuffer() :
     pimpl_(new detail::BufferImpl) { }
 
@@ -312,36 +292,30 @@ namespace avro {
      *
      * Implicit conversion is allowed.
      **/
-
     InputBuffer(const OutputBuffer &src) :
     pimpl_(new detail::BufferImpl(*src.pimpl_)) { }
 
     /*Does the buffer have any data? */
-
     bool empty() const {
       return (pimpl_->size() == 0);
     }
 
     /*Returns the size of the buffer, in bytes. */
-
     size_type size() const {
       return pimpl_->size();
     }
 
     /*Return an iterator pointing to the first data chunk of this buffer that contains data.*/
-
     const_iterator begin() const {
       return const_iterator(pimpl_->beginRead());
     }
 
     /*Return the end iterator. */
-
     const_iterator end() const {
       return const_iterator(pimpl_->endRead());
     }
 
     /*Returns the number of chunks containing data.*/
-
     int numChunks() const {
       return pimpl_->numDataChunks();
     }
@@ -366,7 +340,6 @@ namespace avro {
      * Writing to an OutputBuffer while it is being read may lead to undefined
      * behavior.
      **/
-
     class ShallowCopy {
     };
 
@@ -380,7 +353,6 @@ namespace avro {
      * algorithms that wish to treat InputBuffer and OutputBuffer in the same
      * manner.
      **/
-
     InputBuffer(const InputBuffer &src, const ShallowCopy &) :
     pimpl_(src.pimpl_) { }
 
@@ -431,7 +403,6 @@ namespace avro {
    * the space is not free anymore.
    *
    **/
-
   template<class BufferType>
   inline void toIovec(BufferType &buf, std::vector<struct iovec> &iov) {
     const int chunks = buf.numChunks();

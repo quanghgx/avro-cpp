@@ -32,7 +32,6 @@ namespace avro {
    * xsputn.   Typically custom streambufs will also override sync for output,
    * but we have no need since all writes are immediately stored in the buffer.
    **/
-
   class ostreambuf : public std::streambuf {
   public:
 
@@ -70,7 +69,7 @@ namespace avro {
   };
 
   /** 
-   * \brief Implementation of streambuf for use by the Buffer's istream.
+   * Implementation of streambuf for use by the Buffer's istream.
    *
    * This class derives from std::streambuf and implements the virtual functions
    * needed to operate on InputBuffer.  The override functions are underflow,
@@ -79,9 +78,7 @@ namespace avro {
    * iterator interface.  Because the input is already buffered, uflow is not
    * required.  pbackfail is not yet implemented but can be if necessary (the
    * inherited behavior is to fail, and has yet to be a problem).
-   *
    **/
-
   class istreambuf : public std::streambuf {
   public:
 
@@ -227,7 +224,6 @@ namespace avro {
     off_type basePos_;
     InputBuffer::const_iterator iter_;
   };
-
-} // namespace
+}
 
 #endif 
