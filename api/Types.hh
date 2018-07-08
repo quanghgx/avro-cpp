@@ -103,8 +103,8 @@ namespace avro {
 
   /**
    * Writes schema for null \p null type to \p os.
-   * \param os The ostream to write to.
-   * \param null The value to be written.
+   * @param os The ostream to write to.
+   * @param null The value to be written.
    */
   std::ostream& operator<<(std::ostream &os, const Null &null);
 

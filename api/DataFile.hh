@@ -36,15 +36,13 @@
 
 namespace avro {
 
-  /** Specify type of compression to use when writing data files. */
+  /* Specify type of compression to use when writing data files. */
   enum Codec {
     NULL_CODEC,
     DEFLATE_CODEC,
   };
 
-  /**
-   * The sync value.
-   */
+  /* The sync value.*/
   typedef boost::array<uint8_t, 16> DataFileSync;
 
   /**

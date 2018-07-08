@@ -144,15 +144,15 @@ namespace avro {
      * Constructs a datum corresponding to the given avro type.
      * The value will the appropriate default corresponding to the
      * data type.
-     * \param schema The schema that defines the avro type.
+     * @param schema The schema that defines the avro type.
      */
     GenericDatum(const NodePtr& schema);
 
     /**
      * Constructs a datum corresponding to the given avro type and set
      * the value. 
-     * \param schema The schema that defines the avro type.
-     * \param v The value for this type.
+     * @param schema The schema that defines the avro type.
+     * @param v The value for this type.
      */
     template<typename T>
     GenericDatum(const NodePtr& schema, const T& v) :
@@ -165,7 +165,7 @@ namespace avro {
      * Constructs a datum corresponding to the given avro type.
      * The value will the appropriate default corresponding to the
      * data type.
-     * \param schema The schema that defines the avro type.
+     * @param schema The schema that defines the avro type.
      */
     GenericDatum(const ValidSchema& schema);
   };
@@ -221,7 +221,7 @@ namespace avro {
 
     /**
      * Selects a new branch. The type for the value is changed accordingly.
-     * \param branch The index for the selected branch.
+     * @param branch The index for the selected branch.
      */
     void selectBranch(size_t branch) {
       if (curBranch_ != branch) {

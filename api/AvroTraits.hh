@@ -21,10 +21,7 @@
 
 #include "Types.hh"
 
-/** @file
- *
- * This header contains type traits and similar utilities used by the library.
- */
+/* This header contains type traits and similar utilities used by the library.*/
 namespace avro {
 
   /**
