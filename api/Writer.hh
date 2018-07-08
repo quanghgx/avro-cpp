@@ -28,8 +28,7 @@
 
 namespace avro {
 
-  /// Class for writing avro data to a stream.
-
+  /* Class for writing avro data to a stream.*/
   template<class ValidatorType>
   class WriterImpl {
   public:
@@ -39,8 +38,7 @@ namespace avro {
 
     WriterImpl() { }
 
-    explicit WriterImpl(const ValidSchema &schema) :
-    validator_(schema) { }
+    explicit WriterImpl(const ValidSchema &schema) : validator_(schema) { }
 
     void writeValue(const Null &) {
       validator_.checkTypeExpected(AVRO_NULL);

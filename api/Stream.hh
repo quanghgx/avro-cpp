@@ -28,15 +28,11 @@
 
 namespace avro {
 
-  /**
-   * A no-copy input stream.
-   */
+  /* A no-copy input stream.*/
   class InputStream {
   protected:
 
-    /**
-     * An empty constructor.
-     */
+    /* An empty constructor.*/
     InputStream() { }
 
   public:
@@ -44,179 +40,103 @@ namespace avro {
     InputStream(const InputStream&) = delete;
     const InputStream& operator=(const InputStream&) = delete;
 
-    /**
-     * Destructor.
-     */
+    /* Destructor.*/
     virtual ~InputStream() { }
 
-    /**
-     * Returns some of available data.
-     *
-     * Returns true if some data is available, false if no more data is
-     * available or an error has occurred.
-     */
+    /* Returns some of available data.
+        @returns true if some data is available, false if no more data is available or an error has occurred.*/
     virtual bool next(const uint8_t** data, size_t* len) = 0;
 
-    /**
-     * "Returns" back some of the data to the stream. The returned
-     * data must be less than what was obtained in the last call to
-     * next().
-     */
+    /* "Returns" back some of the data to the stream. The returned data must be less than what was obtained in the last call to next().*/
     virtual void backup(size_t len) = 0;
 
-    /**
-     * Skips number of bytes specified by len.
-     */
+    /* Skips number of bytes specified by len.*/
     virtual void skip(size_t len) = 0;
 
-    /**
-     * Returns the number of bytes read from this stream so far.
-     * All the bytes made available through next are considered
-     * to be used unless, retutned back using backup.
-     */
+    /* Returns the number of bytes read from this stream so far. All the bytes made available through next are considered to be used unless, 
+       returned back using backup.*/
     virtual size_t byteCount() const = 0;
   };
 
-  /**
-   * A no-copy output stream.
-   */
+  /* A no-copy output stream.*/
   class OutputStream {
   protected:
 
-    /**
-     * An empty constuctor.
-     */
+    /* An empty constructor.*/
     OutputStream() { }
   public:
     OutputStream(const OutputStream&) = delete;
     const OutputStream& operator=(const OutputStream&) = delete;
 
-    /**
-     * Destructor.
-     */
+    /* Destructor.*/
     virtual ~OutputStream() { }
 
-    /**
-     * Returns a buffer that can be written into.
-     * On successful return, data has the pointer to the buffer
-     * and len has the number of bytes available at data.
-     */
+    /* Returns a buffer that can be written into. On successful return, data has the pointer to the buffer and len has the number of bytes 
+       available at data.*/
     virtual bool next(uint8_t** data, size_t* len) = 0;
 
-    /**
-     * "Returns" back to the stream some of the buffer obtained
-     * from in the last call to next().
-     */
+    /* "Returns" back to the stream some of the buffer obtained from in the last call to next().*/
     virtual void backup(size_t len) = 0;
 
-    /**
-     * Number of bytes written so far into this stream. The whole buffer
-     * returned by next() is assumed to be written unless some of
-     * it was retutned using backup().
-     */
+    /* Number of bytes written so far into this stream. The whole buffer returned by next() is assumed to be written unless some of it was 
+       returned using backup().*/
     virtual uint64_t byteCount() const = 0;
 
-    /**
-     * Flushes any data remaining in the buffer to the stream's underlying
-     * store, if any.
-     */
+    /* Flushes any data remaining in the buffer to the stream underlying store, if any.*/
     virtual void flush() = 0;
   };
 
-  /**
-   * Returns a new OutputStream, which grows in memory chunks of specified size.
-   */
+  /* Returns a new OutputStream, which grows in memory chunks of specified size.*/
   std::auto_ptr<OutputStream> memoryOutputStream(size_t chunkSize = 4 * 1024);
 
-  /**
-   * Returns a new InputStream, with the data from the given byte array.
-   * It does not copy the data, the byte array should remain valid
-   * until the InputStream is used.
-   */
+  /* Returns a new InputStream, with the data from the given byte array. It does not copy the data, the byte array should remain valid until 
+     the InputStream is used.*/
   std::auto_ptr<InputStream> memoryInputStream(const uint8_t* data, size_t len);
 
-  /**
-   * Returns a new InputStream with the contents written into an
-   * outputstream. The output stream must have been returned by
-   * an earlier call to memoryOutputStream(). The contents for the new
-   * input stream are the snapshot of the outputstream. One can construct
-   * any number of memory input stream from a single memory output stream.
-   */
+  /* Returns a new InputStream with the contents written into an output-stream. The output stream must have been returned by an earlier call 
+     to memoryOutputStream(). The contents for the new input stream are the snapshot of the output-stream. One can construct any number of 
+     memory input stream from a single memory output stream.*/
   std::auto_ptr<InputStream> memoryInputStream(const OutputStream& source);
 
-  /**
-   * Returns the contents written so far into the output stream, which should
-   * be a memory output stream. That is it must have been returned by a pervious
-   * call to memoryOutputStream().
-   */
+  /* Returns the contents written so far into the output stream, which should be a memory output stream. That is it must have been returned 
+     by a pervious call to memoryOutputStream().*/
   std::shared_ptr<std::vector<uint8_t> > snapshot(const OutputStream& source);
 
-  /**
-   * Returns a new OutputStream whose contents would be stored in a file.
-   * Data is written in chunks of given buffer size.
-   *
-   * If there is a file with the given name, it is truncated and overwritten.
-   * If there is no file with the given name, it is created.
-   */
-  std::auto_ptr<OutputStream> fileOutputStream(const char* filename,
-    size_t bufferSize = 8 * 1024);
+  /* Returns a new OutputStream whose contents would be stored in a file. Data is written in chunks of given buffer size. If there is a file 
+     with the given name, it is truncated and overwritten. If there is no file with the given name, it is created.*/
+  std::auto_ptr<OutputStream> fileOutputStream(const char* filename, size_t bufferSize = 8 * 1024);
 
-  /**
-   * Returns a new InputStream whose contents come from the given file.
-   * Data is read in chunks of given buffer size.
-   */
-  std::auto_ptr<InputStream> fileInputStream(const char* filename,
-    size_t bufferSize = 8 * 1024);
+  /* Returns a new InputStream whose contents come from the given file. Data is read in chunks of given buffer size.*/
+  std::auto_ptr<InputStream> fileInputStream(const char* filename, size_t bufferSize = 8 * 1024);
 
-  /**
-   * Returns a new OutputStream whose contents will be sent to the given
-   * std::ostream. The std::ostream object should outlive the returned
-   * OutputStream.
-   */
-  std::auto_ptr<OutputStream> ostreamOutputStream(std::ostream& os,
-    size_t bufferSize = 8 * 1024);
+  /* Returns a new OutputStream whose contents will be sent to the given std::ostream. The std::ostream object should outlive the returned 
+     OutputStream.*/
+  std::auto_ptr<OutputStream> ostreamOutputStream(std::ostream& os, size_t bufferSize = 8 * 1024);
 
-  /**
-   * Returns a new InputStream whose contents come from the given
-   * std::istream. The std::istream object should outlive the returned
-   * InputStream.
-   */
-  std::auto_ptr<InputStream> istreamInputStream(std::istream& in,
-    size_t bufferSize = 8 * 1024);
+  /* Returns a new InputStream whose contents come from the given std::istream. The std::istream object should outlive the returned 
+     InputStream.*/
+  std::auto_ptr<InputStream> istreamInputStream(std::istream& in, size_t bufferSize = 8 * 1024);
 
-  /** A convenience class for reading from an InputStream */
+  /* A convenience class for reading from an InputStream */
   struct StreamReader {
-    /**
-     * The underlying input stream.
-     */
+    /* The underlying input stream.*/
     InputStream* in_;
 
-    /**
-     * The next location to read from.
-     */
+    /* The next location to read from.*/
     const uint8_t* next_;
 
-    /**
-     * One past the last valid location.
-     */
+    /* One past the last valid location.*/
     const uint8_t* end_;
 
-    /**
-     * Constructs an empty reader.
-     */
+    /* Constructs an empty reader.*/
     StreamReader() : in_(0), next_(0), end_(0) { }
 
-    /**
-     * Constructs a reader with the given underlying stream.
-     */
+    /* Constructs a reader with the given underlying stream.*/
     StreamReader(InputStream& in) : in_(0), next_(0), end_(0) {
       reset(in);
     }
 
-    /**
-     * Replaces the current input stream with the given one after backing up
-     * the original one if required.
-     */
+    /* Replaces the current input stream with the given one after backing up the original one if required.*/
     void reset(InputStream& is) {
       if (in_ != 0 && end_ != next_) {
         in_->backup(end_ - next_);
@@ -225,10 +145,7 @@ namespace avro {
       next_ = end_ = 0;
     }
 
-    /**
-     * Read just one byte from the underlying stream. If there are no
-     * more data, throws an exception.
-     */
+    /* Read just one byte from the underlying stream. If there are no more data, throws an exception.*/
     uint8_t read() {
       if (next_ == end_) {
         more();
@@ -236,10 +153,7 @@ namespace avro {
       return *next_++;
     }
 
-    /**
-     * Reads the given number of bytes from the underlying stream.
-     * If there are not that many bytes, throws an exception.
-     */
+    /* Reads the given number of bytes from the underlying stream. If there are not that many bytes, throws an exception.*/
     void readBytes(uint8_t* b, size_t n) {
       while (n > 0) {
         if (next_ == end_) {
@@ -256,10 +170,7 @@ namespace avro {
       }
     }
 
-    /**
-     * Skips the given number of bytes. Of there are not so that many
-     * bytes, throws an exception.
-     */
+    /* Skips the given number of bytes. Of there are not so that many bytes, throws an exception.*/
     void skipBytes(size_t n) {
       if (n > static_cast<size_t> (end_ - next_)) {
         n -= end_ - next_;
@@ -270,12 +181,8 @@ namespace avro {
       }
     }
 
-    /**
-     * Get as many byes from the underlying stream as possible in a single
-     * chunk.
-     * \return true if some data could be obtained. False is no more
-     * data is available on the stream.
-     */
+    /* Get as many byes from the underlying stream as possible in a single chunk.
+       @return true if some data could be obtained. False is no more data is available on the stream.*/
     bool fill() {
       size_t n = 0;
       while (in_->next(&next_, &n)) {
@@ -287,45 +194,31 @@ namespace avro {
       return false;
     }
 
-    /**
-     * Tries to get more data and if it cannot, throws an exception.
-     */
+    /* Tries to get more data and if it cannot, throws an exception.*/
     void more() {
       if (!fill()) {
         throw Exception("EOF reached");
       }
     }
 
-    /**
-     * Returns true if and only if the end of stream is not reached.
-     */
+    /* Returns true if and only if the end of stream is not reached.*/
     bool hasMore() {
       return (next_ == end_) ? fill() : true;
     }
   };
 
-  /**
-   * A convinience class to write data into an OutputStream.
-   */
+  /* A convenience class to write data into an OutputStream.*/
   struct StreamWriter {
-    /**
-     * The underlying output stream for this writer.
-     */
+    /* The underlying output stream for this writer.*/
     OutputStream* out_;
 
-    /**
-     * The next location to write to.
-     */
+    /* The next location to write to.*/
     uint8_t* next_;
 
-    /**
-     * One past the last location one can write to.
-     */
+    /* One past the last location one can write to.*/
     uint8_t* end_;
 
-    /**
-     * Constructs a writer with no underlying stream.
-     */
+    /* Constructs a writer with no underlying stream.*/
     StreamWriter() : out_(0), next_(0), end_(0) { }
 
     /**
@@ -335,10 +228,7 @@ namespace avro {
       reset(out);
     }
 
-    /**
-     * Replaces the current underlying stream with a new one.
-     * If required, it backs up unused bytes in the previous stream.
-     */
+    /* Replaces the current underlying stream with a new one. If required, it backs up unused bytes in the previous stream.*/
     void reset(OutputStream& os) {
       if (out_ != 0 && end_ != next_) {
         out_->backup(end_ - next_);
@@ -347,9 +237,7 @@ namespace avro {
       next_ = end_;
     }
 
-    /**
-     * Writes a single byte.
-     */
+    /* Writes a single byte.*/
     void write(uint8_t c) {
       if (next_ == end_) {
         more();
@@ -357,9 +245,7 @@ namespace avro {
       *next_++ = c;
     }
 
-    /**
-     * Writes the specified number of bytes starting at \p b.
-     */
+    /* Writes the specified number of bytes starting at b.*/
     void writeBytes(const uint8_t* b, size_t n) {
       while (n > 0) {
         if (next_ == end_) {
@@ -376,10 +262,7 @@ namespace avro {
       }
     }
 
-    /**
-     * backs up upto the currently written data and flushes the
-     * underlying stream.
-     */
+    /* backs up upto the currently written data and flushes the underlying stream.*/
     void flush() {
       if (next_ != end_) {
         out_->backup(end_ - next_);
@@ -388,9 +271,7 @@ namespace avro {
       out_->flush();
     }
 
-    /**
-     * Gets more space to write to. Throws an exception it cannot.
-     */
+    /* Gets more space to write to. Throws an exception it cannot.*/
     void more() {
       size_t n = 0;
       while (out_->next(&next_, &n)) {
@@ -404,10 +285,7 @@ namespace avro {
 
   };
 
-  /**
-   * A convenience function to copy all the contents of an input stream into
-   * an output stream.
-   */
+  /* A convenience function to copy all the contents of an input stream into an output stream.*/
   inline void copy(InputStream& in, OutputStream& out) {
     const uint8_t *p = 0;
     size_t n = 0;

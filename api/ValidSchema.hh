@@ -25,17 +25,11 @@ namespace avro {
 
   class Schema;
 
-  /// A ValidSchema is basically a non-mutable Schema that has passed some
-  /// minumum of sanity checks.  Once valididated, any Schema that is part of
-  /// this ValidSchema is considered locked, and cannot be modified (an attempt
-  /// to modify a locked Schema will throw).  Also, as it is validated, any
-  /// recursive duplications of schemas are replaced with symbolic links to the
-  /// original.
-  ///
-  /// Once a Schema is converted to a valid schema it can be used in validating
-  /// parsers/serializers, converted to a json schema, etc.
-  ///
-
+  /* A ValidSchema is basically a non-mutable Schema that has passed some minimum of sanity checks. Once validated, any Schema that is part 
+     of this ValidSchema is considered locked, and cannot be modified (an attempt to modify a locked Schema will throw).  Also, as it is 
+     validated, any recursive duplications of schemas are replaced with symbolic links to the original.
+  
+     Once a Schema is converted to a valid schema it can be used in validating parsers/serializers, converted to a json schema, etc.*/
   class ValidSchema {
   public:
     explicit ValidSchema(const NodePtr &root);
@@ -49,7 +43,6 @@ namespace avro {
     }
 
     void toJson(std::ostream &os) const;
-
     void toFlatList(std::ostream &os) const;
 
   protected:

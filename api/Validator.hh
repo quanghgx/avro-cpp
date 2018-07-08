@@ -19,17 +19,18 @@
 #ifndef avro_Validating_hh__
 #define avro_Validating_hh__
 
-#include <boost/noncopyable.hpp>
 #include <vector>
 #include <cstdint>
-
 #include "Types.hh"
 #include "ValidSchema.hh"
 
 namespace avro {
 
-  class NullValidator : private boost::noncopyable {
+  class NullValidator {
   public:
+
+    NullValidator(const NullValidator&) = delete;
+    const NullValidator& operator=(const NullValidator&) = delete;
 
     explicit NullValidator(const ValidSchema &schema) { }
 
@@ -64,14 +65,13 @@ namespace avro {
 
   };
 
-  /// This class is used by both the ValidatingSerializer and ValidationParser
-  /// objects.  It advances the parse tree (containing logic how to advance
-  /// through the various compound types, for example a record must advance
-  /// through all leaf nodes but a union only skips to one), and reports which
-  /// type is next.
-
-  class Validator : private boost::noncopyable {
+  /* This class is used by both the ValidatingSerializer and ValidationParser objects. It advances the parse tree (containing logic how to 
+     advance through the various compound types, for example a record must advance through all leaf nodes but a union only skips to one), 
+     and reports which type is next.*/
+  class Validator {
   public:
+    Validator(const Validator&) = delete;
+    const Validator& operator=(const Validator&) = delete;
 
     explicit Validator(const ValidSchema &schema);
 
@@ -92,20 +92,14 @@ namespace avro {
 
     void checkTypeExpected(Type type) {
       if (!typeIsExpected(type)) {
-        throw Exception(
-          boost::format("Type %1% does not match schema %2%")
-          % type % nextType_
-          );
+        throw Exception(boost::format("Type %1% does not match schema %2%") % type % nextType_);
       }
       advance();
     }
 
     void checkFixedSizeExpected(int size) {
       if (nextSizeExpected() != size) {
-        throw Exception(
-          boost::format("Wrong size for fixed, got %1%, expected %2%")
-          % size % nextSizeExpected()
-          );
+        throw Exception(boost::format("Wrong size for fixed, got %1%, expected %2%") % size % nextSizeExpected());
       }
       checkTypeExpected(AVRO_FIXED);
     }
