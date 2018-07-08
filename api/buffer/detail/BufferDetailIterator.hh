@@ -41,19 +41,16 @@ namespace avro {
       InputIteratorHelper() :
       iter_() { }
 
-      /// Construct a helper with an iterator.
-
+/* Construct a helper with an iterator.*/
       InputIteratorHelper(const BufferImpl::ChunkList::const_iterator &iter) :
       iter_(iter) { }
 
-      /// The location of valid data in this chunk.
-
+/* The location of valid data in this chunk.*/
       const data_type *data() const {
         return iter_->tellReadPos();
       }
 
-      /// The size of valid data in this chunk.
-
+/* The size of valid data in this chunk.*/
       size_type size() const {
         return iter_->dataSize();
       }
@@ -77,19 +74,16 @@ namespace avro {
       OutputIteratorHelper() :
       iter_() { }
 
-      /// Construct a helper with an iterator.
-
+/* Construct a helper with an iterator.*/
       OutputIteratorHelper(const BufferImpl::ChunkList::const_iterator &iter) :
       iter_(iter) { }
 
-      /// The location of the first writable byte in this chunk.
-
+/* The location of the first writable byte in this chunk.*/
       data_type *data() const {
         return iter_->tellWritePos();
       }
 
-      /// The size of area that can be written in this chunk.
-
+/* The size of area that can be written in this chunk.*/
       size_type size() const {
         return iter_->freeSize();
       }
@@ -126,8 +120,7 @@ namespace avro {
       typedef value_type& reference;
       //@}
 
-      /// Construct an unitialized iterator.
-
+/* Construct an unitialized iterator.*/
       BufferIterator() :
       helper_() { }
 
@@ -148,53 +141,45 @@ namespace avro {
       explicit BufferIterator(BufferImpl::ChunkList::const_iterator iter) :
       helper_(iter) { }
 
-      /// Dereference iterator, returns InputIteratorHelper or OutputIteratorHelper wrapper.
-
+/* Dereference iterator, returns InputIteratorHelper or OutputIteratorHelper wrapper.*/
       reference operator*() {
         return helper_;
       }
 
-      /// Dereference iterator, returns const InputIteratorHelper or OutputIteratorHelper wrapper.
-
+/* Dereference iterator, returns const InputIteratorHelper or OutputIteratorHelper wrapper.*/
       const value_type &operator*() const {
         return helper_;
       }
 
-      /// Dereference iterator, returns InputIteratorHelper or OutputIteratorHelper wrapper.
-
+/* Dereference iterator, returns InputIteratorHelper or OutputIteratorHelper wrapper.*/
       pointer operator->() {
         return &helper_;
       }
 
-      /// Dereference iterator, returns const InputIteratorHelper or OutputIteratorHelper wrapper.
-
+/* Dereference iterator, returns const InputIteratorHelper or OutputIteratorHelper wrapper.*/
       const value_type *operator->() const {
         return &helper_;
       }
 
-      /// Increment to next chunk in list, or to end() iterator.
-
+/* Increment to next chunk in list, or to end() iterator.*/
       this_type& operator++() {
         ++helper_.iter_;
         return *this;
       }
 
-      /// Increment to next chunk in list, or to end() iterator.
-
+/* Increment to next chunk in list, or to end() iterator.*/
       this_type operator++(int) {
         this_type ret = *this;
         ++helper_.iter_;
         return ret;
       }
 
-      /// True if iterators point to same chunks.
-
+/* True if iterators point to same chunks.*/
       bool operator==(const this_type &rhs) const {
         return (helper_.iter_ == rhs.helper_.iter_);
       }
 
-      /// True if iterators point to different chunks.
-
+/* True if iterators point to different chunks.*/
       bool operator!=(const this_type &rhs) const {
         return (helper_.iter_ != rhs.helper_.iter_);
       }

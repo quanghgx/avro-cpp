@@ -33,8 +33,7 @@ namespace avro {
   ///
   /// Parses from an avro encoding to the requested type.  Assumes the next item
   /// in the avro binary data is the expected type.
-  ///
-
+/**/
   template<class ValidatorType>
   class ReaderImpl {
   public:

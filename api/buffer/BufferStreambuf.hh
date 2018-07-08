@@ -36,35 +36,30 @@ namespace avro {
   class ostreambuf : public std::streambuf {
   public:
 
-    /// Default constructor creates a new OutputBuffer.
-
+/* Default constructor creates a new OutputBuffer.*/
     ostreambuf() :
     std::streambuf(),
     buffer_() { }
 
-    /// Construct using an existing OutputBuffer.
-
+/* Construct using an existing OutputBuffer.*/
     explicit ostreambuf(OutputBuffer &buffer) :
     std::streambuf(),
     buffer_(buffer) { }
 
-    /// Return the buffer.
-
+/* Return the buffer.*/
     const OutputBuffer &getBuffer() const {
       return buffer_;
     }
 
   protected:
 
-    /// Write a single character to the stream.
-
+/* Write a single character to the stream.*/
     virtual int_type overflow(int_type c) {
       buffer_.writeTo(static_cast<OutputBuffer::data_type> (c));
       return c;
     }
 
-    /// Write a block of characters to the stream.
-
+/* Write a block of characters to the stream.*/
     virtual std::streamsize xsputn(const char_type *s, std::streamsize n) {
       return buffer_.writeTo(s, static_cast<size_t> (n));
     }
@@ -90,8 +85,7 @@ namespace avro {
   class istreambuf : public std::streambuf {
   public:
 
-    /// Default constructor requires an InputBuffer to read from.
-
+/* Default constructor requires an InputBuffer to read from.*/
     explicit istreambuf(const InputBuffer &buffer) :
     std::streambuf(),
     buffer_(buffer),
@@ -100,8 +94,7 @@ namespace avro {
       setBuffer();
     }
 
-    /// Default constructor converts an OutputBuffer to an InputBuffer 
-
+/* Default constructor converts an OutputBuffer to an InputBuffer */
     explicit istreambuf(const OutputBuffer &buffer) :
     std::streambuf(),
     buffer_(buffer, InputBuffer::ShallowCopy()),
@@ -110,16 +103,14 @@ namespace avro {
       setBuffer();
     }
 
-    /// Return the buffer.
-
+/* Return the buffer.*/
     const InputBuffer &getBuffer() const {
       return buffer_;
     }
 
   protected:
 
-    /// The current chunk of data is exhausted, read the next chunk.
-
+/* The current chunk of data is exhausted, read the next chunk.*/
     virtual int_type underflow() {
       if (iter_ != buffer_.end()) {
         basePos_ += (egptr() - eback());
@@ -128,9 +119,7 @@ namespace avro {
       return setBuffer();
     }
 
-    /// Get a block of data from the stream.  Overrides default behavior
-    /// to ignore eof characters that may reside in the stream.
-
+/* Get a block of data from the stream.  Overrides default behavior  to ignore eof characters that may reside in the stream.*/
     virtual std::streamsize xsgetn(char_type *c, std::streamsize len) {
       std::streamsize bytesCopied = 0;
 
@@ -158,8 +147,7 @@ namespace avro {
       return bytesCopied;
     }
 
-    /// Special seek override to navigate InputBuffer chunks.
-
+/* Special seek override to navigate InputBuffer chunks.*/
     virtual pos_type seekoff(off_type off, std::ios::seekdir dir, std::ios_base::openmode) {
 
       off_type curpos = basePos_ + (gptr() - eback());
@@ -201,8 +189,7 @@ namespace avro {
       return newpos;
     }
 
-    /// Calls seekoff for implemention.
-
+/* Calls seekoff for implemention.*/
     virtual pos_type seekpos(pos_type pos, std::ios_base::openmode) {
       return istreambuf::seekoff(pos, std::ios::beg, std::ios_base::openmode(0));
     }
@@ -224,10 +211,7 @@ namespace avro {
 
   private:
 
-    /// Setup the streambuf buffer pointers after updating
-    /// the value of the iterator.  Returns the first character
-    /// in the new buffer, or eof if there is no buffer.
-
+/* Setup the streambuf buffer pointers after updating  the value of the iterator.  Returns the first character  in the new buffer, or eof if there is no buffer.*/
     int_type setBuffer() {
       int_type ret = traits_type::eof();
 

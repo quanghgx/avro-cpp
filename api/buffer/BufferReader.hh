@@ -229,8 +229,7 @@ namespace avro {
       return true;
     }
 
-    /// An uninstantiable function, this is if boost::is_fundamental check fails
-
+/* An uninstantiable function, this is if boost::is_fundamental check fails*/
     template<typename T>
     bool read(T &val, const boost::false_type&) {
       static_assert(sizeof (T) == 0);

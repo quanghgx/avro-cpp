@@ -26,8 +26,7 @@
 #include "Reader.hh"
 
 /// \file ResolverSchema.hh
-///
-
+/**/
 namespace avro {
 
   class ValidSchema;

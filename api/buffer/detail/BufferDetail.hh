@@ -81,8 +81,7 @@ namespace avro {
 
       typedef std::shared_ptr<Chunk> SharedPtr;
 
-      /// Default constructor, allocates a new underlying block for this chunk.
-
+/* Default constructor, allocates a new underlying block for this chunk.*/
       Chunk(size_type size) :
       underlyingBlock_(new data_type[size]),
       readPos_(underlyingBlock_.get()),
@@ -104,55 +103,45 @@ namespace avro {
 
     public:
 
-      /// Remove readable bytes from the front of the chunk by advancing the
-      /// chunk start position.
-
+/* Remove readable bytes from the front of the chunk by advancing the  chunk start position.*/
       void truncateFront(size_type howMuch) {
         readPos_ += howMuch;
         assert(readPos_ <= writePos_);
       }
 
-      /// Remove readable bytes from the back of the chunk by moving the
-      /// chunk cursor position.
-
+/* Remove readable bytes from the back of the chunk by moving the  chunk cursor position.*/
       void truncateBack(size_type howMuch) {
         writePos_ -= howMuch;
         assert(readPos_ <= writePos_);
       }
 
-      /// Tell the position the next byte may be written to.
-
+/* Tell the position the next byte may be written to.*/
       data_type *tellWritePos() const {
         return writePos_;
       }
 
-      /// Tell the position of the first byte containing valid data.
-
+/* Tell the position of the first byte containing valid data.*/
       const data_type *tellReadPos() const {
         return readPos_;
       }
 
-      /// After a write operation, increment the write position.
-
+/* After a write operation, increment the write position.*/
       void incrementCursor(size_type howMuch) {
         writePos_ += howMuch;
         assert(writePos_ <= endPos_);
       }
 
-      /// Tell how many bytes of data were written to this chunk.
-
+/* Tell how many bytes of data were written to this chunk.*/
       size_type dataSize() const {
         return (writePos_ - readPos_);
       }
 
-      /// Tell how many bytes this chunk has available to write to.
-
+/* Tell how many bytes this chunk has available to write to.*/
       size_type freeSize() const {
         return (endPos_ - writePos_);
       }
 
-      /// Tell how many bytes of data this chunk can hold (used and free).
-
+/* Tell how many bytes of data this chunk can hold (used and free).*/
       size_type capacity() const {
         return (endPos_ - readPos_);
       }
@@ -194,18 +183,13 @@ namespace avro {
      */
 
     class BufferImpl {
-      /// Add a new chunk to the list of chunks for this buffer, growing the
-      /// buffer by the default block size.
-
+/* Add a new chunk to the list of chunks for this buffer, growing the  buffer by the default block size.*/
       void allocChunkChecked(size_type size = kDefaultBlockSize) {
         writeChunks_.push_back(Chunk(size));
         freeSpace_ += writeChunks_.back().freeSize();
       }
 
-      /// Add a new chunk to the list of chunks for this buffer, growing the
-      /// buffer by the requested size, but within the range of a minimum and
-      /// maximum.
-
+/* Add a new chunk to the list of chunks for this buffer, growing the  buffer by the requested size, but within the range of a minimum and  maximum.*/
       void allocChunk(size_type size) {
         if (size < kMinBlockSize) {
           size = kMinBlockSize;
@@ -215,9 +199,7 @@ namespace avro {
         allocChunkChecked(size);
       }
 
-      /// Update the state of the chunks after a write operation.  This function
-      /// ensures the chunk states are consistent with the write.
-
+/* Update the state of the chunks after a write operation.  This function  ensures the chunk states are consistent with the write.*/
       void postWrite(size_type size) {
 
         // precondition to this function is that the writeChunk_.front()
@@ -282,27 +264,23 @@ namespace avro {
       typedef std::shared_ptr<BufferImpl> SharedPtr;
       typedef std::shared_ptr<const BufferImpl> ConstSharedPtr;
 
-      /// Default constructor, creates a buffer without any chunks
-
+/* Default constructor, creates a buffer without any chunks*/
       BufferImpl() :
       freeSpace_(0),
       size_(0) { }
 
-      /// Copy constructor, gets a copy of all the chunks with data.
-
+/* Copy constructor, gets a copy of all the chunks with data.*/
       explicit BufferImpl(const BufferImpl &src) :
       readChunks_(src.readChunks_),
       freeSpace_(0),
       size_(src.size_) { }
 
-      /// Amount of data held in this buffer.
-
+/* Amount of data held in this buffer.*/
       size_type size() const {
         return size_;
       }
 
-      /// Capacity that may be written before the buffer must allocate more memory.
-
+/* Capacity that may be written before the buffer must allocate more memory.*/
       size_type freeSpace() const {
         return freeSpace_;
       }
@@ -340,8 +318,7 @@ namespace avro {
         return writeChunks_.end();
       }
 
-      /// Write a single value to buffer, add a new chunk if necessary.
-
+/* Write a single value to buffer, add a new chunk if necessary.*/
       template<typename T>
       void writeTo(T val, const boost::true_type&) {
         if (freeSpace_ && (sizeof (T) <= writeChunks_.front().freeSize())) {
@@ -364,8 +341,7 @@ namespace avro {
         static_assert(sizeof (T) == 0);
       }
 
-      /// Write a block of data to the buffer, adding new chunks if necessary.
-
+/* Write a block of data to the buffer, adding new chunks if necessary.*/
       size_type writeTo(const data_type *data, size_type size) {
         size_type bytesLeft = size;
         while (bytesLeft) {
@@ -385,8 +361,7 @@ namespace avro {
         return size;
       }
 
-      /// Update internal status of chunks after data is written using iterator.
-
+/* Update internal status of chunks after data is written using iterator.*/
       size_type wroteTo(size_type size) {
         assert(size <= freeSpace_);
         size_type bytesLeft = size;
@@ -401,22 +376,19 @@ namespace avro {
         return size;
       }
 
-      /// Append the chunks that have data in src to this buffer
-
+/* Append the chunks that have data in src to this buffer*/
       void append(const BufferImpl &src) {
         std::copy(src.readChunks_.begin(), src.readChunks_.end(), std::back_inserter(readChunks_));
         size_ += src.size_;
       }
 
-      /// Remove all the chunks that contain data from this buffer.
-
+/* Remove all the chunks that contain data from this buffer.*/
       void discardData() {
         readChunks_.clear();
         size_ = 0;
       }
 
-      /// Remove the specified amount of data from the chunks, starting at the front.
-
+/* Remove the specified amount of data from the chunks, starting at the front.*/
       void discardData(size_type bytes) {
         assert(bytes && bytes <= size_);
 
@@ -466,8 +438,7 @@ namespace avro {
         dest.size_ += bytes;
       }
 
-      /// Move data from this to the destination, leaving this buffer without data
-
+/* Move data from this to the destination, leaving this buffer without data*/
       void extractData(BufferImpl &dest) {
         assert(dest.readChunks_.empty());
         dest.readChunks_.swap(readChunks_);
@@ -506,8 +477,7 @@ namespace avro {
         dest.size_ += bytes;
       }
 
-      /// The number of chunks containing data.  Used for debugging.
-
+/* The number of chunks containing data.  Used for debugging.*/
       int numDataChunks() const {
         return readChunks_.size();
       }
@@ -519,10 +489,7 @@ namespace avro {
         return writeChunks_.size();
       }
 
-      /// Add unmanaged data to the buffer.  The buffer will not automatically
-      /// free the data, but it will call the supplied function when the data is
-      /// no longer referenced by the buffer (or copies of the buffer).
-
+/* Add unmanaged data to the buffer.  The buffer will not automatically  free the data, but it will call the supplied function when the data is  no longer referenced by the buffer (or copies of the buffer).*/
       void appendForeignData(const data_type *data, size_type size, const free_func &func) {
         readChunks_.push_back(Chunk(data, size, func));
         size_ += size;

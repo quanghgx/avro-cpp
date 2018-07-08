@@ -102,8 +102,7 @@ namespace avro {
   ///
   /// Node has minimal implementation, serving as an abstract base class for
   /// different node types.
-  ///
-
+/**/
   class Node {
   public:
 

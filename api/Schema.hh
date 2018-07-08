@@ -25,13 +25,11 @@
 ///
 /// Schemas for representing all the avro types.  The compound schema objects
 /// allow composition from other schemas.
-///
-
+/**/
 namespace avro {
 
 
-  /// The root Schema object is a base class.  Nobody constructs this class directly.
-
+/* The root Schema object is a base class.  Nobody constructs this class directly.*/
   class Schema {
   public:
 
