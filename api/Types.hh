@@ -73,7 +73,7 @@ namespace avro {
   }
 
   /* Converts the given type into a string. Useful for generating messages.*/
-  const std::string& toString(Type type);
+  const std::string toString(Type type);
 
   /* Writes a string form of the given type into the given ostream.*/
   std::ostream &operator<<(std::ostream &os, avro::Type type);
@@ -86,8 +86,6 @@ namespace avro {
      @param os The ostream to write to
      @param null The value to be written*/
   std::ostream& operator<<(std::ostream &os, const Null &null);
-
 }
-
 
 #endif

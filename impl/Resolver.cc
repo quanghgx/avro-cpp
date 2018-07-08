@@ -602,7 +602,7 @@ namespace avro {
                 &ResolverFactory::constructCompound<FixedParser, FixedSkipper>
             };
 
-            BOOST_STATIC_ASSERT((sizeof (funcs) / sizeof (BuilderFunc)) == (AVRO_NUM_TYPES));
+            static_assert((sizeof (funcs) / sizeof (BuilderFunc)) == (AVRO_NUM_TYPES));
 
             BuilderFunc func = funcs[currentWriter->type()];
             assert(func);
@@ -635,7 +635,7 @@ namespace avro {
                 &ResolverFactory::constructCompoundSkipper<FixedSkipper>
             };
 
-            BOOST_STATIC_ASSERT((sizeof (funcs) / sizeof (BuilderFunc)) == (AVRO_NUM_TYPES));
+            static_assert((sizeof (funcs) / sizeof (BuilderFunc)) == (AVRO_NUM_TYPES));
 
             BuilderFunc func = funcs[currentWriter->type()];
             assert(func);

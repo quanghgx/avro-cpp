@@ -19,7 +19,6 @@
 #ifndef avro_AvroSerialize_hh__
 #define avro_AvroSerialize_hh__
 
-#include <boost/static_assert.hpp>
 #include "AvroTraits.hh"
 
 /* Standalone serialize functions for Avro types*/
@@ -34,7 +33,7 @@ namespace avro {
   /* Type trait should be set to is_serializable in otherwise force the compiler to complain*/
   template <typename Writer, typename T>
   void serialize(Writer &s, const T& val, const boost::false_type &) {
-    BOOST_STATIC_ASSERT(sizeof (T) == 0);
+    static_assert(sizeof (T) == 0);
   }
 
   /* The remainder of the file includes default implementations for serializable types*/

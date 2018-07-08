@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-#include <boost/static_assert.hpp>
-
 #include "Validator.hh"
 #include "ValidSchema.hh"
 #include "NodeImpl.hh"
@@ -34,16 +32,14 @@ namespace avro {
         setupOperation(schema_.root());
     }
 
-    void
-    Validator::setWaitingForCount() {
+    void Validator::setWaitingForCount() {
         waitingForCount_ = true;
         count_ = 0;
         expectedTypesFlag_ = typeToFlag(AVRO_INT) | typeToFlag(AVRO_LONG);
         nextType_ = AVRO_LONG;
     }
 
-    void
-    Validator::enumAdvance() {
+    void Validator::enumAdvance() {
         if (compoundStarted_) {
             setWaitingForCount();
             compoundStarted_ = false;
@@ -53,8 +49,7 @@ namespace avro {
         }
     }
 
-    bool
-    Validator::countingSetup() {
+    bool Validator::countingSetup() {
         bool proceed = true;
         if (compoundStarted_) {
             setWaitingForCount();
@@ -73,8 +68,7 @@ namespace avro {
         return proceed;
     }
 
-    void
-    Validator::countingAdvance() {
+    void Validator::countingAdvance() {
         if (countingSetup()) {
 
             size_t index = (compoundStack_.back().pos)++;
@@ -98,8 +92,7 @@ namespace avro {
         }
     }
 
-    void
-    Validator::unionAdvance() {
+    void Validator::unionAdvance() {
         if (compoundStarted_) {
             setWaitingForCount();
             compoundStarted_ = false;
@@ -120,19 +113,16 @@ namespace avro {
         }
     }
 
-    void
-    Validator::fixedAdvance() {
+    void Validator::fixedAdvance() {
         compoundStarted_ = false;
         compoundStack_.pop_back();
     }
 
-    int
-    Validator::nextSizeExpected() const {
+    int Validator::nextSizeExpected() const {
         return compoundStack_.back().node->fixedSize();
     }
 
-    void
-    Validator::doAdvance() {
+    void Validator::doAdvance() {
         typedef void (Validator::*AdvanceFunc)();
 
         // only the compound types need advance functions here
@@ -152,7 +142,7 @@ namespace avro {
             &Validator::unionAdvance,
             &Validator::fixedAdvance
         };
-        BOOST_STATIC_ASSERT((sizeof (funcs) / sizeof (AdvanceFunc)) == (AVRO_NUM_TYPES));
+        static_assert((sizeof (funcs) / sizeof (AdvanceFunc)) == (AVRO_NUM_TYPES));
 
         expectedTypesFlag_ = 0;
         // loop until we encounter a next expected type, or we've exited all compound types 
@@ -180,8 +170,7 @@ namespace avro {
         }
     }
 
-    void
-    Validator::setCount(int64_t count) {
+    void Validator::setCount(int64_t count) {
         if (!waitingForCount_) {
             throw Exception("Not expecting count");
         } else if (count_ < 0) {
@@ -192,8 +181,7 @@ namespace avro {
         doAdvance();
     }
 
-    void
-    Validator::setupFlag(Type type) {
+    void Validator::setupFlag(Type type) {
         // use flags instead of strictly types, so that we can be more lax about the type
         // (for example, a long should be able to accept an int type, but not vice versa)
         static const flag_t flags[] = {
@@ -212,13 +200,12 @@ namespace avro {
             typeToFlag(AVRO_UNION),
             typeToFlag(AVRO_FIXED)
         };
-        BOOST_STATIC_ASSERT((sizeof (flags) / sizeof (flag_t)) == (AVRO_NUM_TYPES));
+        static_assert((sizeof (flags) / sizeof (flag_t)) == (AVRO_NUM_TYPES));
 
         expectedTypesFlag_ = flags[type];
     }
 
-    void
-    Validator::setupOperation(const NodePtr &node) {
+    void Validator::setupOperation(const NodePtr &node) {
         nextType_ = node->type();
 
         if (nextType_ == AVRO_SYMBOLIC) {
@@ -238,8 +225,7 @@ namespace avro {
         }
     }
 
-    bool
-    Validator::getCurrentRecordName(std::string &name) const {
+    bool Validator::getCurrentRecordName(std::string &name) const {
         bool found = false;
         name.clear();
 
@@ -258,8 +244,7 @@ namespace avro {
         return found;
     }
 
-    bool
-    Validator::getNextFieldName(std::string &name) const {
+    bool Validator::getNextFieldName(std::string &name) const {
         bool found = false;
         name.clear();
         int idx = isCompound(nextType_) ? compoundStack_.size() - 2 : compoundStack_.size() - 1;

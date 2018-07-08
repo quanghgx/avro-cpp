@@ -233,7 +233,7 @@ namespace avro {
 
     template<typename T>
     bool read(T &val, const boost::false_type&) {
-      BOOST_STATIC_ASSERT(sizeof (T) == 0);
+      static_assert(sizeof (T) == 0);
       return false;
     }
 
