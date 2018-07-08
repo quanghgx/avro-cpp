@@ -28,7 +28,7 @@ namespace avro {
 
   /* This class is used to implement an avro spec parser using a flex/bison compiler.  In order for the lexer to be reentrant, this class 
      provides a lexer object for each parse.  The bison parser also uses this class to build up an avro parse tree as the avro spec is 
-     parsed.*/
+     parsed*/
   class ValidSchema;
 
   /* Given a stream containing a JSON schema, compiles the schema to a ValidSchema object. Throws if the schema cannot be compiled to a 

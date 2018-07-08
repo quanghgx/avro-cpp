@@ -28,7 +28,7 @@
 #include <cassert>
 #include <deque>
 
-/* The implementation details for the Buffer class.*/
+/* The implementation details for the Buffer class*/
 namespace avro {
 
   namespace detail {

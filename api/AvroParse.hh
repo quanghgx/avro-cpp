@@ -23,10 +23,10 @@
 #include "AvroTraits.hh"
 #include "ResolvingReader.hh"
 
-/* Standalone parse functions for Avro types.*/
+/* Standalone parse functions for Avro types*/
 namespace avro {
 
-  /* The main parse entry point function.  Takes a parser (either validating or plain) and the object that should receive the parsed data.*/
+  /* The main parse entry point function.  Takes a parser (either validating or plain) and the object that should receive the parsed data*/
   template <typename Reader, typename T>
   void parse(Reader &p, T& val) {
     parse(p, val, is_serializable<T>());
@@ -37,7 +37,7 @@ namespace avro {
     translatingParse(p, val, is_serializable<T>());
   }
 
-  /* Type trait should be set to is_serializable in otherwise force the compiler to complain.*/
+  /* Type trait should be set to is_serializable in otherwise force the compiler to complain*/
   template <typename Reader, typename T>
   void parse(Reader &p, T& val, const boost::false_type &) {
     BOOST_STATIC_ASSERT(sizeof (T) == 0);
@@ -48,7 +48,7 @@ namespace avro {
     BOOST_STATIC_ASSERT(sizeof (T) == 0);
   }
 
-  /* The remainder of the file includes default implementations for serializable types.*/
+  /* The remainder of the file includes default implementations for serializable types*/
   template <typename Reader, typename T>
   void parse(Reader &p, T &val, const boost::true_type &) {
     p.readValue(val);

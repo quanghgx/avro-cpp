@@ -21,7 +21,7 @@
 
 #include "Buffer.hh"
 
-/* streambuf implementation for istream and ostream.*/
+/* streambuf implementation for istream and ostream*/
 namespace avro {
 
   /**

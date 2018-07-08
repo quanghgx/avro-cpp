@@ -42,7 +42,7 @@ namespace avro {
     DEFLATE_CODEC,
   };
 
-  /* The sync value.*/
+  /* The sync value*/
   typedef boost::array<uint8_t, 16> DataFileSync;
 
   /**

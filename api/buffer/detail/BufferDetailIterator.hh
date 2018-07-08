@@ -21,7 +21,7 @@
 
 #include "BufferDetail.hh"
 
-/* The implementation details for the Buffer iterators.*/
+/* The implementation details for the Buffer iterators*/
 namespace avro {
 
   namespace detail {

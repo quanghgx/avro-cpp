@@ -21,14 +21,10 @@
 
 #include "Buffer.hh"
 
-/* Helper class for reading bytes from buffer in a streaming manner, without the overhead of istream.*/
+/* Helper class for reading bytes from buffer in a streaming manner, without the overhead of istream*/
 namespace avro {
 
-  /** 
-   * Helper class for reading bytes from buffer without worrying about
-   * chunk boundaries.  May read from an InputBuffer or OutputBuffer.
-   *
-   **/
+  /* Helper class for reading bytes from buffer without worrying about chunk boundaries.  May read from an InputBuffer or OutputBuffer*/
   class BufferReader {
   public:
 
