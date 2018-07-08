@@ -25,7 +25,6 @@
 
 #include "../impl/json/JsonDom.hh"
 
-#define S(x) #x
 
 namespace avro {
     namespace json {
@@ -172,7 +171,7 @@ namespace avro {
 #define COUNTOF(x)  (sizeof(x) / sizeof(x[0]))
 
 boost::unit_test::test_suite*
-init_unit_test_suite(int argc, char* argv[]) {
+init_unit_test_suite(int, char*[]) {
     using namespace boost::unit_test;
 
     test_suite* ts = BOOST_TEST_SUITE("Avro C++ unit tests for json routines");
