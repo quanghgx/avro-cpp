@@ -26,7 +26,8 @@ namespace avro {
   ///
   /// Class that wraps a reader or ValidatingReade with an interface that uses
   /// explicit get* names instead of getValue
-/**/
+
+  /**/
   template<class Reader>
   class Parser {
   public:
@@ -39,7 +40,7 @@ namespace avro {
     explicit Parser(const InputBuffer &in) :
     reader_(in) { }
 
-/* Constructor only works with ValidatingWriter*/
+    /* Constructor only works with ValidatingWriter*/
     Parser(const ValidSchema &schema, const InputBuffer &in) :
     reader_(schema, in) { }
 

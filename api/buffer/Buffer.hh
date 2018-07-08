@@ -388,7 +388,7 @@ namespace avro {
     detail::BufferImpl::ConstSharedPtr pimpl_; //Must never be null.
   };
 
-/*Implementations of some OutputBuffer functions are inlined here because InputBuffer definition was required before.*/
+  /*Implementations of some OutputBuffer functions are inlined here because InputBuffer definition was required before.*/
 
   inline InputBuffer OutputBuffer::extractData() {
     detail::BufferImpl::SharedPtr newImpl(new detail::BufferImpl);

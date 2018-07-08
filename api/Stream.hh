@@ -221,7 +221,7 @@ namespace avro {
     /* Constructs a writer with no underlying stream.*/
     StreamWriter() : out_(0), next_(0), end_(0) { }
 
-/*Constructs a new writer with the given underlying stream.*/
+    /*Constructs a new writer with the given underlying stream.*/
     StreamWriter(OutputStream& out) : out_(0), next_(0), end_(0) {
       reset(out);
     }

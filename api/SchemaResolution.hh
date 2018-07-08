@@ -23,13 +23,13 @@
 namespace avro {
 
   enum SchemaResolution {
-/* The schemas definitely do not match*/
+    /* The schemas definitely do not match*/
     RESOLVE_NO_MATCH,
 
     /// The schemas match at a cursory level
-/*  For records and enums, this means the name is the same, but it does not  necessarily mean that every symbol or field is an exact match.*/
+    /*  For records and enums, this means the name is the same, but it does not  necessarily mean that every symbol or field is an exact match.*/
     RESOLVE_MATCH,
-/* For primitives, the matching may occur if the type is promotable.  This means that the  writer matches reader if the writer's type is promoted the specified type.*/
+    /* For primitives, the matching may occur if the type is promotable.  This means that the  writer matches reader if the writer's type is promoted the specified type.*/
     //@{
 
     RESOLVE_PROMOTABLE_TO_LONG,
@@ -40,6 +40,6 @@ namespace avro {
 
   };
 
-} 
+}
 
 #endif

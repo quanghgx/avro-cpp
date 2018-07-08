@@ -66,7 +66,7 @@ namespace avro {
   public:
     GenericWriter(const GenericWriter&) = delete;
     const GenericWriter& operator=(const GenericWriter&) = delete;
-    
+
     /* Constructs a writer for the given schema using the given encoder.*/
     GenericWriter(const ValidSchema& s, const EncoderPtr& encoder);
 

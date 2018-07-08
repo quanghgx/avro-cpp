@@ -85,7 +85,7 @@ namespace avro {
         using std::string;
         using std::vector;
         using std::stack;
-        using std::pair;        
+        using std::pair;
         using std::istringstream;
         using std::ostringstream;
         using std::back_inserter;

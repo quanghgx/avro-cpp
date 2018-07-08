@@ -74,19 +74,19 @@ namespace avro {
     bytesRemaining_(bytes_),
     chunkPos_(0) { }
 
-/*How many bytes are still not read from this buffer.*/
+    /*How many bytes are still not read from this buffer.*/
 
     size_type bytesRemaining() const {
       return bytesRemaining_;
     }
 
-/*Read a block of data from the front of the buffer.*/
+    /*Read a block of data from the front of the buffer.*/
 
     size_type bytesRead() const {
       return bytes_ - bytesRemaining_;
     }
 
-/*Read a block of data from the buffer.*/
+    /*Read a block of data from the buffer.*/
 
     size_type read(data_type *data, size_type size) {
 
@@ -106,7 +106,7 @@ namespace avro {
       return size;
     }
 
-/*Read a block of data from the buffer.*/
+    /*Read a block of data from the buffer.*/
 
     bool read(std::string &str, size_type size) {
       if (size > bytesRemaining_) {
@@ -133,7 +133,7 @@ namespace avro {
       return read(val, boost::is_fundamental<T>());
     }
 
-/*Skips a block of data from the buffer.*/
+    /*Skips a block of data from the buffer.*/
 
     bool skip(size_type bytes) {
       bool skipped = false;
@@ -144,7 +144,7 @@ namespace avro {
       return skipped;
     }
 
-/*Seek to a position in the buffer.*/
+    /*Seek to a position in the buffer.*/
 
     bool seek(size_type pos) {
       if (pos > bytes_) {
@@ -217,7 +217,7 @@ namespace avro {
       return true;
     }
 
-/* An uninstantiable function, this is if boost::is_fundamental check fails*/
+    /* An uninstantiable function, this is if boost::is_fundamental check fails*/
     template<typename T>
     bool read(T &val, const boost::false_type&) {
       static_assert(sizeof (T) == 0);

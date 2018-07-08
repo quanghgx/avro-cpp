@@ -42,7 +42,8 @@ namespace avro::concepts {
   /// concepts extend a NodeImpl to include leaf nodes, and attributes for leaf
   /// nodes, which are used to build parse trees.
   ///
-/**/
+
+  /**/
   template <typename Attribute>
   struct NoAttribute {
     static const bool hasAttribute = false;

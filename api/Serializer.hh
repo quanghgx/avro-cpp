@@ -33,11 +33,11 @@ namespace avro {
     Serializer(const Serializer&) = delete;
     const Serializer& operator=(const Serializer&) = delete;
 
-/* Constructor only works with Writer*/
+    /* Constructor only works with Writer*/
     explicit Serializer() :
     writer_() { }
 
-/* Constructor only works with ValidatingWriter*/
+    /* Constructor only works with ValidatingWriter*/
     Serializer(const ValidSchema &schema) :
     writer_(schema) { }
 
