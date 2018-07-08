@@ -136,41 +136,29 @@ namespace avro {
     }
   };
 
-  /**
-   * codec_traits for Avro bytes.
-   */
+  /* codec_traits for Avro bytes.*/
   template <> struct codec_traits<std::vector<uint8_t> > {
 
-    /**
-     * Encodes a given value.
-     */
+    /* Encodes a given value.*/
     static void encode(Encoder& e, const std::vector<uint8_t>& b) {
       e.encodeBytes(b);
     }
 
-    /**
-     * Decodes into a given value.
-     */
+    /* Decodes into a given value.*/
     static void decode(Decoder& d, std::vector<uint8_t>& s) {
       d.decodeBytes(s);
     }
   };
 
-  /**
-   * codec_traits for Avro fixed.
-   */
+  /* codec_traits for Avro fixed.*/
   template <size_t N> struct codec_traits<boost::array<uint8_t, N> > {
 
-    /**
-     * Encodes a given value.
-     */
+    /* Encodes a given value.*/
     static void encode(Encoder& e, const boost::array<uint8_t, N>& b) {
       e.encodeFixed(&b[0], N);
     }
 
-    /**
-     * Decodes into a given value.
-     */
+    /* Decodes into a given value.*/
     static void decode(Decoder& d, boost::array<uint8_t, N>& s) {
       std::vector<uint8_t> v(N);
       d.decodeFixed(N, v);
@@ -178,14 +166,10 @@ namespace avro {
     }
   };
 
-  /**
-   * codec_traits for Avro arrays.
-   */
+  /* codec_traits for Avro arrays.*/
   template <typename T> struct codec_traits<std::vector<T> > {
 
-    /**
-     * Encodes a given value.
-     */
+    /* Encodes a given value.*/
     static void encode(Encoder& e, const std::vector<T>& b) {
       e.arrayStart();
       if (!b.empty()) {
@@ -199,9 +183,7 @@ namespace avro {
       e.arrayEnd();
     }
 
-    /**
-     * Decodes into a given value.
-     */
+    /* Decodes into a given value.*/
     static void decode(Decoder& d, std::vector<T>& s) {
       s.clear();
       for (size_t n = d.arrayStart(); n != 0; n = d.arrayNext()) {
@@ -219,22 +201,16 @@ namespace avro {
   template <> struct codec_traits<boost::conditional<avro::is_not_defined<bool_codec_traits>::value,
   std::vector<bool>::const_reference, void>::type> {
 
-    /**
-     * Encodes a given value.
-     */
+    /* Encodes a given value.*/
     static void encode(Encoder& e, std::vector<bool>::const_reference b) {
       e.encodeBool(b);
     }
   };
 
-  /**
-   * codec_traits for Avro maps.
-   */
+  /* codec_traits for Avro maps.*/
   template <typename T> struct codec_traits<std::map<std::string, T> > {
 
-    /**
-     * Encodes a given value.
-     */
+    /* Encodes a given value.*/
     static void encode(Encoder& e, const std::map<std::string, T>& b) {
       e.mapStart();
       if (!b.empty()) {
@@ -250,9 +226,7 @@ namespace avro {
       e.mapEnd();
     }
 
-    /**
-     * Decodes into a given value.
-     */
+    /* Decodes into a given value.*/
     static void decode(Decoder& d, std::map<std::string, T>& s) {
       s.clear();
       for (size_t n = d.mapStart(); n != 0; n = d.mapNext()) {
@@ -267,37 +241,27 @@ namespace avro {
     }
   };
 
-  /**
-   * codec_traits for Avro null.
-   */
+  /* codec_traits for Avro null.*/
   template <> struct codec_traits<avro::null> {
 
-    /**
-     * Encodes a given value.
-     */
+    /* Encodes a given value.*/
     static void encode(Encoder& e, const avro::null&) {
       e.encodeNull();
     }
 
-    /**
-     * Decodes into a given value.
-     */
+    /* Decodes into a given value.*/
     static void decode(Decoder& d, avro::null&) {
       d.decodeNull();
     }
   };
 
-  /**
-   * Generic encoder function that makes use of the codec_traits.
-   */
+  /* Generic encoder function that makes use of the codec_traits.*/
   template <typename T>
   void encode(Encoder& e, const T& t) {
     codec_traits<T>::encode(e, t);
   }
 
-  /**
-   * Generic decoder function that makes use of the codec_traits.
-   */
+  /* Generic decoder function that makes use of the codec_traits.*/
   template <typename T>
   void decode(Decoder& d, T& t) {
     codec_traits<T>::decode(d, t);

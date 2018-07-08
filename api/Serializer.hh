@@ -25,9 +25,7 @@
 
 namespace avro {
 
-  /// Class that wraps a Writer or ValidatingWriter with an interface that uses
-  /// explicit write* names instead of writeValue
-
+  /* Class that wraps a Writer or ValidatingWriter with an interface that uses explicit write* names instead of writeValue*/
   template<class Writer>
   class Serializer {
   public:
@@ -35,13 +33,11 @@ namespace avro {
     Serializer(const Serializer&) = delete;
     const Serializer& operator=(const Serializer&) = delete;
 
-    /// Constructor only works with Writer
-
+/* Constructor only works with Writer*/
     explicit Serializer() :
     writer_() { }
 
-    /// Constructor only works with ValidatingWriter
-
+/* Constructor only works with ValidatingWriter*/
     Serializer(const ValidSchema &schema) :
     writer_(schema) { }
 
