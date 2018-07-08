@@ -27,26 +27,27 @@
 
 namespace avro {
 
-class ResolvingReader : private boost::noncopyable
-{
+    class ResolvingReader {
+    public:
 
-  public:
+        ResolvingReader(const ResolvingReader&) = delete;
+        const ResolvingReader& operator=(const ResolvingReader&) = delete;
 
-    ResolvingReader(const ResolverSchema &schema, const InputBuffer &in) :
+        ResolvingReader(const ResolverSchema &schema, const InputBuffer &in) :
         reader_(in),
-        schema_(schema)
-    {}
+        schema_(schema) {
+        }
 
-    template<typename T>
-    void parse(T &object) {
-        schema_.parse(reader_, reinterpret_cast<uint8_t *>(&object));
-    }
+        template<typename T>
+        void parse(T &object) {
+            schema_.parse(reader_, reinterpret_cast<uint8_t *> (&object));
+        }
 
-  private:
+    private:
 
-    Reader reader_;
-    ResolverSchema schema_;
-};
+        Reader reader_;
+        ResolverSchema schema_;
+    };
 
 } // namespace avro
 
