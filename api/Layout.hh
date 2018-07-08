@@ -26,56 +26,52 @@
 
 namespace avro {
 
-    class Layout {
-    protected:
+  class Layout {
+  protected:
 
-        Layout(size_t offset = 0) :
-        offset_(offset) {
-        }
+    Layout(size_t offset = 0) :
+    offset_(offset) { }
 
-    public:
-        Layout(const Layout&) = delete;
-        const Layout& operator=(const Layout&) = delete;
+  public:
+    Layout(const Layout&) = delete;
+    const Layout& operator=(const Layout&) = delete;
 
-        size_t offset() const {
-            return offset_;
-        }
+    size_t offset() const {
+      return offset_;
+    }
 
-        virtual ~Layout() {
-        }
+    virtual ~Layout() { }
 
-    private:
+  private:
 
-        const size_t offset_;
-    };
+    const size_t offset_;
+  };
 
-    class PrimitiveLayout : public Layout {
-    public:
+  class PrimitiveLayout : public Layout {
+  public:
 
-        PrimitiveLayout(size_t offset = 0) :
-        Layout(offset) {
-        }
-    };
+    PrimitiveLayout(size_t offset = 0) :
+    Layout(offset) { }
+  };
 
-    class CompoundLayout : public Layout {
-    public:
+  class CompoundLayout : public Layout {
+  public:
 
-        CompoundLayout(size_t offset = 0) :
-        Layout(offset) {
-        }
+    CompoundLayout(size_t offset = 0) :
+    Layout(offset) { }
 
-        void add(Layout *layout) {
-            layouts_.push_back(layout);
-        }
+    void add(Layout *layout) {
+      layouts_.push_back(layout);
+    }
 
-        const Layout &at(size_t idx) const {
-            return layouts_.at(idx);
-        }
+    const Layout &at(size_t idx) const {
+      return layouts_.at(idx);
+    }
 
-    private:
+  private:
 
-        boost::ptr_vector<Layout> layouts_;
-    };
+    boost::ptr_vector<Layout> layouts_;
+  };
 
 } // namespace avro
 

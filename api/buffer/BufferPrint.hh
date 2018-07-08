@@ -32,87 +32,84 @@
 
 namespace avro {
 
-namespace detail {
+  namespace detail {
 
-/**
- * \fn hexPrint
- * 
- * Prints a buffer to a stream in the canonical hex+ASCII format, 
- * the same used by the program 'hexdump -C'
- *
- **/
+    /**
+     * \fn hexPrint
+     * 
+     * Prints a buffer to a stream in the canonical hex+ASCII format, 
+     * the same used by the program 'hexdump -C'
+     *
+     **/
 
-inline void
-hexPrint(std::ostream &os, BufferReader &reader)
-{
-    std::ios_base::fmtflags savedFlags = os.flags();
+    inline void
+    hexPrint(std::ostream &os, BufferReader &reader) {
+      std::ios_base::fmtflags savedFlags = os.flags();
 
-    char sixteenBytes[16];
-    int offset = 0;
+      char sixteenBytes[16];
+      int offset = 0;
 
-    os << std::setfill('0');
-    os << std::hex;
+      os << std::setfill('0');
+      os << std::hex;
 
-    while(reader.bytesRemaining()) {
+      while (reader.bytesRemaining()) {
 
         os << std::setw(8) << offset << "  ";
 
-        size_t inBuffer = reader.read(sixteenBytes, sizeof(sixteenBytes));
+        size_t inBuffer = reader.read(sixteenBytes, sizeof (sixteenBytes));
         offset += inBuffer;
 
         // traverse 8 bytes or inBuffer, whatever is less
-        size_t cnt = std::min(inBuffer, static_cast<size_t>(8));
+        size_t cnt = std::min(inBuffer, static_cast<size_t> (8));
 
         size_t i = 0;
         for (; i < cnt; ++i) {
-            os << std::setw(2);
-            os << (static_cast<int>(sixteenBytes[i]) & 0xff) << ' ';
+          os << std::setw(2);
+          os << (static_cast<int> (sixteenBytes[i]) & 0xff) << ' ';
         }
         for (; i < 8; ++i) {
-            os << "   ";
+          os << "   ";
         }
         os << ' ';
 
         // traverse 16 bytes or inBuffer, whatever is less
-        cnt = std::min(inBuffer, static_cast<size_t>(16));
+        cnt = std::min(inBuffer, static_cast<size_t> (16));
 
         for (; i < cnt; ++i) {
-            os << std::setw(2);
-            os << (static_cast<int>(sixteenBytes[i]) & 0xff) << ' ';
+          os << std::setw(2);
+          os << (static_cast<int> (sixteenBytes[i]) & 0xff) << ' ';
         }
         for (; i < 16; ++i) {
-            os << "   ";
+          os << "   ";
         }
         os << " |";
-        for(i = 0; i < inBuffer; ++i) {
-            os.put(isprint(sixteenBytes[i] & 0xff) ? sixteenBytes[i] : '.' );
+        for (i = 0; i < inBuffer; ++i) {
+          os.put(isprint(sixteenBytes[i] & 0xff) ? sixteenBytes[i] : '.');
         }
         os << "|\n";
 
+      }
+
+      // restore flags
+      os.flags(savedFlags);
     }
 
-    // restore flags
-    os.flags( savedFlags);
-}
-
-} // namespace detail
+  } // namespace detail
 
 } // namespace
 
 inline
-std::ostream& operator<<(std::ostream& os, const avro::OutputBuffer& buffer)
-{
-    avro::BufferReader reader(buffer);
-    avro::detail::hexPrint(os, reader);
-    return os;
+std::ostream& operator<<(std::ostream& os, const avro::OutputBuffer& buffer) {
+  avro::BufferReader reader(buffer);
+  avro::detail::hexPrint(os, reader);
+  return os;
 }
 
 inline
-std::ostream& operator<<(std::ostream& os, const avro::InputBuffer& buffer)
-{
-    avro::BufferReader reader(buffer);
-    avro::detail::hexPrint(os, reader);
-    return os;
+std::ostream& operator<<(std::ostream& os, const avro::InputBuffer& buffer) {
+  avro::BufferReader reader(buffer);
+  avro::detail::hexPrint(os, reader);
+  return os;
 }
 
 #endif 

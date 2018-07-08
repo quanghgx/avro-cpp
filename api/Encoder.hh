@@ -44,13 +44,14 @@
 
 namespace avro {
 
-/**
- * The abstract base class for all Avro encoders. The implementations
- * differ in the method of encoding (binary vresus JSON) or in capabilities
- * such as ability to verify the order of invocation of different functions.
- */
-class Encoder {
-public:
+  /**
+   * The abstract base class for all Avro encoders. The implementations
+   * differ in the method of encoding (binary vresus JSON) or in capabilities
+   * such as ability to verify the order of invocation of different functions.
+   */
+  class Encoder {
+  public:
+
     virtual ~Encoder() { };
     /// All future encodings will go to os, which should be valid until
     /// it is reset with another call to init() or the encoder is
@@ -95,8 +96,8 @@ public:
      * \param bytes The data.
      */
     void encodeBytes(const std::vector<uint8_t>& bytes) {
-        uint8_t b = 0; 
-        encodeBytes(bytes.empty() ? &b : &bytes[0], bytes.size());
+      uint8_t b = 0;
+      encodeBytes(bytes.empty() ? &b : &bytes[0], bytes.size());
     }
 
     /// Encodes fixed length binary to the current stream.
@@ -108,7 +109,7 @@ public:
      * of fixed.
      */
     void encodeFixed(const std::vector<uint8_t>& bytes) {
-        encodeFixed(&bytes[0], bytes.size());
+      encodeFixed(&bytes[0], bytes.size());
     }
 
     /// Encodes enum to the current stream.
@@ -135,35 +136,35 @@ public:
 
     /// Encodes a branch of a union. The actual value is to follow.
     virtual void encodeUnionIndex(size_t e) = 0;
-};
+  };
 
-/**
- * Shared pointer to Encoder.
- */
-typedef std::shared_ptr<Encoder> EncoderPtr;
+  /**
+   * Shared pointer to Encoder.
+   */
+  typedef std::shared_ptr<Encoder> EncoderPtr;
 
-/**
- *  Returns an encoder that can encode binary Avro standard.
- */
-EncoderPtr binaryEncoder();
+  /**
+   *  Returns an encoder that can encode binary Avro standard.
+   */
+  EncoderPtr binaryEncoder();
 
-/**
- *  Returns an encoder that validates sequence of calls to an underlying
- *  Encoder against the given schema.
- */
-EncoderPtr validatingEncoder(const ValidSchema& schema,
+  /**
+   *  Returns an encoder that validates sequence of calls to an underlying
+   *  Encoder against the given schema.
+   */
+  EncoderPtr validatingEncoder(const ValidSchema& schema,
     const EncoderPtr& base);
 
-/**
- *  Returns an encoder that encodes Avro standard for JSON.
- */
-EncoderPtr jsonEncoder(const ValidSchema& schema);
+  /**
+   *  Returns an encoder that encodes Avro standard for JSON.
+   */
+  EncoderPtr jsonEncoder(const ValidSchema& schema);
 
-/**
- *  Returns an encoder that encodes Avro standard for pretty printed JSON.
- */
-EncoderPtr jsonPrettyEncoder(const ValidSchema& schema);
+  /**
+   *  Returns an encoder that encodes Avro standard for pretty printed JSON.
+   */
+  EncoderPtr jsonPrettyEncoder(const ValidSchema& schema);
 
-}   // namespace avro
+} // namespace avro
 
 #endif

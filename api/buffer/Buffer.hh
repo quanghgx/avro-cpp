@@ -34,33 +34,30 @@
 
 namespace avro {
 
-class OutputBuffer;
-class InputBuffer;
+  class OutputBuffer;
+  class InputBuffer;
 
+  /** 
+   * The OutputBuffer (write-only buffer)
+   *
+   * Use cases for OutputBuffer 
+   *
+   * - write message to buffer using ostream class or directly
+   * - append messages to headers
+   * - building up streams of messages via append
+   * - converting to read-only buffers for sending
+   * - extracting parts of the messages into read-only buffers
+   *   
+   * -# ASIO access:
+   *     - write to a buffer(s) by asio using iterator
+   *     - convert to read buffer for deserializing
+   *
+   * OutputBuffer is assignable and copy-constructable.  On copy or assignment,
+   * only a pointer is copied, so the two resulting copies are identical, so 
+   * modifying one will modify both.
+   **/
 
-/** 
- * The OutputBuffer (write-only buffer)
- *
- * Use cases for OutputBuffer 
- *
- * - write message to buffer using ostream class or directly
- * - append messages to headers
- * - building up streams of messages via append
- * - converting to read-only buffers for sending
- * - extracting parts of the messages into read-only buffers
- *   
- * -# ASIO access:
- *     - write to a buffer(s) by asio using iterator
- *     - convert to read buffer for deserializing
- *
- * OutputBuffer is assignable and copy-constructable.  On copy or assignment,
- * only a pointer is copied, so the two resulting copies are identical, so 
- * modifying one will modify both.
- **/
-
-class OutputBuffer 
-{
-
+  class OutputBuffer {
   public:
 
     typedef detail::size_type size_type;
@@ -93,11 +90,10 @@ class OutputBuffer
      **/
 
     OutputBuffer(size_type reserveSize = 0) :
-        pimpl_(new detail::BufferImpl) 
-    { 
-        if(reserveSize) { 
-            reserve(reserveSize); 
-        }
+    pimpl_(new detail::BufferImpl) {
+      if (reserveSize) {
+        reserve(reserveSize);
+      }
     }
 
     /** 
@@ -108,9 +104,8 @@ class OutputBuffer
      * the write operation.
      **/
 
-    void reserve(size_type reserveSize) 
-    {
-        pimpl_->reserveFreeSpace(reserveSize);
+    void reserve(size_type reserveSize) {
+      pimpl_->reserveFreeSpace(reserveSize);
     }
 
     /** 
@@ -119,7 +114,7 @@ class OutputBuffer
      **/
 
     size_type writeTo(const data_type *data, size_type size) {
-        return pimpl_->writeTo(data, size);
+      return pimpl_->writeTo(data, size);
     }
 
     /** 
@@ -131,7 +126,7 @@ class OutputBuffer
 
     template<typename T>
     void writeTo(T val) {
-        pimpl_->writeTo(val, boost::is_fundamental<T>());
+      pimpl_->writeTo(val, boost::is_fundamental<T>());
     }
 
     /** 
@@ -146,16 +141,15 @@ class OutputBuffer
      * throw a std::length_error exception.
      **/
 
-    size_type wroteTo(size_type size) 
-    {
-        int wrote = 0;
-        if(size) {
-            if(size > freeSpace()) {
-                throw std::length_error("Impossible to write more data than free space");
-            }
-            wrote = pimpl_->wroteTo(size);
+    size_type wroteTo(size_type size) {
+      int wrote = 0;
+      if (size) {
+        if (size > freeSpace()) {
+          throw std::length_error("Impossible to write more data than free space");
         }
-        return wrote;
+        wrote = pimpl_->wroteTo(size);
+      }
+      return wrote;
     }
 
     /**
@@ -163,7 +157,7 @@ class OutputBuffer
      **/
 
     bool empty() const {
-        return  (pimpl_->size()==0);
+      return (pimpl_->size() == 0);
     }
 
     /** 
@@ -171,7 +165,7 @@ class OutputBuffer
      */
 
     size_type size() const {
-        return  pimpl_->size();
+      return pimpl_->size();
     }
 
     /** 
@@ -181,7 +175,7 @@ class OutputBuffer
      **/
 
     size_type freeSpace() const {
-        return  pimpl_->freeSpace();
+      return pimpl_->freeSpace();
     }
 
     /**
@@ -192,10 +186,10 @@ class OutputBuffer
 
     template <class BufferType>
     void append(const BufferType &buf) {
-        // don't append an empty buffer
-        if(buf.size()) {
-            pimpl_->append(*(buf.pimpl_.get()));
-        }
+      // don't append an empty buffer
+      if (buf.size()) {
+        pimpl_->append(*(buf.pimpl_.get()));
+      }
     }
 
     /** 
@@ -204,7 +198,7 @@ class OutputBuffer
      **/
 
     const_iterator begin() const {
-        return const_iterator(pimpl_->beginWrite());
+      return const_iterator(pimpl_->beginWrite());
     }
 
     /** 
@@ -212,16 +206,15 @@ class OutputBuffer
      **/
 
     const_iterator end() const {
-        return const_iterator(pimpl_->endWrite());
+      return const_iterator(pimpl_->endWrite());
     }
 
     /** 
      * Discard any data in this buffer.
      **/
 
-    void discardData()
-    {
-        pimpl_->discardData();
+    void discardData() {
+      pimpl_->discardData();
     }
 
     /** 
@@ -229,19 +222,16 @@ class OutputBuffer
      * Throws if the size is greater than the number of bytes.
      **/
 
-    void discardData(size_t bytes)
-    {
-        if(bytes > 0) {
-            if(bytes < pimpl_->size()) {
-                pimpl_->discardData(bytes);
-            }
-            else if(bytes == pimpl_->size()) {
-                pimpl_->discardData();
-            }
-            else {
-                throw std::out_of_range("trying to discard more data than exists");
-            }
+    void discardData(size_t bytes) {
+      if (bytes > 0) {
+        if (bytes < pimpl_->size()) {
+          pimpl_->discardData(bytes);
+        } else if (bytes == pimpl_->size()) {
+          pimpl_->discardData();
+        } else {
+          throw std::out_of_range("trying to discard more data than exists");
         }
+      }
     }
 
     /** 
@@ -264,10 +254,9 @@ class OutputBuffer
      * Clone this buffer, creating a copy that contains the same data.
      **/
 
-    OutputBuffer clone() const 
-    {
-        detail::BufferImpl::SharedPtr newImpl(new detail::BufferImpl(*pimpl_));
-        return OutputBuffer(newImpl);
+    OutputBuffer clone() const {
+      detail::BufferImpl::SharedPtr newImpl(new detail::BufferImpl(*pimpl_));
+      return OutputBuffer(newImpl);
     }
 
     /** 
@@ -277,7 +266,7 @@ class OutputBuffer
      **/
 
     void appendForeignData(const data_type *data, size_type size, const detail::free_func &func) {
-        pimpl_->appendForeignData(data, size, func);
+      pimpl_->appendForeignData(data, size, func);
     }
 
     /** 
@@ -285,7 +274,7 @@ class OutputBuffer
      **/
 
     int numChunks() const {
-        return  pimpl_->numFreeChunks();
+      return pimpl_->numFreeChunks();
     }
 
     /** 
@@ -293,7 +282,7 @@ class OutputBuffer
      **/
 
     int numDataChunks() const {
-        return  pimpl_->numDataChunks();
+      return pimpl_->numDataChunks();
     }
 
   private:
@@ -302,29 +291,26 @@ class OutputBuffer
     friend class BufferReader;
 
     explicit OutputBuffer(const detail::BufferImpl::SharedPtr &pimpl) :
-        pimpl_(pimpl) 
-    { }
+    pimpl_(pimpl) { }
 
     detail::BufferImpl::SharedPtr pimpl_; ///< Must never be null.
-};
+  };
 
-/** 
- * The InputBuffer (read-only buffer)
- *
- * InputBuffer is an immutable buffer which that may be constructed from an
- * OutputBuffer, or several of OutputBuffer's methods.  Once the data is
- * transfered to an InputBuffer it cannot be modified, only read (via 
- * BufferReader, istream, or its iterator).
- *
- * Assignments and copies are shallow copies.
- *
- * -# ASIO access: - iterate using const_iterator for sending messages
- *
- **/
+  /** 
+   * The InputBuffer (read-only buffer)
+   *
+   * InputBuffer is an immutable buffer which that may be constructed from an
+   * OutputBuffer, or several of OutputBuffer's methods.  Once the data is
+   * transfered to an InputBuffer it cannot be modified, only read (via 
+   * BufferReader, istream, or its iterator).
+   *
+   * Assignments and copies are shallow copies.
+   *
+   * -# ASIO access: - iterate using const_iterator for sending messages
+   *
+   **/
 
-class InputBuffer 
-{
-
+  class InputBuffer {
   public:
 
     typedef detail::size_type size_type;
@@ -345,8 +331,7 @@ class InputBuffer
      **/
 
     InputBuffer() :
-        pimpl_(new detail::BufferImpl)
-    { }
+    pimpl_(new detail::BufferImpl) { }
 
     /** 
      * Construct an InputBuffer that contains the contents of an OutputBuffer.
@@ -361,15 +346,14 @@ class InputBuffer
      **/
 
     InputBuffer(const OutputBuffer &src) :
-        pimpl_(new detail::BufferImpl(*src.pimpl_))
-    { }
+    pimpl_(new detail::BufferImpl(*src.pimpl_)) { }
 
     /** 
      * Does the buffer have any data? 
      **/
 
     bool empty() const {
-        return (pimpl_->size() == 0);
+      return (pimpl_->size() == 0);
     }
 
     /** 
@@ -377,7 +361,7 @@ class InputBuffer
      **/
 
     size_type size() const {
-        return pimpl_->size();
+      return pimpl_->size();
     }
 
     /**
@@ -386,7 +370,7 @@ class InputBuffer
      **/
 
     const_iterator begin() const {
-        return const_iterator(pimpl_->beginRead());
+      return const_iterator(pimpl_->beginRead());
     }
 
     /**
@@ -394,7 +378,7 @@ class InputBuffer
      **/
 
     const_iterator end() const {
-        return const_iterator(pimpl_->endRead());
+      return const_iterator(pimpl_->endRead());
     }
 
     /** 
@@ -402,7 +386,7 @@ class InputBuffer
      **/
 
     int numChunks() const {
-        return pimpl_->numDataChunks();
+      return pimpl_->numDataChunks();
     }
 
 
@@ -413,8 +397,7 @@ class InputBuffer
     friend class BufferReader;
 
     explicit InputBuffer(const detail::BufferImpl::SharedPtr &pimpl) :
-        pimpl_(pimpl) 
-    { }
+    pimpl_(pimpl) { }
 
     /**
      * Class to indicate that a copy of a OutputBuffer to InputBuffer should be
@@ -427,15 +410,15 @@ class InputBuffer
      * behavior.
      **/
 
-    class ShallowCopy {};
+    class ShallowCopy {
+    };
 
     /** 
      * Make a shallow copy of an OutputBuffer in order to read it without 
      * causing conversion overhead.
      **/
-    InputBuffer(const OutputBuffer &src, const ShallowCopy &) : 
-        pimpl_(src.pimpl_)
-    { }
+    InputBuffer(const OutputBuffer &src, const ShallowCopy &) :
+    pimpl_(src.pimpl_) { }
 
     /** 
      * Make a shallow copy of an InputBuffer.  The default copy constructor
@@ -444,77 +427,71 @@ class InputBuffer
      * manner.
      **/
 
-     InputBuffer(const InputBuffer &src, const ShallowCopy &) : 
-        pimpl_(src.pimpl_)
-    { }
+    InputBuffer(const InputBuffer &src, const ShallowCopy &) :
+    pimpl_(src.pimpl_) { }
 
 
     detail::BufferImpl::ConstSharedPtr pimpl_; ///< Must never be null.
-};
+  };
 
+  /* 
+   * Implementations of some OutputBuffer functions are inlined here
+   * because InputBuffer definition was required before.
+   */
 
-/* 
- * Implementations of some OutputBuffer functions are inlined here
- * because InputBuffer definition was required before.
- */
-
-inline InputBuffer OutputBuffer::extractData() 
-{
+  inline InputBuffer OutputBuffer::extractData() {
     detail::BufferImpl::SharedPtr newImpl(new detail::BufferImpl);
-    if(pimpl_->size()) {
+    if (pimpl_->size()) {
+      pimpl_->extractData(*newImpl);
+    }
+    return InputBuffer(newImpl);
+  }
+
+  inline InputBuffer OutputBuffer::extractData(size_type bytes) {
+    if (bytes > pimpl_->size()) {
+      throw std::out_of_range("trying to extract more data than exists");
+    }
+
+    detail::BufferImpl::SharedPtr newImpl(new detail::BufferImpl);
+    if (bytes > 0) {
+      if (bytes < pimpl_->size()) {
+        pimpl_->extractData(*newImpl, bytes);
+      } else {
         pimpl_->extractData(*newImpl);
-    }
-    return InputBuffer(newImpl);
-}
-
-inline InputBuffer OutputBuffer::extractData(size_type bytes)
-{
-    if(bytes > pimpl_->size()) {
-        throw std::out_of_range("trying to extract more data than exists");
-    }
-
-    detail::BufferImpl::SharedPtr newImpl(new detail::BufferImpl);
-    if(bytes > 0) {
-        if(bytes < pimpl_->size()) {
-            pimpl_->extractData(*newImpl, bytes);
-        }
-        else {
-            pimpl_->extractData(*newImpl);
-        }
+      }
     }
 
     return InputBuffer(newImpl);
-}
+  }
 
-/** 
- * Create an array of iovec structures from the buffer.  This utility is used
- * to support writev and readv function calls.  The caller should ensure the
- * buffer object is not deleted while using the iovec vector.
- *
- * If the BufferType is an InputBuffer, the iovec will point to the data that
- * already exists in the buffer, for reading.
- *
- * If the BufferType is an OutputBuffer, the iovec will point to the free
- * space, which may be written to.  Before writing, the caller should call
- * OutputBuffer::reserve() to create enough room for the desired write (which
- * can be verified by calling OutputBuffer::freeSpace()), and after writing,
- * they MUST call OutputBuffer::wroteTo(), otherwise the buffer will not know
- * the space is not free anymore.
- *
- **/
+  /** 
+   * Create an array of iovec structures from the buffer.  This utility is used
+   * to support writev and readv function calls.  The caller should ensure the
+   * buffer object is not deleted while using the iovec vector.
+   *
+   * If the BufferType is an InputBuffer, the iovec will point to the data that
+   * already exists in the buffer, for reading.
+   *
+   * If the BufferType is an OutputBuffer, the iovec will point to the free
+   * space, which may be written to.  Before writing, the caller should call
+   * OutputBuffer::reserve() to create enough room for the desired write (which
+   * can be verified by calling OutputBuffer::freeSpace()), and after writing,
+   * they MUST call OutputBuffer::wroteTo(), otherwise the buffer will not know
+   * the space is not free anymore.
+   *
+   **/
 
-template<class BufferType>
-inline void toIovec(BufferType &buf, std::vector<struct iovec> &iov) 
-{
+  template<class BufferType>
+  inline void toIovec(BufferType &buf, std::vector<struct iovec> &iov) {
     const int chunks = buf.numChunks();
     iov.resize(chunks);
     typename BufferType::const_iterator iter = buf.begin();
     for (int i = 0; i < chunks; ++i) {
-        iov[i].iov_base = const_cast<typename BufferType::data_type *>(iter->data());
-        iov[i].iov_len = iter->size();
-        ++iter;
+      iov[i].iov_base = const_cast<typename BufferType::data_type *> (iter->data());
+      iov[i].iov_len = iter->size();
+      ++iter;
     }
-}
+  }
 
 } // namespace
 

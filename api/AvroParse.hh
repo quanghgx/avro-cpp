@@ -28,57 +28,52 @@
 /// Standalone parse functions for Avro types.
 
 namespace avro {
-    
-/// The main parse entry point function.  Takes a parser (either validating or
-/// plain) and the object that should receive the parsed data.
 
-template <typename Reader, typename T>
-void parse(Reader &p, T& val)
-{
+  /// The main parse entry point function.  Takes a parser (either validating or
+  /// plain) and the object that should receive the parsed data.
+
+  template <typename Reader, typename T>
+  void parse(Reader &p, T& val) {
     parse(p, val, is_serializable<T>());
-}
+  }
 
-template <typename T>
-void parse(ResolvingReader &p, T& val)
-{
+  template <typename T>
+  void parse(ResolvingReader &p, T& val) {
     translatingParse(p, val, is_serializable<T>());
-}
+  }
 
-/// Type trait should be set to is_serializable in otherwise force the compiler to complain.
+  /// Type trait should be set to is_serializable in otherwise force the compiler to complain.
 
-template <typename Reader, typename T>
-void parse(Reader &p, T& val, const boost::false_type &)
-{
-    BOOST_STATIC_ASSERT(sizeof(T)==0);
-}
+  template <typename Reader, typename T>
+  void parse(Reader &p, T& val, const boost::false_type &) {
+    BOOST_STATIC_ASSERT(sizeof (T) == 0);
+  }
 
-template <typename Reader, typename T>
-void translatingParse(Reader &p, T& val, const boost::false_type &)
-{
-    BOOST_STATIC_ASSERT(sizeof(T)==0);
-}
+  template <typename Reader, typename T>
+  void translatingParse(Reader &p, T& val, const boost::false_type &) {
+    BOOST_STATIC_ASSERT(sizeof (T) == 0);
+  }
 
-// @{
+  // @{
 
-/// The remainder of the file includes default implementations for serializable types.
+  /// The remainder of the file includes default implementations for serializable types.
 
-
-template <typename Reader, typename T>
-void parse(Reader &p, T &val, const boost::true_type &) {
+  template <typename Reader, typename T>
+  void parse(Reader &p, T &val, const boost::true_type &) {
     p.readValue(val);
-}
+  }
 
-template <typename Reader>
-void parse(Reader &p, std::vector<uint8_t> &val, const boost::true_type &) {
+  template <typename Reader>
+  void parse(Reader &p, std::vector<uint8_t> &val, const boost::true_type &) {
     p.readBytes(val);
-}
+  }
 
-template<typename T>
-void translatingParse(ResolvingReader &p, T& val, const boost::true_type &) {
+  template<typename T>
+  void translatingParse(ResolvingReader &p, T& val, const boost::true_type &) {
     p.parse(val);
-}
+  }
 
-// @}
+  // @}
 
 } // namespace avro
 

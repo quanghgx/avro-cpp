@@ -41,12 +41,13 @@
 
 namespace avro {
 
-/**
- * Decoder is an interface implemented by every decoder capable
- * of decoding Avro data.
- */
-class Decoder {
-public:
+  /**
+   * Decoder is an interface implemented by every decoder capable
+   * of decoding Avro data.
+   */
+  class Decoder {
+  public:
+
     virtual ~Decoder() { };
     /// All future decoding will come from is, which should be valid
     /// until replaced by another call to init() or this Decoder is
@@ -72,10 +73,11 @@ public:
     virtual double decodeDouble() = 0;
 
     /// Decodes a UTF-8 string from the current stream.
+
     std::string decodeString() {
-        std::string result;
-        decodeString(result);
-        return result;
+      std::string result;
+      decodeString(result);
+      return result;
     }
 
     /**
@@ -87,10 +89,11 @@ public:
     virtual void skipString() = 0;
 
     /// Decodes arbitray binary data from the current stream.
+
     std::vector<uint8_t> decodeBytes() {
-        std::vector<uint8_t> result;
-        decodeBytes(result);
-        return result;
+      std::vector<uint8_t> result;
+      decodeBytes(result);
+      return result;
     }
 
     /// Decodes arbitray binary data from the current stream and puts it
@@ -107,9 +110,9 @@ public:
      * vector is guaranteed to be equal to \p n.
      */
     std::vector<uint8_t> decodeFixed(size_t n) {
-        std::vector<uint8_t> result;
-        decodeFixed(n, result);
-        return result;
+      std::vector<uint8_t> result;
+      decodeFixed(n, result);
+      return result;
     }
 
     /**
@@ -152,58 +155,58 @@ public:
 
     /// Decodes a branch of a union. The actual value is to follow.
     virtual size_t decodeUnionIndex() = 0;
-};
+  };
 
-/**
- * Shared pointer to Decoder.
- */
-typedef std::shared_ptr<Decoder> DecoderPtr;
+  /**
+   * Shared pointer to Decoder.
+   */
+  typedef std::shared_ptr<Decoder> DecoderPtr;
 
-/**
- * ResolvingDecoder is derived from \ref Decoder, with an additional
- * function to obtain the field ordering of fiedls within a record.
- */
-class ResolvingDecoder : public Decoder {
-public:
+  /**
+   * ResolvingDecoder is derived from \ref Decoder, with an additional
+   * function to obtain the field ordering of fiedls within a record.
+   */
+  class ResolvingDecoder : public Decoder {
+  public:
     /// Returns the order of fields for records.
     /// The order of fields could be different from the order of their
     /// order in the schema because the writer's field order could
     /// be different. In order to avoid buffering and later use,
     /// we return the values in the writer's field order.
     virtual const std::vector<size_t>& fieldOrder() = 0;
-};
+  };
 
-/**
- * Shared pointer to ResolvingDecoder.
- */
-typedef std::shared_ptr<ResolvingDecoder> ResolvingDecoderPtr;
-/**
- *  Returns an decoder that can decode binary Avro standard.
- */
-DecoderPtr binaryDecoder();
+  /**
+   * Shared pointer to ResolvingDecoder.
+   */
+  typedef std::shared_ptr<ResolvingDecoder> ResolvingDecoderPtr;
+  /**
+   *  Returns an decoder that can decode binary Avro standard.
+   */
+  DecoderPtr binaryDecoder();
 
-/**
- *  Returns an decoder that validates sequence of calls to an underlying
- *  Decoder against the given schema.
- */
-DecoderPtr validatingDecoder(const ValidSchema& schema,
+  /**
+   *  Returns an decoder that validates sequence of calls to an underlying
+   *  Decoder against the given schema.
+   */
+  DecoderPtr validatingDecoder(const ValidSchema& schema,
     const DecoderPtr& base);
 
-/**
- *  Returns an decoder that can decode Avro standard for JSON.
- */
-DecoderPtr jsonDecoder(const ValidSchema& schema);
+  /**
+   *  Returns an decoder that can decode Avro standard for JSON.
+   */
+  DecoderPtr jsonDecoder(const ValidSchema& schema);
 
-/**
- *  Returns a decoder that decodes avro data from base written according to
- *  writerSchema and resolves against readerSchema.
- *  The client uses the decoder as if the data were written using readerSchema.
- *  // FIXME: Handle out of order fields.
- */
-ResolvingDecoderPtr resolvingDecoder(const ValidSchema& writer,
+  /**
+   *  Returns a decoder that decodes avro data from base written according to
+   *  writerSchema and resolves against readerSchema.
+   *  The client uses the decoder as if the data were written using readerSchema.
+   *  // FIXME: Handle out of order fields.
+   */
+  ResolvingDecoderPtr resolvingDecoder(const ValidSchema& writer,
     const ValidSchema& reader, const DecoderPtr& base);
 
 
-}   // namespace avro
+} // namespace avro
 
 #endif

@@ -36,36 +36,35 @@
 
 using namespace avro;
 
-static const uint8_t fixeddata[16] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+static const uint8_t fixeddata[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 #ifdef max
 #undef max
 #endif
-struct TestSchema
-{
-    TestSchema() 
-    {}
 
-    void createExampleSchema()
-    {
+struct TestSchema {
+
+    TestSchema() {
+    }
+
+    void createExampleSchema() {
         // First construct our complex data type:
         avro::RecordSchema myRecord("complex");
-   
+
         // Now populate my record with fields (each field is another schema):
         myRecord.addField("real", avro::DoubleSchema());
         myRecord.addField("imaginary", avro::DoubleSchema());
 
         // The complex record is the same as used above, let's make a schema 
         // for an array of these record
-  
-        avro::ArraySchema complexArray(myRecord); 
+
+        avro::ArraySchema complexArray(myRecord);
 
         avro::ValidSchema validComplexArray(complexArray);
         validComplexArray.toJson(std::cout);
     }
 
-    void buildSchema()
-    {
+    void buildSchema() {
         RecordSchema record("RootRecord");
 
         record.addField("mylong", LongSchema());
@@ -89,21 +88,20 @@ struct TestSchema
         bool caught = false;
         try {
             myenum.addSymbol("three");
-        }
-        catch(Exception &e) {
+        }        catch (Exception &e) {
             std::cout << "(intentional) exception: " << e.what() << '\n';
             caught = true;
         }
         BOOST_CHECK_EQUAL(caught, true);
 
-        record.addField("myenum", myenum); 
+        record.addField("myenum", myenum);
 
         UnionSchema onion;
         onion.addType(NullSchema());
         onion.addType(map);
         onion.addType(FloatSchema());
-       
-        record.addField("myunion", onion); 
+
+        record.addField("myunion", onion);
 
         RecordSchema nestedRecord("NestedRecord");
         nestedRecord.addField("floatInNested", FloatSchema());
@@ -117,8 +115,7 @@ struct TestSchema
         caught = false;
         try {
             record.addField("mylong", LongSchema());
-        }
-        catch(Exception &e) {
+        }        catch (Exception &e) {
             std::cout << "(intentional) exception: " << e.what() << '\n';
             caught = true;
         }
@@ -163,14 +160,12 @@ struct TestSchema
     }
 
     template<typename Serializer>
-    void printUnion(Serializer &s, int path)
-    {
+    void printUnion(Serializer &s, int path) {
         s.writeUnion(path);
-        if(path == 0) {
+        if (path == 0) {
             std::cout << "Null in union\n";
             s.writeNull();
-        }
-        else if(path == 1) {
+        } else if (path == 1) {
             std::cout << "Map in union\n";
             s.writeMapBlock(2);
             s.writeString("Foo");
@@ -181,16 +176,14 @@ struct TestSchema
             s.writeString("FooBar");
             s.writeInt(18);
             s.writeMapEnd();
-        }
-        else {
+        } else {
             std::cout << "Float in union\n";
             s.writeFloat(200.);
         }
     }
 
     template<typename Serializer>
-    void writeEncoding(Serializer &s, int path)
-    {
+    void writeEncoding(Serializer &s, int path) {
         std::cout << "Record\n";
         s.writeRecord();
         s.writeInt(1000);
@@ -224,7 +217,7 @@ struct TestSchema
         s.writeBool(true);
 
         std::cout << "Fixed16\n";
-        
+
         s.writeFixed(fixeddata);
 
         std::cout << "Long\n";
@@ -242,16 +235,14 @@ struct TestSchema
         std::cout << s.buffer();
     }
 
-    void printValidatingEncoding(int path)
-    {
+    void printValidatingEncoding(int path) {
         std::cout << "Validating Encoding " << path << "\n";
         Serializer<ValidatingWriter> s(schema_);
         writeEncoding(s, path);
         std::cout << s.buffer();
     }
 
-    void saveValidatingEncoding(int path) 
-    {
+    void saveValidatingEncoding(int path) {
         std::ofstream out("test.avro");
         Serializer<ValidatingWriter> s(schema_);
         writeEncoding(s, path);
@@ -264,15 +255,14 @@ struct TestSchema
         // no-op printer
     }
 
-    void printNext(Parser<ValidatingReader> &p)
-    {
+    void printNext(Parser<ValidatingReader> &p) {
         std::cout << "Next: \"" << nextType(p);
         std::string recordName;
         std::string fieldName;
-        if( currentRecordName(p, recordName) ) {
+        if (currentRecordName(p, recordName)) {
             std::cout << "\" record: \"" << recordName;
         }
-        if( nextFieldName(p, fieldName) ) {
+        if (nextFieldName(p, fieldName)) {
             std::cout << "\" field: \"" << fieldName;
         }
         std::cout << "\"\n";
@@ -280,14 +270,13 @@ struct TestSchema
     }
 
     template <typename Parser>
-    void readMap(Parser &p)
-    {
+    void readMap(Parser &p) {
         int64_t size = 0;
-        do { 
+        do {
             printNext(p);
             size = p.readMapBlockSize();
             std::cout << "Size " << size << '\n';
-            for(int64_t i=0; i < size; ++i) {
+            for (int64_t i = 0; i < size; ++i) {
                 std::string key;
                 printNext(p);
                 p.readString(key);
@@ -299,26 +288,24 @@ struct TestSchema
     }
 
     template <typename Parser>
-    void readArray(Parser &p)
-    {
+    void readArray(Parser &p) {
         int64_t size = 0;
         double d = 0.0;
         do {
             printNext(p);
             size = p.readArrayBlockSize();
             std::cout << "Size " << size << '\n';
-            for(int64_t i=0; i < size; ++i) {
+            for (int64_t i = 0; i < size; ++i) {
                 printNext(p);
                 d = p.readDouble();
                 std::cout << i << ":" << d << '\n';
             }
-        } while(size != 0);
+        } while (size != 0);
         BOOST_CHECK_EQUAL(d, 1000.0);
     }
 
     template <typename Parser>
-    void readNestedRecord(Parser &p)
-    {
+    void readNestedRecord(Parser &p) {
         printNext(p);
         p.readRecord();
         printNext(p);
@@ -335,15 +322,14 @@ struct TestSchema
         p.readFixed(input);
         BOOST_CHECK_EQUAL(input.size(), 16U);
 
-        for(int i=0; i< 16; ++i) {
-            std::cout << static_cast<int>(input[i]) << ' ';
+        for (int i = 0; i < 16; ++i) {
+            std::cout << static_cast<int> (input[i]) << ' ';
         }
         std::cout << '\n';
     }
 
     template <typename Parser>
-    void readData(Parser &p)
-    {
+    void readData(Parser &p) {
         printNext(p);
         p.readRecord();
 
@@ -394,8 +380,7 @@ struct TestSchema
         readData(p);
     }
 
-    void readValidatedData()
-    {
+    void readValidatedData() {
         std::ifstream in("test.avro");
         ostream os;
         os << in.rdbuf();
@@ -403,8 +388,7 @@ struct TestSchema
         readData(p);
     }
 
-    void test()
-    {
+    void test() {
         std::cout << "Before\n";
         schema_.toJson(std::cout);
         schema_.toFlatList(std::cout);
@@ -443,23 +427,21 @@ struct TestEncoding {
     }
 
     template<typename IntType>
-    void testEncoding(IntType start, IntType stop)
-    {
+    void testEncoding(IntType start, IntType stop) {
         std::cout << "testing from " << start << " to " << stop << " inclusive\n";
         IntType val = start;
         IntType diff = stop - start + 1;
 
-        for(IntType i = 0; i < diff; ++i) {
-            compare(val+i);
+        for (IntType i = 0; i < diff; ++i) {
+            compare(val + i);
         }
     }
 
     template<typename IntType>
-    void testEncoding()
-    {
+    void testEncoding() {
         testEncoding<IntType>(std::numeric_limits<IntType>::min(), std::numeric_limits<IntType>::min() + 1000);
         testEncoding<IntType>(-1000, 1000);
-        testEncoding<IntType>(std::numeric_limits<IntType>::max()-1000, std::numeric_limits<IntType>::max());
+        testEncoding<IntType>(std::numeric_limits<IntType>::max() - 1000, std::numeric_limits<IntType>::max());
     }
 
     void test() {
@@ -469,13 +451,12 @@ struct TestEncoding {
 
 };
 
-struct TestNested
-{
-    TestNested()
-    {}
+struct TestNested {
 
-    void createSchema() 
-    {
+    TestNested() {
+    }
+
+    void createSchema() {
         std::cout << "TestNested\n";
         RecordSchema rec("LongList");
         rec.addField("value", LongSchema());
@@ -490,8 +471,7 @@ struct TestNested
         schema_.toFlatList(std::cout);
     }
 
-    InputBuffer serializeNoRecurse()
-    {
+    InputBuffer serializeNoRecurse() {
         std::cout << "No recurse\n";
         Serializer<ValidatingWriter> s(schema_);
         s.writeRecord();
@@ -504,8 +484,7 @@ struct TestNested
         return s.buffer();
     }
 
-    InputBuffer serializeRecurse()
-    {
+    InputBuffer serializeRecurse() {
         std::cout << "Recurse\n";
         Serializer<ValidatingWriter> s(schema_);
         s.writeRecord();
@@ -519,7 +498,7 @@ struct TestNested
                 s.writeRecord();
                 s.writeLong(3);
                 s.writeUnion(0);
-                { 
+                {
                     s.writeNull();
                 }
                 s.writeBool(false);
@@ -535,16 +514,14 @@ struct TestNested
         return s.buffer();
     }
 
-    void readRecord(Parser<ValidatingReader> &p) 
-    {
+    void readRecord(Parser<ValidatingReader> &p) {
         p.readRecord();
         int64_t val = p.readLong();
         std::cout << "longval = " << val << '\n';
         int64_t path = p.readUnion();
         if (path == 1) {
             readRecord(p);
-        }
-        else {
+        } else {
             p.readNull();
         }
         bool b = p.readBool();
@@ -552,8 +529,7 @@ struct TestNested
         p.readRecordEnd();
     }
 
-    void validatingParser(InputBuffer &buf) 
-    {
+    void validatingParser(InputBuffer &buf) {
         Parser<ValidatingReader> p(schema_, buf);
         readRecord(p);
     }
@@ -568,7 +544,7 @@ struct TestNested
     void testParseNoRecurse() {
         std::cout << "ParseNoRecurse\n";
         InputBuffer buf = serializeNoRecurse();
-    
+
         validatingParser(buf);
     }
 
@@ -578,7 +554,6 @@ struct TestNested
 
         validatingParser(buf);
     }
-
 
     void test() {
         createSchema();
@@ -592,17 +567,16 @@ struct TestNested
     ValidSchema schema_;
 };
 
-struct TestGenerated
-{
-    TestGenerated()
-    {}
+struct TestGenerated {
 
-    void test() 
-    {
+    TestGenerated() {
+    }
+
+    void test() {
         std::cout << "TestGenerated\n";
 
         int32_t val = 100;
-        float   f   = 200.0;
+        float f = 200.0;
 
         Writer writer;
 
@@ -614,10 +588,9 @@ struct TestGenerated
     }
 };
 
-struct TestBadStuff
-{
-    void testBadFile() 
-    {
+struct TestBadStuff {
+
+    void testBadFile() {
         std::cout << "TestBadFile\n";
 
         avro::ValidSchema schema;
@@ -628,11 +601,10 @@ struct TestBadStuff
         std::cout << "(intentional) error: " << error << '\n';
     }
 
-    void testBadSchema()
-    {
+    void testBadSchema() {
         std::cout << "TestBadSchema\n";
 
-        std::string str ("{ \"type\" : \"wrong\" }");
+        std::string str("{ \"type\" : \"wrong\" }");
         std::istringstream in(str);
 
         avro::ValidSchema schema;
@@ -642,29 +614,27 @@ struct TestBadStuff
         std::cout << "(intentional) error: " << error << '\n';
     }
 
-    void test() 
-    {
+    void test() {
         std::cout << "TestBadStuff\n";
         testBadFile();
         testBadSchema();
     }
 };
 
-struct TestResolution
-{
+struct TestResolution {
+
     TestResolution() :
-        int_(IntSchema()), 
-        long_(LongSchema()),
-        bool_(BoolSchema()), 
-        float_(FloatSchema()), 
-        double_(DoubleSchema()),
+    int_(IntSchema()),
+    long_(LongSchema()),
+    bool_(BoolSchema()),
+    float_(FloatSchema()),
+    double_(DoubleSchema()),
 
-        mapOfInt_(MapSchema(IntSchema())),
-        mapOfDouble_(MapSchema(DoubleSchema())),
+    mapOfInt_(MapSchema(IntSchema())),
+    mapOfDouble_(MapSchema(DoubleSchema())),
 
-        arrayOfLong_(ArraySchema(LongSchema())),
-        arrayOfFloat_(ArraySchema(FloatSchema()))
-    {
+    arrayOfLong_(ArraySchema(LongSchema())),
+    arrayOfFloat_(ArraySchema(FloatSchema())) {
         {
             EnumSchema one("one");
             one.addSymbol("X");
@@ -674,7 +644,7 @@ struct TestResolution
             two.addSymbol("Y");
             enumTwo_.setSchema(two);
         }
-    
+
         {
             UnionSchema one;
             one.addType(IntSchema());
@@ -688,36 +658,34 @@ struct TestResolution
         }
     }
 
-    SchemaResolution resolve(const ValidSchema &writer, const ValidSchema &reader)
-    {
+    SchemaResolution resolve(const ValidSchema &writer, const ValidSchema &reader) {
         return writer.root()->resolve(*reader.root());
     }
 
-    void test() 
-    {
+    void test() {
         std::cout << "TestResolution\n";
 
-        BOOST_CHECK_EQUAL(resolve(long_, long_), RESOLVE_MATCH); 
-        BOOST_CHECK_EQUAL(resolve(long_, bool_), RESOLVE_NO_MATCH); 
-        BOOST_CHECK_EQUAL(resolve(bool_, long_), RESOLVE_NO_MATCH); 
+        BOOST_CHECK_EQUAL(resolve(long_, long_), RESOLVE_MATCH);
+        BOOST_CHECK_EQUAL(resolve(long_, bool_), RESOLVE_NO_MATCH);
+        BOOST_CHECK_EQUAL(resolve(bool_, long_), RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(int_, long_), RESOLVE_PROMOTABLE_TO_LONG); 
-        BOOST_CHECK_EQUAL(resolve(long_, int_), RESOLVE_NO_MATCH); 
+        BOOST_CHECK_EQUAL(resolve(int_, long_), RESOLVE_PROMOTABLE_TO_LONG);
+        BOOST_CHECK_EQUAL(resolve(long_, int_), RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(int_, float_), RESOLVE_PROMOTABLE_TO_FLOAT); 
-        BOOST_CHECK_EQUAL(resolve(float_, int_), RESOLVE_NO_MATCH); 
+        BOOST_CHECK_EQUAL(resolve(int_, float_), RESOLVE_PROMOTABLE_TO_FLOAT);
+        BOOST_CHECK_EQUAL(resolve(float_, int_), RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(int_, double_), RESOLVE_PROMOTABLE_TO_DOUBLE); 
-        BOOST_CHECK_EQUAL(resolve(double_, int_), RESOLVE_NO_MATCH); 
+        BOOST_CHECK_EQUAL(resolve(int_, double_), RESOLVE_PROMOTABLE_TO_DOUBLE);
+        BOOST_CHECK_EQUAL(resolve(double_, int_), RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(long_, float_), RESOLVE_PROMOTABLE_TO_FLOAT); 
-        BOOST_CHECK_EQUAL(resolve(float_, long_), RESOLVE_NO_MATCH); 
+        BOOST_CHECK_EQUAL(resolve(long_, float_), RESOLVE_PROMOTABLE_TO_FLOAT);
+        BOOST_CHECK_EQUAL(resolve(float_, long_), RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(long_, double_), RESOLVE_PROMOTABLE_TO_DOUBLE); 
-        BOOST_CHECK_EQUAL(resolve(double_, long_), RESOLVE_NO_MATCH); 
+        BOOST_CHECK_EQUAL(resolve(long_, double_), RESOLVE_PROMOTABLE_TO_DOUBLE);
+        BOOST_CHECK_EQUAL(resolve(double_, long_), RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(float_, double_), RESOLVE_PROMOTABLE_TO_DOUBLE); 
-        BOOST_CHECK_EQUAL(resolve(double_, float_), RESOLVE_NO_MATCH); 
+        BOOST_CHECK_EQUAL(resolve(float_, double_), RESOLVE_PROMOTABLE_TO_DOUBLE);
+        BOOST_CHECK_EQUAL(resolve(double_, float_), RESOLVE_NO_MATCH);
 
         BOOST_CHECK_EQUAL(resolve(int_, mapOfInt_), RESOLVE_NO_MATCH);
         BOOST_CHECK_EQUAL(resolve(mapOfInt_, int_), RESOLVE_NO_MATCH);
@@ -746,7 +714,7 @@ struct TestResolution
         BOOST_CHECK_EQUAL(resolve(unionOne_, unionTwo_), RESOLVE_MATCH);
     }
 
-  private:
+private:
 
     ValidSchema int_;
     ValidSchema long_;
@@ -767,20 +735,17 @@ struct TestResolution
     ValidSchema unionTwo_;
 };
 
-
 template<typename T>
-void addTestCase(boost::unit_test::test_suite &test) 
-{
-    boost::shared_ptr<T> newtest( new T );
-    test.add( BOOST_CLASS_TEST_CASE( &T::test, newtest ));
+void addTestCase(boost::unit_test::test_suite &test) {
+    boost::shared_ptr<T> newtest(new T);
+    test.add(BOOST_CLASS_TEST_CASE(&T::test, newtest));
 }
 
 boost::unit_test::test_suite*
-init_unit_test_suite( int argc, char* argv[] ) 
-{
+init_unit_test_suite(int argc, char* argv[]) {
     using namespace boost::unit_test;
 
-    test_suite* test= BOOST_TEST_SUITE( "Avro C++ unit test suite" );
+    test_suite* test = BOOST_TEST_SUITE("Avro C++ unit test suite");
 
     addTestCase<TestEncoding>(*test);
     addTestCase<TestSchema>(*test);

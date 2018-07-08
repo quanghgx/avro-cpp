@@ -28,49 +28,49 @@
 
 namespace avro {
 
-class NullValidator : private boost::noncopyable
-{
+  class NullValidator : private boost::noncopyable {
   public:
 
-    explicit NullValidator(const ValidSchema &schema) {}
-    NullValidator() {}
+    explicit NullValidator(const ValidSchema &schema) { }
 
-    void setCount(int64_t val) {}
+    NullValidator() { }
+
+    void setCount(int64_t val) { }
 
     bool typeIsExpected(Type type) const {
-        return true;
+      return true;
     }
 
     Type nextTypeExpected() const {
-        return AVRO_UNKNOWN;
+      return AVRO_UNKNOWN;
     }
 
     int nextSizeExpected() const {
-        return 0;
+      return 0;
     }
 
     bool getCurrentRecordName(std::string &name) const {
-        return true;
+      return true;
     }
 
     bool getNextFieldName(std::string &name) const {
-        return true;
+      return true;
     }
 
     void checkTypeExpected(Type type) { }
+
     void checkFixedSizeExpected(int size) { }
 
 
-};
+  };
 
-/// This class is used by both the ValidatingSerializer and ValidationParser
-/// objects.  It advances the parse tree (containing logic how to advance
-/// through the various compound types, for example a record must advance
-/// through all leaf nodes but a union only skips to one), and reports which
-/// type is next.
+  /// This class is used by both the ValidatingSerializer and ValidationParser
+  /// objects.  It advances the parse tree (containing logic how to advance
+  /// through the various compound types, for example a record must advance
+  /// through all leaf nodes but a union only skips to one), and reports which
+  /// type is next.
 
-class Validator : private boost::noncopyable
-{
+  class Validator : private boost::noncopyable {
   public:
 
     explicit Validator(const ValidSchema &schema);
@@ -78,11 +78,11 @@ class Validator : private boost::noncopyable
     void setCount(int64_t val);
 
     bool typeIsExpected(Type type) const {
-        return (expectedTypesFlag_ & typeToFlag(type)) != 0;
+      return (expectedTypesFlag_ & typeToFlag(type)) != 0;
     }
 
     Type nextTypeExpected() const {
-        return nextType_;
+      return nextType_;
     }
 
     int nextSizeExpected() const;
@@ -91,23 +91,23 @@ class Validator : private boost::noncopyable
     bool getNextFieldName(std::string &name) const;
 
     void checkTypeExpected(Type type) {
-        if(! typeIsExpected(type)) {
-            throw Exception(
-                boost::format("Type %1% does not match schema %2%") 
-                    % type % nextType_
-            );
-        }
-        advance();
+      if (!typeIsExpected(type)) {
+        throw Exception(
+          boost::format("Type %1% does not match schema %2%")
+          % type % nextType_
+          );
+      }
+      advance();
     }
 
-    void checkFixedSizeExpected(int size) { 
-        if( nextSizeExpected() != size) {
-            throw Exception(
-                boost::format("Wrong size for fixed, got %1%, expected %2%") 
-                    % size % nextSizeExpected()
-            );
-        }
-        checkTypeExpected(AVRO_FIXED);
+    void checkFixedSizeExpected(int size) {
+      if (nextSizeExpected() != size) {
+        throw Exception(
+          boost::format("Wrong size for fixed, got %1%, expected %2%")
+          % size % nextSizeExpected()
+          );
+      }
+      checkTypeExpected(AVRO_FIXED);
     }
 
   private:
@@ -115,8 +115,8 @@ class Validator : private boost::noncopyable
     typedef uint32_t flag_t;
 
     flag_t typeToFlag(Type type) const {
-        flag_t flag = (1L << type);
-        return flag;
+      flag_t flag = (1L << type);
+      return flag;
     }
 
     void setupOperation(const NodePtr &node);
@@ -136,24 +136,24 @@ class Validator : private boost::noncopyable
 
     const ValidSchema schema_;
 
-    Type nextType_; 
+    Type nextType_;
     flag_t expectedTypesFlag_;
     bool compoundStarted_;
     bool waitingForCount_;
     int64_t count_;
 
     struct CompoundType {
-        explicit CompoundType(const NodePtr &n) :
-            node(n), pos(0)
-        {}
-        NodePtr node;  ///< save the node
-        size_t  pos;   ///< track the leaf position to visit
+
+      explicit CompoundType(const NodePtr &n) :
+      node(n), pos(0) { }
+      NodePtr node; ///< save the node
+      size_t pos; ///< track the leaf position to visit
     };
 
     std::vector<CompoundType> compoundStack_;
     std::vector<size_t> counters_;
 
-};
+  };
 
 } // namespace avro
 

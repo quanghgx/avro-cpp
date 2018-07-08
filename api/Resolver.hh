@@ -29,29 +29,27 @@
 
 namespace avro {
 
-    class ValidSchema;
-    class Layout;
+  class ValidSchema;
+  class Layout;
 
-    class Resolver {
-    public:
-        Resolver(const Resolver&) = delete;
-        const Resolver& operator=(const Resolver&) = delete;
+  class Resolver {
+  public:
+    Resolver(const Resolver&) = delete;
+    const Resolver& operator=(const Resolver&) = delete;
 
-        Resolver() {
-        }
+    Resolver() { }
 
-        virtual void parse(Reader &reader, uint8_t *address) const = 0;
+    virtual void parse(Reader &reader, uint8_t *address) const = 0;
 
-        virtual ~Resolver() {
-        }
+    virtual ~Resolver() { }
 
-    };
+  };
 
-    Resolver *constructResolver(
-            const ValidSchema &rwriterSchema,
-            const ValidSchema &readerSchema,
-            const Layout &readerLayout
-            );
+  Resolver *constructResolver(
+    const ValidSchema &rwriterSchema,
+    const ValidSchema &readerSchema,
+    const Layout &readerLayout
+    );
 
 
 

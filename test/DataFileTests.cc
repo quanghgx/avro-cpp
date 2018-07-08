@@ -50,14 +50,22 @@ template <typename T>
 struct Complex {
     T re;
     T im;
-    Complex() : re(0), im(0) { }
-    Complex(T r, T i) : re(r), im(i) { }
+
+    Complex() : re(0), im(0) {
+    }
+
+    Complex(T r, T i) : re(r), im(i) {
+    }
 };
 
 struct Integer {
     int64_t re;
-    Integer() : re(0) { }
-    Integer(int64_t r) : re(r) { }
+
+    Integer() : re(0) {
+    }
+
+    Integer(int64_t r) : re(r) {
+    }
 };
 
 typedef Complex<int64_t> ComplexInteger;
@@ -65,52 +73,59 @@ typedef Complex<double> ComplexDouble;
 
 struct Double {
     double re;
-    Double() : re(0) { }
-    Double(double r) : re(r) { }
+
+    Double() : re(0) {
+    }
+
+    Double(double r) : re(r) {
+    }
 };
 
 namespace avro {
 
-template <typename T> struct codec_traits<Complex<T> > {
-    static void encode(Encoder& e, const Complex<T>& c) {
-        avro::encode(e, c.re);
-        avro::encode(e, c.im);
-    }
+    template <typename T> struct codec_traits<Complex<T> > {
 
-    static void decode(Decoder& d, Complex<T>& c) {
-        avro::decode(d, c.re);
-        avro::decode(d, c.im);
-    }
-};
+        static void encode(Encoder& e, const Complex<T>& c) {
+            avro::encode(e, c.re);
+            avro::encode(e, c.im);
+        }
 
-template <> struct codec_traits<Integer> {
-    static void decode(Decoder& d, Integer& c) {
-        avro::decode(d, c.re);
-    }
-};
+        static void decode(Decoder& d, Complex<T>& c) {
+            avro::decode(d, c.re);
+            avro::decode(d, c.im);
+        }
+    };
 
-template <> struct codec_traits<Double> {
-    static void decode(Decoder& d, Double& c) {
-        avro::decode(d, c.re);
-    }
-};
+    template <> struct codec_traits<Integer> {
 
-template<> struct codec_traits<uint32_t> {
-    static void encode(Encoder& e, const uint32_t& v) {
-      e.encodeFixed( (uint8_t *) &v,sizeof(uint32_t));
-    }
+        static void decode(Decoder& d, Integer& c) {
+            avro::decode(d, c.re);
+        }
+    };
 
-    static void decode(Decoder& d, uint32_t& v) {
-        std::vector <uint8_t> value;
-        d.decodeFixed(sizeof(uint32_t),value);
-        memcpy(&v,&(value[0]),sizeof(uint32_t));
-    }
-};
+    template <> struct codec_traits<Double> {
+
+        static void decode(Decoder& d, Double& c) {
+            avro::decode(d, c.re);
+        }
+    };
+
+    template<> struct codec_traits<uint32_t> {
+
+        static void encode(Encoder& e, const uint32_t& v) {
+            e.encodeFixed((uint8_t *) & v, sizeof (uint32_t));
+        }
+
+        static void decode(Decoder& d, uint32_t& v) {
+            std::vector <uint8_t> value;
+            d.decodeFixed(sizeof (uint32_t), value);
+            memcpy(&v, &(value[0]), sizeof (uint32_t));
+        }
+    };
 
 }
 
-static ValidSchema makeValidSchema(const char* schema)
-{
+static ValidSchema makeValidSchema(const char* schema) {
     istringstream iss(schema);
     ValidSchema vs;
     compileJsonSchema(iss, vs);
@@ -118,29 +133,27 @@ static ValidSchema makeValidSchema(const char* schema)
 }
 
 static const char sch[] = "{\"type\": \"record\","
-    "\"name\":\"ComplexInteger\", \"fields\": ["
-        "{\"name\":\"re\", \"type\":\"long\"},"
-        "{\"name\":\"im\", \"type\":\"long\"}"
-    "]}";
+  "\"name\":\"ComplexInteger\", \"fields\": ["
+  "{\"name\":\"re\", \"type\":\"long\"},"
+  "{\"name\":\"im\", \"type\":\"long\"}"
+  "]}";
 static const char isch[] = "{\"type\": \"record\","
-    "\"name\":\"ComplexInteger\", \"fields\": ["
-        "{\"name\":\"re\", \"type\":\"long\"}"
-    "]}";
+  "\"name\":\"ComplexInteger\", \"fields\": ["
+  "{\"name\":\"re\", \"type\":\"long\"}"
+  "]}";
 static const char dsch[] = "{\"type\": \"record\","
-    "\"name\":\"ComplexDouble\", \"fields\": ["
-        "{\"name\":\"re\", \"type\":\"double\"},"
-        "{\"name\":\"im\", \"type\":\"double\"}"
-    "]}";
+  "\"name\":\"ComplexDouble\", \"fields\": ["
+  "{\"name\":\"re\", \"type\":\"double\"},"
+  "{\"name\":\"im\", \"type\":\"double\"}"
+  "]}";
 static const char dblsch[] = "{\"type\": \"record\","
-    "\"name\":\"ComplexDouble\", \"fields\": ["
-        "{\"name\":\"re\", \"type\":\"double\"}"
-    "]}";
+  "\"name\":\"ComplexDouble\", \"fields\": ["
+  "{\"name\":\"re\", \"type\":\"double\"}"
+  "]}";
 static const char fsch[] = "{\"type\": \"fixed\","
-    "\"name\":\"Fixed_32\", \"size\":4}";
+  "\"name\":\"Fixed_32\", \"size\":4}";
 
-
-string toString(const ValidSchema& s)
-{
+string toString(const ValidSchema& s) {
     ostringstream oss;
     s.toJson(oss);
     return oss.str();
@@ -152,9 +165,11 @@ class DataFileTest {
     const ValidSchema readerSchema;
 
 public:
+
     DataFileTest(const char* f, const char* wsch, const char* rsch) :
-        filename(f), writerSchema(makeValidSchema(wsch)),
-        readerSchema(makeValidSchema(rsch)) { }
+    filename(f), writerSchema(makeValidSchema(wsch)),
+    readerSchema(makeValidSchema(rsch)) {
+    }
 
     typedef pair<ValidSchema, GenericDatum> Pair;
 
@@ -361,7 +376,7 @@ public:
      */
     void testReadDoubleTwoStep() {
         auto_ptr<avro::DataFileReaderBase>
-            base(new avro::DataFileReaderBase(filename));
+          base(new avro::DataFileReaderBase(filename));
         avro::DataFileReader<ComplexDouble> df(base);
         BOOST_CHECK_EQUAL(toString(writerSchema), toString(df.readerSchema()));
         BOOST_CHECK_EQUAL(toString(writerSchema), toString(df.dataSchema()));
@@ -385,7 +400,7 @@ public:
      */
     void testReadDoubleTwoStepProject() {
         auto_ptr<avro::DataFileReaderBase>
-            base(new avro::DataFileReaderBase(filename));
+          base(new avro::DataFileReaderBase(filename));
         avro::DataFileReader<Double> df(base, readerSchema);
 
         BOOST_CHECK_EQUAL(toString(readerSchema), toString(df.readerSchema()));
@@ -402,6 +417,7 @@ public:
         }
         BOOST_CHECK_EQUAL(i, count);
     }
+
     /**
      * Test writing DataFiles into other streams operations.
      */
@@ -435,37 +451,35 @@ public:
     }
 
     void testSchemaReadWrite() {
-    uint32_t a=42;
-    {
+        uint32_t a = 42;
+        {
             avro::DataFileWriter<uint32_t> df(filename, writerSchema);
-        df.write(a);
+            df.write(a);
         }
 
         {
-        avro::DataFileReader<uint32_t> df(filename);
-        uint32_t b;
+            avro::DataFileReader<uint32_t> df(filename);
+            uint32_t b;
             df.read(b);
             BOOST_CHECK_EQUAL(b, a);
-    }
+        }
     }
 };
 
-void addReaderTests(test_suite* ts, const shared_ptr<DataFileTest>& t)
-{
+void addReaderTests(test_suite* ts, const shared_ptr<DataFileTest>& t) {
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReadFull, t));
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReadProjection, t));
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReaderGeneric, t));
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReaderGenericByName, t));
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReaderGenericProjection,
-        t));
+      t));
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testCleanup, t));
 
 }
 
 test_suite*
-init_unit_test_suite( int argc, char* argv[] )
-{
-    test_suite* ts= BOOST_TEST_SUITE("DataFile tests");
+init_unit_test_suite(int argc, char* argv[]) {
+    test_suite* ts = BOOST_TEST_SUITE("DataFile tests");
     shared_ptr<DataFileTest> t1(new DataFileTest("test1.df", sch, isch));
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testWrite, t1));
     addReaderTests(ts, t1);
@@ -479,7 +493,7 @@ init_unit_test_suite( int argc, char* argv[] )
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReadDouble, t3));
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReadDoubleTwoStep, t3));
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReadDoubleTwoStepProject,
-        t3));
+      t3));
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testCleanup, t3));
 
     shared_ptr<DataFileTest> t4(new DataFileTest("test4.df", dsch, dblsch));
@@ -494,9 +508,9 @@ init_unit_test_suite( int argc, char* argv[] )
     ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testZip, t6));
     shared_ptr<DataFileTest> t8(new DataFileTest("test8.df", dsch, dblsch));
 
-    shared_ptr<DataFileTest> t7(new DataFileTest("test7.df",fsch,fsch));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testSchemaReadWrite,t7));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testCleanup,t7));
+    shared_ptr<DataFileTest> t7(new DataFileTest("test7.df", fsch, fsch));
+    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testSchemaReadWrite, t7));
+    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testCleanup, t7));
 
     return ts;
 }

@@ -29,13 +29,12 @@
 ///
 
 namespace avro {
-    
-class ValidSchema;
-class Layout;
-class Resolver;
 
-class ResolverSchema {
+  class ValidSchema;
+  class Layout;
+  class Resolver;
 
+  class ResolverSchema {
   public:
 
     ResolverSchema(const ValidSchema &writer, const ValidSchema &reader, const Layout &readerLayout);
@@ -44,11 +43,11 @@ class ResolverSchema {
 
     friend class ResolvingReader;
 
-    void parse(Reader &reader, uint8_t *address); 
+    void parse(Reader &reader, uint8_t *address);
 
     std::shared_ptr<Resolver> resolver_;
 
-};
+  };
 
 } // namespace avro
 

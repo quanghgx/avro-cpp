@@ -30,166 +30,158 @@ using std::string;
 using boost::format;
 
 namespace avro {
-namespace json {
-const char* typeToString(EntityType t)
-{
-    switch (t) {
-    case etNull: return "null";
-    case etBool: return "bool";
-    case etLong: return "long";
-    case etDouble: return "double";
-    case etString: return "string";
-    case etArray: return "array";
-    case etObject: return "object";
-    default: return "unknown";
-    }
-}
+    namespace json {
 
-Entity readEntity(JsonParser& p)
-{
-    switch (p.peek()) {
-    case JsonParser::tkNull:
-        p.advance();
-        return Entity(p.line());
-    case JsonParser::tkBool:
-        p.advance();
-        return Entity(p.boolValue(), p.line());
-    case JsonParser::tkLong:
-        p.advance();
-        return Entity(p.longValue(), p.line());
-    case JsonParser::tkDouble:
-        p.advance();
-        return Entity(p.doubleValue(), p.line());
-    case JsonParser::tkString:
-        p.advance();
-        return Entity(std::make_shared<String>(p.stringValue()), p.line());
-    case JsonParser::tkArrayStart:
-        {
-            size_t l = p.line();
-            p.advance();
-            std::shared_ptr<Array> v = std::make_shared<Array>();
-            while (p.peek() != JsonParser::tkArrayEnd) {
-                v->push_back(readEntity(p));
+        const char* typeToString(EntityType t) {
+            switch (t) {
+                case etNull: return "null";
+                case etBool: return "bool";
+                case etLong: return "long";
+                case etDouble: return "double";
+                case etString: return "string";
+                case etArray: return "array";
+                case etObject: return "object";
+                default: return "unknown";
             }
-            p.advance();
-            return Entity(v, l);
         }
-    case JsonParser::tkObjectStart:
-        {
-            size_t l = p.line();
-            p.advance();
-            std::shared_ptr<Object> v = std::make_shared<Object>();
-            while (p.peek() != JsonParser::tkObjectEnd) {
-                p.advance();
-                std::string k = p.stringValue();
-                Entity n = readEntity(p);
-                v->insert(std::make_pair(k, n));
+
+        Entity readEntity(JsonParser& p) {
+            switch (p.peek()) {
+                case JsonParser::tkNull:
+                    p.advance();
+                    return Entity(p.line());
+                case JsonParser::tkBool:
+                    p.advance();
+                    return Entity(p.boolValue(), p.line());
+                case JsonParser::tkLong:
+                    p.advance();
+                    return Entity(p.longValue(), p.line());
+                case JsonParser::tkDouble:
+                    p.advance();
+                    return Entity(p.doubleValue(), p.line());
+                case JsonParser::tkString:
+                    p.advance();
+                    return Entity(std::make_shared<String>(p.stringValue()), p.line());
+                case JsonParser::tkArrayStart:
+                {
+                    size_t l = p.line();
+                    p.advance();
+                    std::shared_ptr<Array> v = std::make_shared<Array>();
+                    while (p.peek() != JsonParser::tkArrayEnd) {
+                        v->push_back(readEntity(p));
+                    }
+                    p.advance();
+                    return Entity(v, l);
+                }
+                case JsonParser::tkObjectStart:
+                {
+                    size_t l = p.line();
+                    p.advance();
+                    std::shared_ptr<Object> v = std::make_shared<Object>();
+                    while (p.peek() != JsonParser::tkObjectEnd) {
+                        p.advance();
+                        std::string k = p.stringValue();
+                        Entity n = readEntity(p);
+                        v->insert(std::make_pair(k, n));
+                    }
+                    p.advance();
+                    return Entity(v, l);
+                }
+                default:
+                    throw std::domain_error(JsonParser::toString(p.peek()));
             }
-            p.advance();
-            return Entity(v, l);
+
         }
-    default:
-        throw std::domain_error(JsonParser::toString(p.peek()));
-    }
-    
-}
 
-Entity loadEntity(const char* text)
-{
-    return loadEntity(reinterpret_cast<const uint8_t*>(text), ::strlen(text));
-}
+        Entity loadEntity(const char* text) {
+            return loadEntity(reinterpret_cast<const uint8_t*> (text), ::strlen(text));
+        }
 
-Entity loadEntity(InputStream& in)
-{
-    JsonParser p;
-    p.init(in);
-    return readEntity(p);
-}
+        Entity loadEntity(InputStream& in) {
+            JsonParser p;
+            p.init(in);
+            return readEntity(p);
+        }
 
-Entity loadEntity(const uint8_t* text, size_t len)
-{
-    std::auto_ptr<InputStream> in = memoryInputStream(text, len);
-    return loadEntity(*in);
-}
+        Entity loadEntity(const uint8_t* text, size_t len) {
+            std::auto_ptr<InputStream> in = memoryInputStream(text, len);
+            return loadEntity(*in);
+        }
 
-void writeEntity(JsonGenerator<JsonNullFormatter>& g, const Entity& n)
-{
-    switch (n.type()) {
-    case etNull:
-        g.encodeNull();
-        break;
-    case etBool:
-        g.encodeBool(n.boolValue());
-        break;
-    case etLong:
-        g.encodeNumber(n.longValue());
-        break;
-    case etDouble:
-        g.encodeNumber(n.doubleValue());
-        break;
-    case etString:
-        g.encodeString(n.stringValue());
-        break;
-    case etArray:
-        {
-            g.arrayStart();
-            const Array& v = n.arrayValue();
-            for (Array::const_iterator it = v.begin();
-                it != v.end(); ++it) {
-                writeEntity(g, *it);
+        void writeEntity(JsonGenerator<JsonNullFormatter>& g, const Entity& n) {
+            switch (n.type()) {
+                case etNull:
+                    g.encodeNull();
+                    break;
+                case etBool:
+                    g.encodeBool(n.boolValue());
+                    break;
+                case etLong:
+                    g.encodeNumber(n.longValue());
+                    break;
+                case etDouble:
+                    g.encodeNumber(n.doubleValue());
+                    break;
+                case etString:
+                    g.encodeString(n.stringValue());
+                    break;
+                case etArray:
+                {
+                    g.arrayStart();
+                    const Array& v = n.arrayValue();
+                    for (Array::const_iterator it = v.begin();
+                      it != v.end(); ++it) {
+                        writeEntity(g, *it);
+                    }
+                    g.arrayEnd();
+                }
+                    break;
+                case etObject:
+                {
+                    g.objectStart();
+                    const Object& v = n.objectValue();
+                    for (Object::const_iterator it = v.begin(); it != v.end(); ++it) {
+                        g.encodeString(it->first);
+                        writeEntity(g, it->second);
+                    }
+                    g.objectEnd();
+                }
+                    break;
             }
-            g.arrayEnd();
         }
-        break;
-    case etObject:
-        {
-            g.objectStart();
-            const Object& v = n.objectValue();
-            for (Object::const_iterator it = v.begin(); it != v.end(); ++it) {
-                g.encodeString(it->first);
-                writeEntity(g, it->second);
+
+        void Entity::ensureType(EntityType type) const {
+            if (type_ != type) {
+                format msg = format("Invalid type. Expected \"%1%\" actual %2%") %
+                  typeToString(type) % typeToString(type_);
+                throw Exception(msg);
             }
-            g.objectEnd();
         }
-        break;
-    }
-}
 
-void Entity::ensureType(EntityType type) const
-{
-    if (type_ != type) {
-        format msg = format("Invalid type. Expected \"%1%\" actual %2%") %
-            typeToString(type) % typeToString(type_);
-        throw Exception(msg);
-    }
-}
-    
+        std::string Entity::toString() const {
+            std::auto_ptr<OutputStream> out = memoryOutputStream();
+            JsonGenerator<JsonNullFormatter> g;
+            g.init(*out);
+            writeEntity(g, *this);
+            g.flush();
+            std::auto_ptr<InputStream> in = memoryInputStream(*out);
+            const uint8_t *p = 0;
+            size_t n = 0;
+            size_t c = 0;
+            while (in->next(&p, &n)) {
+                c += n;
+            }
+            std::string result;
+            result.resize(c);
+            c = 0;
+            std::auto_ptr<InputStream> in2 = memoryInputStream(*out);
+            while (in2->next(&p, &n)) {
+                ::memcpy(&result[c], p, n);
+                c += n;
+            }
+            return result;
+        }
 
-std::string Entity::toString() const
-{
-    std::auto_ptr<OutputStream> out = memoryOutputStream();
-    JsonGenerator<JsonNullFormatter> g;
-    g.init(*out);
-    writeEntity(g, *this);
-    g.flush();
-    std::auto_ptr<InputStream> in = memoryInputStream(*out);
-    const uint8_t *p = 0;
-    size_t n = 0;
-    size_t c = 0;
-    while (in->next(&p, &n)) {
-        c += n;
     }
-    std::string result;
-    result.resize(c);
-    c = 0;
-    std::auto_ptr<InputStream> in2 = memoryInputStream(*out);
-    while (in2->next(&p, &n)) {
-        ::memcpy(&result[c], p, n);
-        c += n;
-    }
-    return result;
-}
-
-}
 }
 

@@ -27,27 +27,26 @@
 
 namespace avro {
 
-    class ResolvingReader {
-    public:
+  class ResolvingReader {
+  public:
 
-        ResolvingReader(const ResolvingReader&) = delete;
-        const ResolvingReader& operator=(const ResolvingReader&) = delete;
+    ResolvingReader(const ResolvingReader&) = delete;
+    const ResolvingReader& operator=(const ResolvingReader&) = delete;
 
-        ResolvingReader(const ResolverSchema &schema, const InputBuffer &in) :
-        reader_(in),
-        schema_(schema) {
-        }
+    ResolvingReader(const ResolverSchema &schema, const InputBuffer &in) :
+    reader_(in),
+    schema_(schema) { }
 
-        template<typename T>
-        void parse(T &object) {
-            schema_.parse(reader_, reinterpret_cast<uint8_t *> (&object));
-        }
+    template<typename T>
+    void parse(T &object) {
+      schema_.parse(reader_, reinterpret_cast<uint8_t *> (&object));
+    }
 
-    private:
+  private:
 
-        Reader reader_;
-        ResolverSchema schema_;
-    };
+    Reader reader_;
+    ResolverSchema schema_;
+  };
 
 } // namespace avro
 
