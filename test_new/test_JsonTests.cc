@@ -21,7 +21,6 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
-
 #include "../impl/json/JsonDom.hh"
 
 using std::string;
