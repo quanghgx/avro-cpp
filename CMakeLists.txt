@@ -30,7 +30,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
 
 find_package (Boost 1.38 REQUIRED  COMPONENTS filesystem system program_options iostreams)
 
-include_directories (api ${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIRS})
+include_directories (3rd api ${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIRS})
 
 set (AVRO_SOURCE_FILES
         impl/Compiler.cc impl/Node.cc
@@ -134,3 +134,8 @@ install (TARGETS avrogencpp RUNTIME DESTINATION bin)
 
 install (DIRECTORY api/ DESTINATION include/avro
     FILES_MATCHING PATTERN *.hh)
+
+# -----------------------------------------------------------------------
+file (GLOB_RECURSE CATCH2_TESTS "test_new/*.cc")
+add_executable (catch2_test ${CATCH2_TESTS})
+target_link_libraries (catch2_test avrocpp_s ${Boost_LIBRARIES})
