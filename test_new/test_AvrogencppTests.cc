@@ -93,42 +93,40 @@ void setRecord(testgen::RootRecord &myRecord) {
 
 template <typename T1, typename T2>
 void checkRecord(const T1& r1, const T2& r2) {
-    BOOST_CHECK_EQUAL(r1.mylong, r2.mylong);
-    BOOST_CHECK_EQUAL(r1.nestedrecord.inval1, r2.nestedrecord.inval1);
-    BOOST_CHECK_EQUAL(r1.nestedrecord.inval2, r2.nestedrecord.inval2);
-    BOOST_CHECK_EQUAL(r1.nestedrecord.inval3, r2.nestedrecord.inval3);
-    BOOST_CHECK(r1.mymap == r2.mymap);
-    BOOST_CHECK(r1.myarray == r2.myarray);
-    BOOST_CHECK_EQUAL(r1.myunion.idx(), r2.myunion.idx());
-    BOOST_CHECK(r1.myunion.get_map() == r2.myunion.get_map());
-    BOOST_CHECK_EQUAL(r1.anotherunion.idx(), r2.anotherunion.idx());
-    BOOST_CHECK(r1.anotherunion.get_bytes() == r2.anotherunion.get_bytes());
-    BOOST_CHECK_EQUAL(r1.mybool, r2.mybool);
-    BOOST_CHECK_EQUAL(r1.anothernested.inval1, r2.anothernested.inval1);
-    BOOST_CHECK_EQUAL(r1.anothernested.inval2, r2.anothernested.inval2);
-    BOOST_CHECK_EQUAL(r1.anothernested.inval3, r2.anothernested.inval3);
-    BOOST_CHECK_EQUAL_COLLECTIONS(r1.myfixed.begin(), r1.myfixed.end(),
-      r2.myfixed.begin(), r2.myfixed.end());
-    BOOST_CHECK_EQUAL(r1.anotherint, r2.anotherint);
-    BOOST_CHECK_EQUAL(r1.bytes.size(), r2.bytes.size());
-    BOOST_CHECK_EQUAL_COLLECTIONS(r1.bytes.begin(), r1.bytes.end(),
-      r2.bytes.begin(), r2.bytes.end());
+    REQUIRE(r1.mylong == r2.mylong);
+    REQUIRE(r1.nestedrecord.inval1 == r2.nestedrecord.inval1);
+    REQUIRE(r1.nestedrecord.inval2 == r2.nestedrecord.inval2);
+    REQUIRE(r1.nestedrecord.inval3 == r2.nestedrecord.inval3);
+    REQUIRE(r1.mymap == r2.mymap);
+    REQUIRE(r1.myarray == r2.myarray);
+    REQUIRE(r1.myunion.idx() == r2.myunion.idx());
+    REQUIRE(r1.myunion.get_map() == r2.myunion.get_map());
+    REQUIRE(r1.anotherunion.idx() == r2.anotherunion.idx());
+    REQUIRE(r1.anotherunion.get_bytes() == r2.anotherunion.get_bytes());
+    REQUIRE(r1.mybool == r2.mybool);
+    REQUIRE(r1.anothernested.inval1 == r2.anothernested.inval1);
+    REQUIRE(r1.anothernested.inval2 == r2.anothernested.inval2);
+    REQUIRE(r1.anothernested.inval3 == r2.anothernested.inval3);
+    REQUIRE(r1.myfixed == r2.myfixed);
+    REQUIRE(r1.anotherint == r2.anotherint);
+    REQUIRE(r1.bytes.size() == r2.bytes.size());
+    REQUIRE(r1.bytes == r2.bytes);
     /**
      * Usually, comparing two different enums is not reliable. But here it fine because we
      * know the generated code and are merely checking if Avro did the right job.
      * Also, converting enum into unsigned int is not always safe. There are cases there could be
      * truncation. Again, we have a controlled situation and it is safe here.
      */
-    BOOST_CHECK_EQUAL(static_cast<unsigned int> (r1.myenum), static_cast<unsigned int> (r2.myenum));
+    REQUIRE(static_cast<unsigned int> (r1.myenum) == static_cast<unsigned int> (r2.myenum));
 }
 
 void checkDefaultValues(const testgen_r::RootRecord& r) {
-    BOOST_CHECK_EQUAL(r.withDefaultValue.s1, "sval");
-    BOOST_CHECK_EQUAL(r.withDefaultValue.i1, 99);
-    BOOST_CHECK_CLOSE(r.withDefaultValue.d1, 5.67, 1e-10);
+    REQUIRE(r.withDefaultValue.s1 == "sval");
+    REQUIRE(r.withDefaultValue.i1 == 99);
+    REQUIRE(std::abs(r.withDefaultValue.d1 - 5.67) < 1e-10);
 }
 
-void testEncoding() {
+TEST_CASE("Code generator tests: testEncoding", "[testEncoding]") {
     ValidSchema s;
     ifstream ifs("jsonschemas/bigrecord");
     compileJsonSchema(ifs, s);
@@ -149,7 +147,7 @@ void testEncoding() {
     checkRecord(t2, t1);
 }
 
-void testResolution() {
+TEST_CASE("Code generator tests: testResolution", "[testResolution]") {
     ValidSchema s_w;
     ifstream ifs_w("jsonschemas/bigrecord");
     compileJsonSchema(ifs_w, s_w);
@@ -184,7 +182,7 @@ void testResolution() {
 
 }
 
-void testNamespace() {
+TEST_CASE("Code generator tests: testNamespace", "[testNamespace]") {
     ValidSchema s;
     ifstream ifs("jsonschemas/tweet");
     // basic compilation should work
@@ -248,14 +246,8 @@ void testEncoding2() {
     check(t2, t1);
 }
 
-boost::unit_test::test_suite*
-init_unit_test_suite(int argc, char* argv[]) {
-    boost::unit_test::test_suite* ts = BOOST_TEST_SUITE("Code generator tests");
-    ts->add(BOOST_TEST_CASE(testEncoding));
-    ts->add(BOOST_TEST_CASE(testResolution));
-    ts->add(BOOST_TEST_CASE(testEncoding2<uau::r1>));
-    ts->add(BOOST_TEST_CASE(testEncoding2<umu::r1>));
-    ts->add(BOOST_TEST_CASE(testNamespace));
-    return ts;
+TEST_CASE("Code generator tests: testEncoding2", "[testEncoding2]") {
+    testEncoding2<uau::r1>();
+    testEncoding2<umu::r1>();
 }
 
