@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 #include <catch.hpp>
+#include <sstream>
+#include <string>
 #include "Compiler.hh"
 #include "ValidSchema.hh"
 
@@ -182,17 +184,14 @@ namespace avro {
         };
 
         static void testBasic(const char* schema) {
-            BOOST_TEST_CHECKPOINT(schema);
             compileJsonSchemaFromString(schema);
         }
 
         static void testBasic_fail(const char* schema) {
-            BOOST_TEST_CHECKPOINT(schema);
-            BOOST_CHECK_THROW(compileJsonSchemaFromString(schema), Exception);
+            REQUIRE_THROWS_AS(compileJsonSchemaFromString(schema), Exception);
         }
 
         static void testCompile(const char* schema) {
-            BOOST_TEST_CHECKPOINT(schema);
             compileJsonSchemaFromString(std::string(schema));
         }
 
@@ -200,32 +199,20 @@ namespace avro {
         // used to construct it, apart from whitespace changes.
 
         static void testRoundTrip(const char* schema) {
-            BOOST_TEST_CHECKPOINT(schema);
             avro::ValidSchema compiledSchema = compileJsonSchemaFromString(std::string(schema));
             std::ostringstream os;
             compiledSchema.toJson(os);
             std::string result = os.str();
             result.erase(std::remove_if(result.begin(), result.end(), ::isspace), result.end()); // Remove whitespace
-            BOOST_CHECK(result == std::string(schema));
+            REQUIRE(result == std::string(schema));
         }
 
     }
 }
 
-#define ENDOF(x)  (x + sizeof(x) / sizeof(x[0]))
-
-#define ADD_PARAM_TEST(ts, func, data) \
-    ts->add(BOOST_PARAM_TEST_CASE(&func, data, ENDOF(data)))
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int argc, char* argv[]) {
-    using namespace boost::unit_test;
-
-    test_suite* ts = BOOST_TEST_SUITE("Avro C++ unit tests for schemas");
-    ADD_PARAM_TEST(ts, avro::schema::testBasic, avro::schema::basicSchemas);
-    ADD_PARAM_TEST(ts, avro::schema::testBasic_fail,
-      avro::schema::basicSchemaErrors);
-    ADD_PARAM_TEST(ts, avro::schema::testCompile, avro::schema::basicSchemas);
-    ADD_PARAM_TEST(ts, avro::schema::testRoundTrip, avro::schema::roundTripSchemas);
-    return ts;
+TEST_CASE("Avro C++ unit tests for schemas", "[testSchema]") {
+    for (auto& item : avro::schema::basicSchemas) avro::schema::testBasic(item);
+    for (auto& item : avro::schema::basicSchemaErrors) avro::schema::testBasic_fail(item);
+    for (auto& item : avro::schema::basicSchemas) avro::schema::testCompile(item);
+    for (auto& item : avro::schema::roundTripSchemas) avro::schema::testRoundTrip(item);
 }

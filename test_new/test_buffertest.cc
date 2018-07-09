@@ -52,9 +52,9 @@ void printBuffer(const InputBuffer &buf) {
     cout << is.rdbuf() << endl;
 }
 
-void TestReserve() {
-    BOOST_TEST_MESSAGE("TestReserve");
-    {
+TEST_CASE("Buffers: TestReserve", "[TestReserve]") {
+
+    SECTION("Section 1") {
         OutputBuffer ob;
         BOOST_CHECK_EQUAL(ob.size(), 0U);
         BOOST_CHECK_EQUAL(ob.freeSpace(), 0U);
@@ -62,7 +62,7 @@ void TestReserve() {
         BOOST_CHECK_EQUAL(ob.numDataChunks(), 0);
     }
 
-    {
+    SECTION("Section 2") {
         size_t reserveSize = kMinBlockSize / 2;
 
         OutputBuffer ob(reserveSize);
@@ -97,48 +97,47 @@ void addDataToBuffer(OutputBuffer &buf, size_t size) {
     buf.writeTo(data.c_str(), data.size());
 }
 
-void TestGrow() {
-    BOOST_TEST_MESSAGE("TestGrow");
-    {
-        OutputBuffer ob;
+TEST_CASE("Buffers: TestGrow", "[TestGrow]") {
 
-        // add exactly one block
-        addDataToBuffer(ob, kDefaultBlockSize);
+    OutputBuffer ob;
 
-        BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), 0U);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 0);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 1);
+    // add exactly one block
+    addDataToBuffer(ob, kDefaultBlockSize);
 
-        // add another block, half full
-        addDataToBuffer(ob, kDefaultBlockSize / 2);
+    BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize);
+    BOOST_CHECK_EQUAL(ob.freeSpace(), 0U);
+    BOOST_CHECK_EQUAL(ob.numChunks(), 0);
+    BOOST_CHECK_EQUAL(ob.numDataChunks(), 1);
 
-        BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize + kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
+    // add another block, half full
+    addDataToBuffer(ob, kDefaultBlockSize / 2);
 
-        // reserve more capacity
-        size_t reserveSize = ob.freeSpace() + 8192;
-        ob.reserve(reserveSize);
+    BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize + kDefaultBlockSize / 2);
+    BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
+    BOOST_CHECK_EQUAL(ob.numChunks(), 1);
+    BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
 
-        BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize + kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), reserveSize);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 2);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
+    // reserve more capacity
+    size_t reserveSize = ob.freeSpace() + 8192;
+    ob.reserve(reserveSize);
 
-        // fill beyond capacity
-        addDataToBuffer(ob, reserveSize + 1);
-        BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize + kDefaultBlockSize / 2 + reserveSize + 1);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize - 1);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 4);
-    }
+    BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize + kDefaultBlockSize / 2);
+    BOOST_CHECK_EQUAL(ob.freeSpace(), reserveSize);
+    BOOST_CHECK_EQUAL(ob.numChunks(), 2);
+    BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
+
+    // fill beyond capacity
+    addDataToBuffer(ob, reserveSize + 1);
+    BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize + kDefaultBlockSize / 2 + reserveSize + 1);
+    BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize - 1);
+    BOOST_CHECK_EQUAL(ob.numChunks(), 1);
+    BOOST_CHECK_EQUAL(ob.numDataChunks(), 4);
+
 }
 
-void TestDiscard() {
-    BOOST_TEST_MESSAGE("TestDiscard");
-    {
+TEST_CASE("Buffers: TestDiscard", "[TestDiscard]") {
+
+    SECTION("Section 1") {
         OutputBuffer ob;
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
         addDataToBuffer(ob, dataSize);
@@ -156,7 +155,7 @@ void TestDiscard() {
         BOOST_CHECK_EQUAL(ob.numDataChunks(), 0);
     }
 
-    {
+    SECTION("Section 2") {
         // discard no bytes
         OutputBuffer ob;
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
@@ -175,7 +174,7 @@ void TestDiscard() {
         BOOST_CHECK_EQUAL(ob.numDataChunks(), 3);
     }
 
-    {
+    SECTION("Section 3") {
         // discard exactly one block
         OutputBuffer ob;
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
@@ -194,7 +193,7 @@ void TestDiscard() {
         BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
     }
 
-    {
+    SECTION("Section 4") {
         OutputBuffer ob;
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
         addDataToBuffer(ob, dataSize);
@@ -240,28 +239,27 @@ void TestDiscard() {
     }
 }
 
-void TestConvertToInput() {
-    BOOST_TEST_MESSAGE("TestConvertToInput");
-    {
-        OutputBuffer ob;
-        size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
-        addDataToBuffer(ob, dataSize);
+TEST_CASE("Buffers: TestConvertToInput", "[TestConvertToInput]") {
 
-        InputBuffer ib(ob);
+    OutputBuffer ob;
+    size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
+    addDataToBuffer(ob, dataSize);
 
-        BOOST_CHECK_EQUAL(ib.size(), dataSize);
-        BOOST_CHECK_EQUAL(ib.numChunks(), 3);
+    InputBuffer ib(ob);
 
-        BOOST_CHECK_EQUAL(ob.size(), dataSize);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 3);
-    }
+    BOOST_CHECK_EQUAL(ib.size(), dataSize);
+    BOOST_CHECK_EQUAL(ib.numChunks(), 3);
+
+    BOOST_CHECK_EQUAL(ob.size(), dataSize);
+    BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
+    BOOST_CHECK_EQUAL(ob.numChunks(), 1);
+    BOOST_CHECK_EQUAL(ob.numDataChunks(), 3);
+
 }
 
-void TestExtractToInput() {
-    BOOST_TEST_MESSAGE("TestExtractToInput");
-    {
+TEST_CASE("Buffers: TestExtractToInput", "[TestExtractToInput]") {
+
+    SECTION("Section 1") {
         OutputBuffer ob;
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
         addDataToBuffer(ob, dataSize);
@@ -277,7 +275,7 @@ void TestExtractToInput() {
         BOOST_CHECK_EQUAL(ob.numDataChunks(), 0);
     }
 
-    {
+    SECTION("Section 2") {
         // extract no bytes
         OutputBuffer ob;
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
@@ -294,7 +292,7 @@ void TestExtractToInput() {
         BOOST_CHECK_EQUAL(ob.numDataChunks(), 3);
     }
 
-    {
+    SECTION("Section 3") {
         // extract exactly one block
         OutputBuffer ob;
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
@@ -311,7 +309,7 @@ void TestExtractToInput() {
         BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
     }
 
-    {
+    SECTION("Section 4") {
         OutputBuffer ob;
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
         addDataToBuffer(ob, dataSize);
@@ -356,50 +354,47 @@ void TestExtractToInput() {
     }
 }
 
-void TestAppend() {
-    BOOST_TEST_MESSAGE("TestAppend");
-    {
-        OutputBuffer ob;
-        size_t dataSize = kDefaultBlockSize + kDefaultBlockSize / 2;
-        addDataToBuffer(ob, dataSize);
+TEST_CASE("Buffers: TestAppend", "[TestAppend]") {
 
-        OutputBuffer a;
-        a.append(ob);
+    OutputBuffer ob;
+    size_t dataSize = kDefaultBlockSize + kDefaultBlockSize / 2;
+    addDataToBuffer(ob, dataSize);
 
-        BOOST_CHECK_EQUAL(a.size(), dataSize);
-        BOOST_CHECK_EQUAL(a.freeSpace(), 0U);
-        BOOST_CHECK_EQUAL(a.numChunks(), 0);
-        BOOST_CHECK_EQUAL(a.numDataChunks(), 2);
+    OutputBuffer a;
+    a.append(ob);
 
-        // reserve on a, then append from an input buffer
-        a.reserve(7000);
+    BOOST_CHECK_EQUAL(a.size(), dataSize);
+    BOOST_CHECK_EQUAL(a.freeSpace(), 0U);
+    BOOST_CHECK_EQUAL(a.numChunks(), 0);
+    BOOST_CHECK_EQUAL(a.numDataChunks(), 2);
 
-        InputBuffer ib(ob);
-        a.append(ib);
+    // reserve on a, then append from an input buffer
+    a.reserve(7000);
 
-        BOOST_CHECK_EQUAL(a.size(), dataSize * 2);
-        BOOST_CHECK_EQUAL(a.freeSpace(), 7000U);
-        BOOST_CHECK_EQUAL(a.numChunks(), 1);
-        BOOST_CHECK_EQUAL(a.numDataChunks(), 4);
-    }
+    InputBuffer ib(ob);
+    a.append(ib);
+
+    BOOST_CHECK_EQUAL(a.size(), dataSize * 2);
+    BOOST_CHECK_EQUAL(a.freeSpace(), 7000U);
+    BOOST_CHECK_EQUAL(a.numChunks(), 1);
+    BOOST_CHECK_EQUAL(a.numDataChunks(), 4);
+
 }
 
-void TestBufferStream() {
-    BOOST_TEST_MESSAGE("TestBufferStream");
+TEST_CASE("Buffers: TestBufferStream", "[TestBufferStream]") {
 
-    {
-        // write enough bytes to a buffer, to create at least 3 blocks
-        std::string junk = makeString(kDefaultBlockSize);
-        ostream os;
-        int i = 0;
-        for (; i < 3; ++i) {
-            os << junk;
-        }
-
-        const OutputBuffer &buf = os.getBuffer();
-        cout << "Buffer has " << buf.size() << " bytes\n";
-        BOOST_CHECK_EQUAL(buf.size(), junk.size() * i);
+    // write enough bytes to a buffer, to create at least 3 blocks
+    std::string junk = makeString(kDefaultBlockSize);
+    ostream os;
+    int i = 0;
+    for (; i < 3; ++i) {
+        os << junk;
     }
+
+    const OutputBuffer &buf = os.getBuffer();
+    cout << "Buffer has " << buf.size() << " bytes\n";
+    BOOST_CHECK_EQUAL(buf.size(), junk.size() * i);
+
 }
 
 template<typename T>
@@ -433,8 +428,8 @@ void TestEof() {
     BOOST_CHECK_EQUAL(is.eof(), true);
 }
 
-void TestBufferStreamEof() {
-    BOOST_TEST_MESSAGE("TestBufferStreamEof");
+TEST_CASE("Buffers: TestBufferStreamEof", "[TestBufferStreamEof]") {
+
 
     TestEof<int32_t>();
 
@@ -445,274 +440,261 @@ void TestBufferStreamEof() {
     TestEof<double>();
 }
 
-void TestSeekAndTell() {
-    BOOST_TEST_MESSAGE("TestSeekAndTell");
+TEST_CASE("Buffers: TestSeekAndTell", "[TestSeekAndTell]") {
 
-    {
-        std::string junk = makeString(kDefaultBlockSize / 2);
+    std::string junk = makeString(kDefaultBlockSize / 2);
 
-        ostream os;
+    ostream os;
 
-        // write enough bytes to a buffer, to create at least 3 blocks
-        int i = 0;
-        for (; i < 5; ++i) {
-            os << junk;
-        }
-
-        const OutputBuffer &buf = os.getBuffer();
-        cout << "Buffer has " << buf.size() << " bytes\n";
-
-        istream is(os.getBuffer());
-        BOOST_CHECK_EQUAL(is.getBuffer().size(), junk.size() * i);
-        is.seekg(2000);
-        BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (2000));
-        is.seekg(6000);
-        BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (6000));
-        is.seekg(is.getBuffer().size());
-        BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (is.getBuffer().size()));
-        is.seekg(is.getBuffer().size() + 1);
-        BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (-1));
-
+    // write enough bytes to a buffer, to create at least 3 blocks
+    int i = 0;
+    for (; i < 5; ++i) {
+        os << junk;
     }
+
+    const OutputBuffer &buf = os.getBuffer();
+    cout << "Buffer has " << buf.size() << " bytes\n";
+
+    istream is(os.getBuffer());
+    BOOST_CHECK_EQUAL(is.getBuffer().size(), junk.size() * i);
+    is.seekg(2000);
+    BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (2000));
+    is.seekg(6000);
+    BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (6000));
+    is.seekg(is.getBuffer().size());
+    BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (is.getBuffer().size()));
+    is.seekg(is.getBuffer().size() + 1);
+    BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (-1));
+
+
 }
 
-void TestReadSome() {
-    BOOST_TEST_MESSAGE("TestReadSome");
-    {
-        std::string junk = makeString(kDefaultBlockSize / 2);
+TEST_CASE("Buffers: TestReadSome", "[TestReadSome]") {
 
-        ostream os;
+    std::string junk = makeString(kDefaultBlockSize / 2);
 
-        // write enough bytes to a buffer, to create at least 3 blocks
-        int i = 0;
-        for (; i < 5; ++i) {
-            os << junk;
-        }
+    ostream os;
 
-        cout << "Buffer has " << os.getBuffer().size() << " bytes\n";
-
-        istream is(os.getBuffer());
-
-        char datain[5000];
-
-        while (is.rdbuf()->in_avail()) {
-            size_t bytesAvail = static_cast<size_t> (is.rdbuf()->in_avail());
-            cout << "Bytes avail = " << bytesAvail << endl;
-            size_t in = static_cast<size_t> (is.readsome(datain, sizeof (datain)));
-            cout << "Bytes read = " << in << endl;
-            BOOST_CHECK_EQUAL(bytesAvail, in);
-        }
+    // write enough bytes to a buffer, to create at least 3 blocks
+    int i = 0;
+    for (; i < 5; ++i) {
+        os << junk;
     }
-}
 
-void TestSeek() {
-    BOOST_TEST_MESSAGE("TestSeek");
-    {
-        const std::string str = "SampleMessage";
+    cout << "Buffer has " << os.getBuffer().size() << " bytes\n";
 
-        avro::OutputBuffer tmp1, tmp2, tmp3;
-        tmp1.writeTo(str.c_str(), 3); // Sam
-        tmp2.writeTo(str.c_str() + 3, 7); // pleMess
-        tmp3.writeTo(str.c_str() + 10, 3); // age
+    istream is(os.getBuffer());
 
-        tmp2.append(tmp3);
-        tmp1.append(tmp2);
+    char datain[5000];
 
-        BOOST_CHECK_EQUAL(tmp3.numDataChunks(), 1);
-        BOOST_CHECK_EQUAL(tmp2.numDataChunks(), 2);
-        BOOST_CHECK_EQUAL(tmp1.numDataChunks(), 3);
-
-        avro::InputBuffer buf(tmp1);
-
-        cout << "Starting string: " << str << '\n';
-        BOOST_CHECK_EQUAL(static_cast<std::string::size_type> (buf.size()), str.size());
-
-        avro::istream is(buf);
-
-        const std::string part1 = "Sample";
-        char buffer[16];
-        is.read(buffer, part1.size());
-        std::string sample1(buffer, part1.size());
-        cout << "After reading bytes: " << sample1 << '\n';
-        BOOST_CHECK_EQUAL(sample1, part1);
-
-        const std::string part2 = "Message";
-        is.read(buffer, part2.size());
-        std::string sample2(buffer, part2.size());
-        cout << "After reading remaining bytes: " << sample2 << '\n';
-        BOOST_CHECK_EQUAL(sample2, part2);
-
-        cout << "Seeking back " << '\n';
-        is.seekg(-static_cast<std::streamoff> (part2.size()), std::ios_base::cur);
-
-        std::streampos loc = is.tellg();
-        cout << "Saved loc = " << loc << '\n';
-        BOOST_CHECK_EQUAL(static_cast<std::string::size_type> (loc), (str.size() - part2.size()));
-
-        cout << "Reading remaining bytes: " << is.rdbuf() << '\n';
-        cout << "bytes avail = " << is.rdbuf()->in_avail() << '\n';
-        BOOST_CHECK_EQUAL(is.rdbuf()->in_avail(), 0);
-
-        cout << "Moving to saved loc = " << loc << '\n';
-        is.seekg(loc);
-        cout << "bytes avail = " << is.rdbuf()->in_avail() << '\n';
-
-        std::ostringstream oss;
-        oss << is.rdbuf();
-        cout << "After reading bytes: " << oss.str() << '\n';
-        BOOST_CHECK_EQUAL(oss.str(), part2);
-
-    }
-}
-
-void TestIterator() {
-    BOOST_TEST_MESSAGE("TestIterator");
-    {
-        OutputBuffer ob(2 * kMaxBlockSize + 10);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 3);
-        BOOST_CHECK_EQUAL(ob.size(), 0U);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), 2 * kMaxBlockSize + kMinBlockSize);
-
-        BOOST_CHECK_EQUAL(std::distance(ob.begin(), ob.end()), 3);
-
-        OutputBuffer::const_iterator iter = ob.begin();
-        BOOST_CHECK_EQUAL(iter->size(), kMaxBlockSize);
-        ++iter;
-        BOOST_CHECK_EQUAL(iter->size(), kMaxBlockSize);
-        ++iter;
-        BOOST_CHECK_EQUAL(iter->size(), kMinBlockSize);
-        ++iter;
-        BOOST_CHECK(iter == ob.end());
-
-        size_t toWrite = kMaxBlockSize + kMinBlockSize;
-        ob.wroteTo(toWrite);
-        BOOST_CHECK_EQUAL(ob.size(), toWrite);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kMaxBlockSize);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 2);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
-
-        InputBuffer ib = ob;
-        BOOST_CHECK_EQUAL(std::distance(ib.begin(), ib.end()), 2);
-
-        size_t acc = 0;
-        for (OutputBuffer::const_iterator iter = ob.begin();
-          iter != ob.end();
-          ++iter) {
-            acc += iter->size();
-        }
-        BOOST_CHECK_EQUAL(ob.freeSpace(), acc);
-
-        try {
-            ob.wroteTo(acc + 1);
-        } catch (std::exception &e) {
-            std::cout << "Intentionally triggered exception: " << e.what() << std::endl;
-        }
-    }
-}
-
-void TestAsioBuffer() {
-    cout << "Skipping asio test\n";
-}
-
-void TestSplit() {
-    BOOST_TEST_MESSAGE("TestSplit");
-    {
-        const std::string str = "This message is to be split";
-
-        avro::OutputBuffer buf;
-        buf.writeTo(str.c_str(), str.size());
-
-        char datain[12];
-        avro::istream is(buf);
+    while (is.rdbuf()->in_avail()) {
+        size_t bytesAvail = static_cast<size_t> (is.rdbuf()->in_avail());
+        cout << "Bytes avail = " << bytesAvail << endl;
         size_t in = static_cast<size_t> (is.readsome(datain, sizeof (datain)));
-        BOOST_CHECK_EQUAL(in, sizeof (datain));
-        BOOST_CHECK_EQUAL(static_cast<size_t> (is.tellg()), sizeof (datain));
-
-        OutputBuffer part2;
-        part2.append(is.getBuffer());
-        BOOST_CHECK_EQUAL(part2.size(), buf.size());
-        InputBuffer part1 = part2.extractData(static_cast<size_t> (is.tellg()));
-
-        BOOST_CHECK_EQUAL(part2.size(), str.size() - in);
-
-        printBuffer(part1);
-        printBuffer(part2);
+        cout << "Bytes read = " << in << endl;
+        BOOST_CHECK_EQUAL(bytesAvail, in);
     }
+
 }
 
-void TestSplitOnBorder() {
-    BOOST_TEST_MESSAGE("TestSplitOnBorder");
+TEST_CASE("Buffers: TestSeek", "[TestSeek]") {
+
+    const std::string str = "SampleMessage";
+
+    avro::OutputBuffer tmp1, tmp2, tmp3;
+    tmp1.writeTo(str.c_str(), 3); // Sam
+    tmp2.writeTo(str.c_str() + 3, 7); // pleMess
+    tmp3.writeTo(str.c_str() + 10, 3); // age
+
+    tmp2.append(tmp3);
+    tmp1.append(tmp2);
+
+    BOOST_CHECK_EQUAL(tmp3.numDataChunks(), 1);
+    BOOST_CHECK_EQUAL(tmp2.numDataChunks(), 2);
+    BOOST_CHECK_EQUAL(tmp1.numDataChunks(), 3);
+
+    avro::InputBuffer buf(tmp1);
+
+    cout << "Starting string: " << str << '\n';
+    BOOST_CHECK_EQUAL(static_cast<std::string::size_type> (buf.size()), str.size());
+
+    avro::istream is(buf);
+
+    const std::string part1 = "Sample";
+    char buffer[16];
+    is.read(buffer, part1.size());
+    std::string sample1(buffer, part1.size());
+    cout << "After reading bytes: " << sample1 << '\n';
+    BOOST_CHECK_EQUAL(sample1, part1);
+
+    const std::string part2 = "Message";
+    is.read(buffer, part2.size());
+    std::string sample2(buffer, part2.size());
+    cout << "After reading remaining bytes: " << sample2 << '\n';
+    BOOST_CHECK_EQUAL(sample2, part2);
+
+    cout << "Seeking back " << '\n';
+    is.seekg(-static_cast<std::streamoff> (part2.size()), std::ios_base::cur);
+
+    std::streampos loc = is.tellg();
+    cout << "Saved loc = " << loc << '\n';
+    BOOST_CHECK_EQUAL(static_cast<std::string::size_type> (loc), (str.size() - part2.size()));
+
+    cout << "Reading remaining bytes: " << is.rdbuf() << '\n';
+    cout << "bytes avail = " << is.rdbuf()->in_avail() << '\n';
+    BOOST_CHECK_EQUAL(is.rdbuf()->in_avail(), 0);
+
+    cout << "Moving to saved loc = " << loc << '\n';
+    is.seekg(loc);
+    cout << "bytes avail = " << is.rdbuf()->in_avail() << '\n';
+
+    std::ostringstream oss;
+    oss << is.rdbuf();
+    cout << "After reading bytes: " << oss.str() << '\n';
+    BOOST_CHECK_EQUAL(oss.str(), part2);
+
+
+}
+
+TEST_CASE("Buffers: TestIterator", "[TestIterator]") {
+
+    OutputBuffer ob(2 * kMaxBlockSize + 10);
+    BOOST_CHECK_EQUAL(ob.numChunks(), 3);
+    BOOST_CHECK_EQUAL(ob.size(), 0U);
+    BOOST_CHECK_EQUAL(ob.freeSpace(), 2 * kMaxBlockSize + kMinBlockSize);
+
+    BOOST_CHECK_EQUAL(std::distance(ob.begin(), ob.end()), 3);
+
+    OutputBuffer::const_iterator iter = ob.begin();
+    BOOST_CHECK_EQUAL(iter->size(), kMaxBlockSize);
+    ++iter;
+    BOOST_CHECK_EQUAL(iter->size(), kMaxBlockSize);
+    ++iter;
+    BOOST_CHECK_EQUAL(iter->size(), kMinBlockSize);
+    ++iter;
+    BOOST_CHECK(iter == ob.end());
+
+    size_t toWrite = kMaxBlockSize + kMinBlockSize;
+    ob.wroteTo(toWrite);
+    BOOST_CHECK_EQUAL(ob.size(), toWrite);
+    BOOST_CHECK_EQUAL(ob.freeSpace(), kMaxBlockSize);
+    BOOST_CHECK_EQUAL(ob.numChunks(), 2);
+    BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
+
+    InputBuffer ib = ob;
+    BOOST_CHECK_EQUAL(std::distance(ib.begin(), ib.end()), 2);
+
+    size_t acc = 0;
+    for (OutputBuffer::const_iterator iter = ob.begin();
+      iter != ob.end();
+      ++iter) {
+        acc += iter->size();
+    }
+    BOOST_CHECK_EQUAL(ob.freeSpace(), acc);
+
+    try {
+        ob.wroteTo(acc + 1);
+    } catch (std::exception &e) {
+        std::cout << "Intentionally triggered exception: " << e.what() << std::endl;
+    }
+
+}
+
+TEST_CASE("Buffers: TestSplit", "[TestSplit]") {
+
+    const std::string str = "This message is to be split";
+
+    avro::OutputBuffer buf;
+    buf.writeTo(str.c_str(), str.size());
+
+    char datain[12];
+    avro::istream is(buf);
+    size_t in = static_cast<size_t> (is.readsome(datain, sizeof (datain)));
+    BOOST_CHECK_EQUAL(in, sizeof (datain));
+    BOOST_CHECK_EQUAL(static_cast<size_t> (is.tellg()), sizeof (datain));
+
+    OutputBuffer part2;
+    part2.append(is.getBuffer());
+    BOOST_CHECK_EQUAL(part2.size(), buf.size());
+    InputBuffer part1 = part2.extractData(static_cast<size_t> (is.tellg()));
+
+    BOOST_CHECK_EQUAL(part2.size(), str.size() - in);
+
+    printBuffer(part1);
+    printBuffer(part2);
+
+}
+
+TEST_CASE("Buffers: TestSplitOnBorder", "[TestSplitOnBorder]") {
+
+    const std::string part1 = "This message";
+    const std::string part2 = " is to be split";
+
+    avro::OutputBuffer buf;
+    buf.writeTo(part1.c_str(), part1.size());
+    size_t firstChunkSize = buf.size();
+
     {
-
-        const std::string part1 = "This message";
-        const std::string part2 = " is to be split";
-
-        avro::OutputBuffer buf;
-        buf.writeTo(part1.c_str(), part1.size());
-        size_t firstChunkSize = buf.size();
-
-        {
-            avro::OutputBuffer tmp;
-            tmp.writeTo(part2.c_str(), part2.size());
-            buf.append(tmp);
-            printBuffer(InputBuffer(buf));
-        }
-
-        BOOST_CHECK_EQUAL(buf.numDataChunks(), 2);
-        size_t bufsize = buf.size();
-
-        boost::scoped_array<char> datain(new char[firstChunkSize]);
-        avro::istream is(buf);
-        size_t in = static_cast<size_t> (is.readsome(&datain[0], firstChunkSize));
-        BOOST_CHECK_EQUAL(in, firstChunkSize);
-
-        OutputBuffer newBuf;
-        newBuf.append(is.getBuffer());
-        newBuf.discardData(static_cast<size_t> (is.tellg()));
-        BOOST_CHECK_EQUAL(newBuf.numDataChunks(), 1);
-
-        BOOST_CHECK_EQUAL(newBuf.size(), bufsize - in);
-
-        cout << is.rdbuf() << endl;
-        printBuffer(newBuf);
+        avro::OutputBuffer tmp;
+        tmp.writeTo(part2.c_str(), part2.size());
+        buf.append(tmp);
+        printBuffer(InputBuffer(buf));
     }
+
+    BOOST_CHECK_EQUAL(buf.numDataChunks(), 2);
+    size_t bufsize = buf.size();
+
+    boost::scoped_array<char> datain(new char[firstChunkSize]);
+    avro::istream is(buf);
+    size_t in = static_cast<size_t> (is.readsome(&datain[0], firstChunkSize));
+    BOOST_CHECK_EQUAL(in, firstChunkSize);
+
+    OutputBuffer newBuf;
+    newBuf.append(is.getBuffer());
+    newBuf.discardData(static_cast<size_t> (is.tellg()));
+    BOOST_CHECK_EQUAL(newBuf.numDataChunks(), 1);
+
+    BOOST_CHECK_EQUAL(newBuf.size(), bufsize - in);
+
+    cout << is.rdbuf() << endl;
+    printBuffer(newBuf);
+
 }
 
-void TestSplitTwice() {
-    BOOST_TEST_MESSAGE("TestSplitTwice");
-    {
-        const std::string msg1 = makeString(30);
+TEST_CASE("Buffers: TestSplitTwice", "[TestSplitTwice]") {
 
-        avro::OutputBuffer buf1;
-        buf1.writeTo(msg1.c_str(), msg1.size());
+    const std::string msg1 = makeString(30);
 
-        BOOST_CHECK_EQUAL(buf1.size(), msg1.size());
+    avro::OutputBuffer buf1;
+    buf1.writeTo(msg1.c_str(), msg1.size());
 
-        printBuffer(buf1);
+    BOOST_CHECK_EQUAL(buf1.size(), msg1.size());
 
-        avro::istream is(buf1);
-        char buffer[6];
-        is.readsome(buffer, 5);
-        buffer[5] = 0;
-        std::cout << "buffer =" << buffer << std::endl;
+    printBuffer(buf1);
 
-        buf1.discardData(static_cast<size_t> (is.tellg()));
-        printBuffer(buf1);
+    avro::istream is(buf1);
+    char buffer[6];
+    is.readsome(buffer, 5);
+    buffer[5] = 0;
+    std::cout << "buffer =" << buffer << std::endl;
 
-        avro::istream is2(buf1);
-        is2.seekg(15);
+    buf1.discardData(static_cast<size_t> (is.tellg()));
+    printBuffer(buf1);
 
-        buf1.discardData(static_cast<size_t> (is2.tellg()));
-        printBuffer(buf1);
-    }
+    avro::istream is2(buf1);
+    is2.seekg(15);
+
+    buf1.discardData(static_cast<size_t> (is2.tellg()));
+    printBuffer(buf1);
+
 }
 
-void TestCopy() {
-    BOOST_TEST_MESSAGE("TestCopy");
+TEST_CASE("Buffers: TestCopy", "[TestCopy]") {
 
     const std::string msg = makeString(30);
     // Test1, small data, small buffer
-    {
+
+    SECTION("Section 1") {
         std::cout << "Test1\n";
         // put a small amount of data in the buffer
         avro::OutputBuffer wb;
@@ -749,7 +731,8 @@ void TestCopy() {
     }
 
     // Test2, small data, large buffer
-    {
+
+    SECTION("Section 2") {
         std::cout << "Test2\n";
         // put a small amount of data in the buffer
         const OutputBuffer::size_type bufsize = 3 * kMaxBlockSize;
@@ -795,7 +778,8 @@ void TestCopy() {
     }
 
     // Test3 Border case, buffer is exactly full
-    {
+
+    SECTION("Section 3") {
         std::cout << "Test3\n";
         const OutputBuffer::size_type bufsize = 2 * kDefaultBlockSize;
         avro::OutputBuffer wb;
@@ -826,7 +810,8 @@ void TestCopy() {
     }
 
     // Test4, no data 
-    {
+
+    SECTION("Section 4") {
         const OutputBuffer::size_type bufsize = 2 * kMaxBlockSize;
         std::cout << "Test4\n";
         avro::OutputBuffer wb(bufsize);
@@ -861,35 +846,34 @@ void TestCopy() {
 
 // this is reproducing a sequence of steps that caused a crash
 
-void TestBug() {
-    BOOST_TEST_MESSAGE("TestBug");
+TEST_CASE("Buffers: TestBug", "[TestBug]") {
+
+    OutputBuffer rxBuf;
+    OutputBuffer buf;
+    rxBuf.reserve(64 * 1024);
+
+    rxBuf.wroteTo(2896);
+
     {
-        OutputBuffer rxBuf;
-        OutputBuffer buf;
-        rxBuf.reserve(64 * 1024);
-
-        rxBuf.wroteTo(2896);
-
-        {
-            avro::InputBuffer ib(rxBuf.extractData());
-            buf.append(ib);
-        }
-
-        buf.discardData(61);
-
-        rxBuf.reserve(64 * 1024);
-        rxBuf.wroteTo(381);
-
-        {
-            avro::InputBuffer ib(rxBuf.extractData());
-            buf.append(ib);
-        }
-
-        buf.discardData(3216);
-
-
-        rxBuf.reserve(64 * 1024);
+        avro::InputBuffer ib(rxBuf.extractData());
+        buf.append(ib);
     }
+
+    buf.discardData(61);
+
+    rxBuf.reserve(64 * 1024);
+    rxBuf.wroteTo(381);
+
+    {
+        avro::InputBuffer ib(rxBuf.extractData());
+        buf.append(ib);
+    }
+
+    buf.discardData(3216);
+
+
+    rxBuf.reserve(64 * 1024);
+
 }
 
 bool safeToDelete = false;
@@ -899,8 +883,7 @@ void deleteForeign(const std::string &val) {
     BOOST_CHECK(safeToDelete);
 }
 
-void TestForeign() {
-    BOOST_TEST_MESSAGE("TestForeign");
+TEST_CASE("Buffers: TestForeign", "[TestForeign]") {
     {
         std::string hello = "hello ";
         std::string there = "there ";
@@ -925,87 +908,43 @@ void TestForeign() {
     safeToDelete = false;
 }
 
-void TestForeignDiscard() {
-    BOOST_TEST_MESSAGE("TestForeign");
-    {
-        std::string hello = "hello ";
-        std::string again = "again ";
-        std::string there = "there ";
-        std::string world = "world ";
+TEST_CASE("Buffers: TestForeign", "[TestForeign]") {
+    std::string hello = "hello ";
+    std::string again = "again ";
+    std::string there = "there ";
+    std::string world = "world ";
 
-        OutputBuffer buf;
-        buf.writeTo(hello.c_str(), hello.size());
-        buf.appendForeignData(again.c_str(), again.size(), boost::bind(&deleteForeign, again));
-        buf.appendForeignData(there.c_str(), there.size(), boost::bind(&deleteForeign, there));
-        buf.writeTo(world.c_str(), world.size());
+    OutputBuffer buf;
+    buf.writeTo(hello.c_str(), hello.size());
+    buf.appendForeignData(again.c_str(), again.size(), boost::bind(&deleteForeign, again));
+    buf.appendForeignData(there.c_str(), there.size(), boost::bind(&deleteForeign, there));
+    buf.writeTo(world.c_str(), world.size());
 
-        printBuffer(buf);
-        BOOST_CHECK_EQUAL(buf.size(), 24U);
+    printBuffer(buf);
+    BOOST_CHECK_EQUAL(buf.size(), 24U);
 
-        // discard some data including half the foreign buffer
-        buf.discardData(9);
-        printBuffer(buf);
-        BOOST_CHECK_EQUAL(buf.size(), 15U);
+    // discard some data including half the foreign buffer
+    buf.discardData(9);
+    printBuffer(buf);
+    BOOST_CHECK_EQUAL(buf.size(), 15U);
 
-        // discard some more data, which will lop off the first foreign buffer
-        safeToDelete = true;
-        buf.discardData(6);
-        safeToDelete = false;
-        printBuffer(buf);
-        BOOST_CHECK_EQUAL(buf.size(), 9U);
+    // discard some more data, which will lop off the first foreign buffer
+    safeToDelete = true;
+    buf.discardData(6);
+    safeToDelete = false;
+    printBuffer(buf);
+    BOOST_CHECK_EQUAL(buf.size(), 9U);
 
-        // discard some more data, which will lop off the second foreign buffer
-        safeToDelete = true;
-        buf.discardData(3);
-        safeToDelete = false;
-        printBuffer(buf);
-        BOOST_CHECK_EQUAL(buf.size(), 6U);
-    }
+    // discard some more data, which will lop off the second foreign buffer
+    safeToDelete = true;
+    buf.discardData(3);
+    safeToDelete = false;
+    printBuffer(buf);
+    BOOST_CHECK_EQUAL(buf.size(), 6U);
 }
 
-void TestPrinter() {
-    BOOST_TEST_MESSAGE("TestPrinter");
-    {
-        OutputBuffer ob;
-        addDataToBuffer(ob, 128);
-
-        std::cout << ob << std::endl;
-    }
+TEST_CASE("Buffers: TestPrinter", "[TestPrinter]") {
+    OutputBuffer ob;
+    addDataToBuffer(ob, 128);
+    std::cout << ob << std::endl;
 }
-
-struct BufferTestSuite : public boost::unit_test::test_suite {
-
-    BufferTestSuite() :
-    boost::unit_test::test_suite("BufferTestSuite") {
-        add(BOOST_TEST_CASE(TestReserve));
-        add(BOOST_TEST_CASE(TestGrow));
-        add(BOOST_TEST_CASE(TestDiscard));
-        add(BOOST_TEST_CASE(TestConvertToInput));
-        add(BOOST_TEST_CASE(TestExtractToInput));
-        add(BOOST_TEST_CASE(TestAppend));
-        add(BOOST_TEST_CASE(TestBufferStream));
-        add(BOOST_TEST_CASE(TestBufferStreamEof));
-        add(BOOST_TEST_CASE(TestSeekAndTell));
-        add(BOOST_TEST_CASE(TestReadSome));
-        add(BOOST_TEST_CASE(TestSeek));
-        add(BOOST_TEST_CASE(TestIterator));
-        add(BOOST_TEST_CASE(TestAsioBuffer));
-        add(BOOST_TEST_CASE(TestSplit));
-        add(BOOST_TEST_CASE(TestSplitOnBorder));
-        add(BOOST_TEST_CASE(TestSplitTwice));
-        add(BOOST_TEST_CASE(TestCopy));
-        add(BOOST_TEST_CASE(TestBug));
-        add(BOOST_TEST_CASE(TestForeign));
-        add(BOOST_TEST_CASE(TestForeignDiscard));
-        add(BOOST_TEST_CASE(TestPrinter));
-    }
-};
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char* []) {
-    boost::unit_test::test_suite * test(BOOST_TEST_SUITE("Buffer Unit Tests"));
-    test->add(new BufferTestSuite());
-
-    return test;
-}
-

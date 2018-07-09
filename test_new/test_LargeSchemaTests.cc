@@ -21,20 +21,11 @@
 #include "ValidSchema.hh"
 #include "Decoder.hh"
 
-void testLargeSchema() {
+TEST_CASE("Avro C++ unit tests for schemas", "[testLargeSchema]") {
     std::ifstream in("jsonschemas/large_schema.avsc");
     avro::ValidSchema vs;
     avro::compileJsonSchema(in, vs);
     avro::DecoderPtr d = avro::binaryDecoder();
     avro::DecoderPtr vd = avro::validatingDecoder(vs, d);
     avro::DecoderPtr rd = avro::resolvingDecoder(vs, vs, d);
-}
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int argc, char* argv[]) {
-    using namespace boost::unit_test;
-
-    test_suite* ts = BOOST_TEST_SUITE("Avro C++ unit tests for schemas");
-    ts->add(BOOST_TEST_CASE(&testLargeSchema));
-    return ts;
 }

@@ -107,107 +107,87 @@ namespace avro {
             return actual;
         }
 
-        void testBool() {
+        TEST_CASE("Specific tests: testBool", "[testBool]") {
             bool b = encodeAndDecode(true);
-            BOOST_CHECK_EQUAL(b, true);
+            REQUIRE(b == true);
         }
 
-        void testInt() {
+        TEST_CASE("Specific tests: testInt", "[testInt]") {
             int32_t n = 10;
             int32_t b = encodeAndDecode(n);
-            BOOST_CHECK_EQUAL(b, n);
+            REQUIRE(b == n);
         }
 
-        void testLong() {
+        TEST_CASE("Specific tests: testLong", "[testLong]") {
             int64_t n = -109;
             int64_t b = encodeAndDecode(n);
-            BOOST_CHECK_EQUAL(b, n);
+            REQUIRE(b == n);
         }
 
-        void testFloat() {
+        TEST_CASE("Specific tests: testFloat", "[testFloat]") {
             float n = 10.19f;
             float b = encodeAndDecode(n);
-            BOOST_CHECK_CLOSE(b, n, 0.00001f);
+            REQUIRE(std::abs(b - n) < 0.00001f);
         }
 
-        void testDouble() {
+        TEST_CASE("Specific tests: testDouble", "[testDouble]") {
             double n = 10.00001;
             double b = encodeAndDecode(n);
-            BOOST_CHECK_CLOSE(b, n, 0.00000001);
+            REQUIRE(std::abs(b - n) < 0.00000001);
         }
 
-        void testString() {
+        TEST_CASE("Specific tests: testString", "[testString]") {
             string n = "abc";
             string b = encodeAndDecode(n);
-            BOOST_CHECK_EQUAL(b, n);
+            REQUIRE(b == n);
         }
 
-        void testBytes() {
+        TEST_CASE("Specific tests: testBytes", "[testBytes]") {
             uint8_t values[] = {1, 7, 23, 47, 83};
             vector<uint8_t> n(values, values + 5);
             vector<uint8_t> b = encodeAndDecode(n);
-            BOOST_CHECK_EQUAL_COLLECTIONS(b.begin(), b.end(), n.begin(), n.end());
+            REQUIRE(b == n);
         }
 
-        void testFixed() {
+        TEST_CASE("Specific tests: testFixed", "[testFixed]") {
             array<uint8_t, 5> n = {
                 { 1, 7, 23, 47, 83}
             };
             array<uint8_t, 5> b = encodeAndDecode(n);
-            BOOST_CHECK_EQUAL_COLLECTIONS(b.begin(), b.end(), n.begin(), n.end());
+            REQUIRE(b == n);
         }
 
-        void testArray() {
+        TEST_CASE("Specific tests: testArray", "[testArray]") {
             int32_t values[] = {101, 709, 409, 34};
             vector<int32_t> n(values, values + 4);
             vector<int32_t> b = encodeAndDecode(n);
 
-            BOOST_CHECK_EQUAL_COLLECTIONS(b.begin(), b.end(), n.begin(), n.end());
+            REQUIRE(b == n);
         }
 
-        void testBoolArray() {
+        TEST_CASE("Specific tests: testBoolArray", "[testBoolArray]") {
             bool values[] = {true, false, true, false};
             vector<bool> n(values, values + 4);
             vector<bool> b = encodeAndDecode(n);
 
-            BOOST_CHECK_EQUAL_COLLECTIONS(b.begin(), b.end(), n.begin(), n.end());
+            REQUIRE(b == n);
         }
 
-        void testMap() {
+        TEST_CASE("Specific tests: testMap", "[testMap]") {
             map<string, int32_t> n;
             n["a"] = 1;
             n["b"] = 101;
 
             map<string, int32_t> b = encodeAndDecode(n);
 
-            BOOST_CHECK(b == n);
+            REQUIRE(b == n);
         }
 
-        void testCustom() {
+        TEST_CASE("Specific tests: testCustom", "[testCustom]") {
             C n(10, 1023);
             C b = encodeAndDecode(n);
-            BOOST_CHECK(b == n);
+            REQUIRE(b == n);
         }
 
     }
-}
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int argc, char* argv[]) {
-    using namespace boost::unit_test;
-
-    test_suite* ts = BOOST_TEST_SUITE("Specific tests");
-    ts->add(BOOST_TEST_CASE(avro::specific::testBool));
-    ts->add(BOOST_TEST_CASE(avro::specific::testInt));
-    ts->add(BOOST_TEST_CASE(avro::specific::testLong));
-    ts->add(BOOST_TEST_CASE(avro::specific::testFloat));
-    ts->add(BOOST_TEST_CASE(avro::specific::testDouble));
-    ts->add(BOOST_TEST_CASE(avro::specific::testString));
-    ts->add(BOOST_TEST_CASE(avro::specific::testBytes));
-    ts->add(BOOST_TEST_CASE(avro::specific::testFixed));
-    ts->add(BOOST_TEST_CASE(avro::specific::testArray));
-    ts->add(BOOST_TEST_CASE(avro::specific::testBoolArray));
-    ts->add(BOOST_TEST_CASE(avro::specific::testMap));
-    ts->add(BOOST_TEST_CASE(avro::specific::testCustom));
-    return ts;
 }

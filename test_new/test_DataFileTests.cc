@@ -22,6 +22,7 @@
 #include "Generic.hh"
 #include "Stream.hh"
 #include "Compiler.hh"
+#include <boost/filesystem.hpp>
 
 using std::auto_ptr;
 using std::string;
@@ -33,8 +34,6 @@ using std::ostringstream;
 
 using boost::array;
 using boost::shared_ptr;
-using boost::unit_test::test_suite;
-
 
 using avro::ValidSchema;
 using avro::GenericDatum;
@@ -170,7 +169,7 @@ public:
     typedef pair<ValidSchema, GenericDatum> Pair;
 
     void testCleanup() {
-        BOOST_CHECK(boost::filesystem::remove(filename));
+        REQUIRE(boost::filesystem::remove(filename));
     }
 
     void testWrite() {
@@ -239,7 +238,7 @@ public:
             df.close();
         }
         uintmax_t new_size = boost::filesystem::file_size(filename);
-        BOOST_CHECK(size > new_size);
+        REQUIRE(size > new_size);
     }
 
     void testReadFull() {
@@ -249,13 +248,13 @@ public:
         int64_t re = 3;
         int64_t im = 5;
         while (df.read(ci)) {
-            BOOST_CHECK_EQUAL(ci.re, re);
-            BOOST_CHECK_EQUAL(ci.im, im);
+            REQUIRE(ci.re == re);
+            REQUIRE(ci.im == im);
             re *= im;
             im += 3;
             ++i;
         }
-        BOOST_CHECK_EQUAL(i, count);
+        REQUIRE(i == count);
     }
 
     void testReadProjection() {
@@ -265,12 +264,12 @@ public:
         int64_t re = 3;
         int64_t im = 5;
         while (df.read(integer)) {
-            BOOST_CHECK_EQUAL(integer.re, re);
+            REQUIRE(integer.re == re);
             re *= im;
             im += 3;
             ++i;
         }
-        BOOST_CHECK_EQUAL(i, count);
+        REQUIRE(i == count);
     }
 
     void testReaderGeneric() {
@@ -282,22 +281,22 @@ public:
 
         const GenericDatum& ci = p.second;
         while (df.read(p)) {
-            BOOST_REQUIRE_EQUAL(ci.type(), avro::AVRO_RECORD);
+            REQUIRE(ci.type() == avro::AVRO_RECORD);
             const GenericRecord& r = ci.value<GenericRecord>();
             const size_t n = 2;
-            BOOST_REQUIRE_EQUAL(r.fieldCount(), n);
+            REQUIRE(r.fieldCount() == n);
             const GenericDatum& f0 = r.fieldAt(0);
-            BOOST_REQUIRE_EQUAL(f0.type(), avro::AVRO_LONG);
-            BOOST_CHECK_EQUAL(f0.value<int64_t>(), re);
+            REQUIRE(f0.type() == avro::AVRO_LONG);
+            REQUIRE(f0.value<int64_t>() == re);
 
             const GenericDatum& f1 = r.fieldAt(1);
-            BOOST_REQUIRE_EQUAL(f1.type(), avro::AVRO_LONG);
-            BOOST_CHECK_EQUAL(f1.value<int64_t>(), im);
+            REQUIRE(f1.type() == avro::AVRO_LONG);
+            REQUIRE(f1.value<int64_t>() == im);
             re *= im;
             im += 3;
             ++i;
         }
-        BOOST_CHECK_EQUAL(i, count);
+        REQUIRE(i == count);
     }
 
     void testReaderGenericByName() {
@@ -309,22 +308,22 @@ public:
 
         const GenericDatum& ci = p.second;
         while (df.read(p)) {
-            BOOST_REQUIRE_EQUAL(ci.type(), avro::AVRO_RECORD);
+            REQUIRE(ci.type() == avro::AVRO_RECORD);
             const GenericRecord& r = ci.value<GenericRecord>();
             const size_t n = 2;
-            BOOST_REQUIRE_EQUAL(r.fieldCount(), n);
+            REQUIRE(r.fieldCount() == n);
             const GenericDatum& f0 = r.field("re");
-            BOOST_REQUIRE_EQUAL(f0.type(), avro::AVRO_LONG);
-            BOOST_CHECK_EQUAL(f0.value<int64_t>(), re);
+            REQUIRE(f0.type() == avro::AVRO_LONG);
+            REQUIRE(f0.value<int64_t>() == re);
 
             const GenericDatum& f1 = r.field("im");
-            BOOST_REQUIRE_EQUAL(f1.type(), avro::AVRO_LONG);
-            BOOST_CHECK_EQUAL(f1.value<int64_t>(), im);
+            REQUIRE(f1.type() == avro::AVRO_LONG);
+            REQUIRE(f1.value<int64_t>() == im);
             re *= im;
             im += 3;
             ++i;
         }
-        BOOST_CHECK_EQUAL(i, count);
+        REQUIRE(i == count);
     }
 
     void testReaderGenericProjection() {
@@ -336,19 +335,19 @@ public:
 
         const GenericDatum& ci = p.second;
         while (df.read(p)) {
-            BOOST_REQUIRE_EQUAL(ci.type(), avro::AVRO_RECORD);
+            REQUIRE(ci.type() == avro::AVRO_RECORD);
             const GenericRecord& r = ci.value<GenericRecord>();
             const size_t n = 1;
-            BOOST_REQUIRE_EQUAL(r.fieldCount(), n);
+            REQUIRE(r.fieldCount() == n);
             const GenericDatum& f0 = r.fieldAt(0);
-            BOOST_REQUIRE_EQUAL(f0.type(), avro::AVRO_LONG);
-            BOOST_CHECK_EQUAL(f0.value<int64_t>(), re);
+            REQUIRE(f0.type() == avro::AVRO_LONG);
+            REQUIRE(f0.value<int64_t>() == re);
 
             re *= im;
             im += 3;
             ++i;
         }
-        BOOST_CHECK_EQUAL(i, count);
+        REQUIRE(i == count);
     }
 
     void testReadDouble() {
@@ -358,13 +357,13 @@ public:
         double re = 3.0;
         double im = 5.0;
         while (df.read(ci)) {
-            BOOST_CHECK_CLOSE(ci.re, re, 0.0001);
-            BOOST_CHECK_CLOSE(ci.im, im, 0.0001);
+            REQUIRE(std::abs(ci.re - re) < 0.0001);
+            REQUIRE(std::abs(ci.im - im) < 0.0001);
             re += (im - 0.7);
             im += 3.1;
             ++i;
         }
-        BOOST_CHECK_EQUAL(i, count);
+        REQUIRE(i == count);
     }
 
     /*Constructs the DataFileReader in two steps.*/
@@ -372,20 +371,20 @@ public:
         auto_ptr<avro::DataFileReaderBase>
           base(new avro::DataFileReaderBase(filename));
         avro::DataFileReader<ComplexDouble> df(base);
-        BOOST_CHECK_EQUAL(toString(writerSchema), toString(df.readerSchema()));
-        BOOST_CHECK_EQUAL(toString(writerSchema), toString(df.dataSchema()));
+        REQUIRE(toString(writerSchema) == toString(df.readerSchema()));
+        REQUIRE(toString(writerSchema) == toString(df.dataSchema()));
         int i = 0;
         ComplexDouble ci;
         double re = 3.0;
         double im = 5.0;
         while (df.read(ci)) {
-            BOOST_CHECK_CLOSE(ci.re, re, 0.0001);
-            BOOST_CHECK_CLOSE(ci.im, im, 0.0001);
+            REQUIRE(std::abs(ci.re - re) < 0.0001);
+            REQUIRE(std::abs(ci.im - im) < 0.0001);
             re += (im - 0.7);
             im += 3.1;
             ++i;
         }
-        BOOST_CHECK_EQUAL(i, count);
+        REQUIRE(i == count);
     }
 
     /**
@@ -397,19 +396,19 @@ public:
           base(new avro::DataFileReaderBase(filename));
         avro::DataFileReader<Double> df(base, readerSchema);
 
-        BOOST_CHECK_EQUAL(toString(readerSchema), toString(df.readerSchema()));
-        BOOST_CHECK_EQUAL(toString(writerSchema), toString(df.dataSchema()));
+        REQUIRE(toString(readerSchema) == toString(df.readerSchema()));
+        REQUIRE(toString(writerSchema) == toString(df.dataSchema()));
         int i = 0;
         Double ci;
         double re = 3.0;
         double im = 5.0;
         while (df.read(ci)) {
-            BOOST_CHECK_CLOSE(ci.re, re, 0.0001);
+            REQUIRE(std::abs(ci.re - re) < 0.0001);
             re += (im - 0.7);
             im += 3.1;
             ++i;
         }
-        BOOST_CHECK_EQUAL(i, count);
+        REQUIRE(i == count);
     }
 
     /*Test writing DataFiles into other streams operations.*/
@@ -435,9 +434,9 @@ public:
             while (reader.read(record)) {
                 found.push_back(record.re);
             }
-            BOOST_CHECK_EQUAL(found.size(), number_of_objects);
+            REQUIRE(found.size() == number_of_objects);
             for (unsigned int i = 0; i < found.size(); ++i) {
-                BOOST_CHECK_EQUAL(found[i], i);
+                REQUIRE(found[i] == i);
             }
         }
     }
@@ -453,56 +452,49 @@ public:
             avro::DataFileReader<uint32_t> df(filename);
             uint32_t b;
             df.read(b);
-            BOOST_CHECK_EQUAL(b, a);
+            REQUIRE(b == a);
         }
     }
 };
 
-void addReaderTests(test_suite* ts, const shared_ptr<DataFileTest>& t) {
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReadFull, t));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReadProjection, t));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReaderGeneric, t));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReaderGenericByName, t));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReaderGenericProjection,
-      t));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testCleanup, t));
-
+void addReaderTests(const shared_ptr<DataFileTest>& t) {
+    t->testReadFull();
+    t->testReadProjection();
+    t->testReaderGeneric();
+    t->testReaderGenericByName();
+    t->testReaderGenericProjection();
+    t->testCleanup();
 }
 
-test_suite*
-init_unit_test_suite(int argc, char* argv[]) {
-    test_suite* ts = BOOST_TEST_SUITE("DataFile tests");
+TEST_CASE("DataFile tests", "[DataFile tests]") {
     shared_ptr<DataFileTest> t1(new DataFileTest("test1.df", sch, isch));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testWrite, t1));
-    addReaderTests(ts, t1);
+    t1->testWrite();
+    addReaderTests(t1);
 
     shared_ptr<DataFileTest> t2(new DataFileTest("test2.df", sch, isch));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testWriteGeneric, t2));
-    addReaderTests(ts, t2);
+    t2->testWriteGeneric();
+    addReaderTests(t2);
 
     shared_ptr<DataFileTest> t3(new DataFileTest("test3.df", dsch, dblsch));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testWriteDouble, t3));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReadDouble, t3));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReadDoubleTwoStep, t3));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testReadDoubleTwoStepProject,
-      t3));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testCleanup, t3));
+    t3->testWriteDouble();
+    t3->testReadDouble();
+    t3->testReadDoubleTwoStep();
+    t3->testReadDoubleTwoStepProject();
+    t3->testCleanup();
 
     shared_ptr<DataFileTest> t4(new DataFileTest("test4.df", dsch, dblsch));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testTruncate, t4));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testCleanup, t4));
+    t4->testTruncate();
+    t4->testCleanup();
 
     shared_ptr<DataFileTest> t5(new DataFileTest("test5.df", sch, isch));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testWriteGenericByName, t5));
-    addReaderTests(ts, t5);
+    t5->testWriteGenericByName();
+    addReaderTests(t5);
 
     shared_ptr<DataFileTest> t6(new DataFileTest("test6.df", dsch, dblsch));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testZip, t6));
+    t6->testZip();
     shared_ptr<DataFileTest> t8(new DataFileTest("test8.df", dsch, dblsch));
 
     shared_ptr<DataFileTest> t7(new DataFileTest("test7.df", fsch, fsch));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testSchemaReadWrite, t7));
-    ts->add(BOOST_CLASS_TEST_CASE(&DataFileTest::testCleanup, t7));
-
-    return ts;
+    t7->testSchemaReadWrite();
+    t7->testCleanup();
 }
