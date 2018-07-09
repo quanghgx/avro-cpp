@@ -41,17 +41,17 @@ void testEmptyBytesDefault() {
     ]\n\
 }\n\
 ";
-    std::string expected = "{\n\
-    \"type\": \"record\",\n\
-    \"name\": \"testrecord\",\n\
-    \"fields\": [\n\
-        {\n\
-            \"name\": \"testbytes\",\n\
-            \"type\": \"bytes\"\n\
-        }\n\
-    ]\n\
-}\n\
-";
+    std::string expected = 
+      "{\n"
+      "    \"type\": \"record\",\n"
+      "    \"name\": \"testrecord\",\n"
+      "    \"fields\": [\n"
+      "        {\n"
+      "            \"name\": \"testbytes\",\n"
+      "            \"type\": \"bytes\"\n"
+      "        }\n"
+      "    ]\n"
+      "}\n";
 
     avro::ValidSchema schema = avro::compileJsonSchemaFromString(input);
     std::ostringstream actual;
