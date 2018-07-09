@@ -21,7 +21,7 @@
 #include "ValidSchema.hh"
 #include "Decoder.hh"
 
-TEST_CASE("Avro C++ unit tests for schemas", "[testLargeSchema]") {
+TEST_CASE("Avro C++ unit tests for large schemas", "[testLargeSchema]") {
     std::ifstream in("jsonschemas/large_schema.avsc");
     avro::ValidSchema vs;
     avro::compileJsonSchema(in, vs);

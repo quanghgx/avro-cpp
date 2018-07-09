@@ -56,39 +56,39 @@ TEST_CASE("Buffers: TestReserve", "[TestReserve]") {
 
     SECTION("Section 1") {
         OutputBuffer ob;
-        BOOST_CHECK_EQUAL(ob.size(), 0U);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), 0U);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 0);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 0);
+        REQUIRE(ob.size() == 0U);
+        REQUIRE(ob.freeSpace() == 0U);
+        REQUIRE(ob.numChunks() == 0);
+        REQUIRE(ob.numDataChunks() == 0);
     }
 
     SECTION("Section 2") {
         size_t reserveSize = kMinBlockSize / 2;
 
         OutputBuffer ob(reserveSize);
-        BOOST_CHECK_EQUAL(ob.size(), 0U);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kMinBlockSize);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 0);
+        REQUIRE(ob.size() == 0U);
+        REQUIRE(ob.freeSpace() == kMinBlockSize);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 0);
 
         // reserve should add a single block
         reserveSize += 8192;
 
         ob.reserve(reserveSize);
-        BOOST_CHECK_EQUAL(ob.size(), 0U);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), reserveSize);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 2);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 0);
+        REQUIRE(ob.size() == 0U);
+        REQUIRE(ob.freeSpace() == reserveSize);
+        REQUIRE(ob.numChunks() == 2);
+        REQUIRE(ob.numDataChunks() == 0);
 
         // reserve should add two blocks, one of the maximum size and
         // one of the minimum size
         reserveSize += (kMaxBlockSize + kMinBlockSize / 2);
 
         ob.reserve(reserveSize);
-        BOOST_CHECK_EQUAL(ob.size(), 0U);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), reserveSize + kMinBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 4);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 0);
+        REQUIRE(ob.size() == 0U);
+        REQUIRE(ob.freeSpace() == reserveSize + kMinBlockSize / 2);
+        REQUIRE(ob.numChunks() == 4);
+        REQUIRE(ob.numDataChunks() == 0);
     }
 }
 
@@ -104,34 +104,34 @@ TEST_CASE("Buffers: TestGrow", "[TestGrow]") {
     // add exactly one block
     addDataToBuffer(ob, kDefaultBlockSize);
 
-    BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize);
-    BOOST_CHECK_EQUAL(ob.freeSpace(), 0U);
-    BOOST_CHECK_EQUAL(ob.numChunks(), 0);
-    BOOST_CHECK_EQUAL(ob.numDataChunks(), 1);
+    REQUIRE(ob.size() == kDefaultBlockSize);
+    REQUIRE(ob.freeSpace() == 0U);
+    REQUIRE(ob.numChunks() == 0);
+    REQUIRE(ob.numDataChunks() == 1);
 
     // add another block, half full
     addDataToBuffer(ob, kDefaultBlockSize / 2);
 
-    BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize + kDefaultBlockSize / 2);
-    BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-    BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-    BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
+    REQUIRE(ob.size() == kDefaultBlockSize + kDefaultBlockSize / 2);
+    REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+    REQUIRE(ob.numChunks() == 1);
+    REQUIRE(ob.numDataChunks() == 2);
 
     // reserve more capacity
     size_t reserveSize = ob.freeSpace() + 8192;
     ob.reserve(reserveSize);
 
-    BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize + kDefaultBlockSize / 2);
-    BOOST_CHECK_EQUAL(ob.freeSpace(), reserveSize);
-    BOOST_CHECK_EQUAL(ob.numChunks(), 2);
-    BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
+    REQUIRE(ob.size() == kDefaultBlockSize + kDefaultBlockSize / 2);
+    REQUIRE(ob.freeSpace() == reserveSize);
+    REQUIRE(ob.numChunks() == 2);
+    REQUIRE(ob.numDataChunks() == 2);
 
     // fill beyond capacity
     addDataToBuffer(ob, reserveSize + 1);
-    BOOST_CHECK_EQUAL(ob.size(), kDefaultBlockSize + kDefaultBlockSize / 2 + reserveSize + 1);
-    BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize - 1);
-    BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-    BOOST_CHECK_EQUAL(ob.numDataChunks(), 4);
+    REQUIRE(ob.size() == kDefaultBlockSize + kDefaultBlockSize / 2 + reserveSize + 1);
+    REQUIRE(ob.freeSpace() == kDefaultBlockSize - 1);
+    REQUIRE(ob.numChunks() == 1);
+    REQUIRE(ob.numDataChunks() == 4);
 
 }
 
@@ -142,17 +142,17 @@ TEST_CASE("Buffers: TestDiscard", "[TestDiscard]") {
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
         addDataToBuffer(ob, dataSize);
 
-        BOOST_CHECK_EQUAL(ob.size(), dataSize);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 3);
+        REQUIRE(ob.size() == dataSize);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 3);
 
         ob.discardData();
 
-        BOOST_CHECK_EQUAL(ob.size(), 0U);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 0);
+        REQUIRE(ob.size() == 0U);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 0);
     }
 
     SECTION("Section 2") {
@@ -161,17 +161,17 @@ TEST_CASE("Buffers: TestDiscard", "[TestDiscard]") {
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
         addDataToBuffer(ob, dataSize);
 
-        BOOST_CHECK_EQUAL(ob.size(), dataSize);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 3);
+        REQUIRE(ob.size() == dataSize);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 3);
 
         ob.discardData(0);
 
-        BOOST_CHECK_EQUAL(ob.size(), dataSize);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 3);
+        REQUIRE(ob.size() == dataSize);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 3);
     }
 
     SECTION("Section 3") {
@@ -180,17 +180,17 @@ TEST_CASE("Buffers: TestDiscard", "[TestDiscard]") {
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
         addDataToBuffer(ob, dataSize);
 
-        BOOST_CHECK_EQUAL(ob.size(), dataSize);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 3);
+        REQUIRE(ob.size() == dataSize);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 3);
 
         ob.discardData(kDefaultBlockSize);
 
-        BOOST_CHECK_EQUAL(ob.size(), dataSize - kDefaultBlockSize);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
+        REQUIRE(ob.size() == dataSize - kDefaultBlockSize);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 2);
     }
 
     SECTION("Section 4") {
@@ -198,10 +198,10 @@ TEST_CASE("Buffers: TestDiscard", "[TestDiscard]") {
         size_t dataSize = kDefaultBlockSize * 2 + kDefaultBlockSize / 2;
         addDataToBuffer(ob, dataSize);
 
-        BOOST_CHECK_EQUAL(ob.size(), dataSize);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 3);
+        REQUIRE(ob.size() == dataSize);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 3);
 
         size_t remainder = dataSize % 100;
 
@@ -212,18 +212,18 @@ TEST_CASE("Buffers: TestDiscard", "[TestDiscard]") {
             dataSize -= 100;
             discarded += 100;
 
-            BOOST_CHECK_EQUAL(ob.size(), dataSize);
-            BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-            BOOST_CHECK_EQUAL(ob.numChunks(), 1);
+            REQUIRE(ob.size() == dataSize);
+            REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+            REQUIRE(ob.numChunks() == 1);
 
             int chunks = 3 - (discarded / kDefaultBlockSize);
-            BOOST_CHECK_EQUAL(ob.numDataChunks(), chunks);
+            REQUIRE(ob.numDataChunks() == chunks);
         }
 
-        BOOST_CHECK_EQUAL(ob.size(), remainder);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 1);
+        REQUIRE(ob.size() == remainder);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 1);
 
         try {
             ob.discardData(ob.size() + 1);
@@ -232,10 +232,10 @@ TEST_CASE("Buffers: TestDiscard", "[TestDiscard]") {
         }
         ob.discardData(ob.size());
 
-        BOOST_CHECK_EQUAL(ob.size(), 0U);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 0);
+        REQUIRE(ob.size() == 0U);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 0);
     }
 }
 
@@ -247,13 +247,13 @@ TEST_CASE("Buffers: TestConvertToInput", "[TestConvertToInput]") {
 
     InputBuffer ib(ob);
 
-    BOOST_CHECK_EQUAL(ib.size(), dataSize);
-    BOOST_CHECK_EQUAL(ib.numChunks(), 3);
+    REQUIRE(ib.size() == dataSize);
+    REQUIRE(ib.numChunks() == 3);
 
-    BOOST_CHECK_EQUAL(ob.size(), dataSize);
-    BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-    BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-    BOOST_CHECK_EQUAL(ob.numDataChunks(), 3);
+    REQUIRE(ob.size() == dataSize);
+    REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+    REQUIRE(ob.numChunks() == 1);
+    REQUIRE(ob.numDataChunks() == 3);
 
 }
 
@@ -266,13 +266,13 @@ TEST_CASE("Buffers: TestExtractToInput", "[TestExtractToInput]") {
 
         InputBuffer ib = ob.extractData();
 
-        BOOST_CHECK_EQUAL(ib.size(), dataSize);
-        BOOST_CHECK_EQUAL(ib.numChunks(), 3);
+        REQUIRE(ib.size() == dataSize);
+        REQUIRE(ib.numChunks() == 3);
 
-        BOOST_CHECK_EQUAL(ob.size(), 0U);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 0);
+        REQUIRE(ob.size() == 0U);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 0);
     }
 
     SECTION("Section 2") {
@@ -283,13 +283,13 @@ TEST_CASE("Buffers: TestExtractToInput", "[TestExtractToInput]") {
 
         InputBuffer ib = ob.extractData(0);
 
-        BOOST_CHECK_EQUAL(ib.size(), 0U);
-        BOOST_CHECK_EQUAL(ib.numChunks(), 0);
+        REQUIRE(ib.size() == 0U);
+        REQUIRE(ib.numChunks() == 0);
 
-        BOOST_CHECK_EQUAL(ob.size(), dataSize);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 3);
+        REQUIRE(ob.size() == dataSize);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 3);
     }
 
     SECTION("Section 3") {
@@ -300,13 +300,13 @@ TEST_CASE("Buffers: TestExtractToInput", "[TestExtractToInput]") {
 
         InputBuffer ib = ob.extractData(kDefaultBlockSize);
 
-        BOOST_CHECK_EQUAL(ib.size(), kDefaultBlockSize);
-        BOOST_CHECK_EQUAL(ib.numChunks(), 1);
+        REQUIRE(ib.size() == kDefaultBlockSize);
+        REQUIRE(ib.numChunks() == 1);
 
-        BOOST_CHECK_EQUAL(ob.size(), dataSize - kDefaultBlockSize);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
+        REQUIRE(ob.size() == dataSize - kDefaultBlockSize);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 2);
     }
 
     SECTION("Section 4") {
@@ -323,18 +323,18 @@ TEST_CASE("Buffers: TestExtractToInput", "[TestExtractToInput]") {
             dataSize -= 100;
             extracted += 100;
 
-            BOOST_CHECK_EQUAL(ob.size(), dataSize);
-            BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-            BOOST_CHECK_EQUAL(ob.numChunks(), 1);
+            REQUIRE(ob.size() == dataSize);
+            REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+            REQUIRE(ob.numChunks() == 1);
 
             int chunks = 3 - (extracted / kDefaultBlockSize);
-            BOOST_CHECK_EQUAL(ob.numDataChunks(), chunks);
+            REQUIRE(ob.numDataChunks() == chunks);
         }
 
-        BOOST_CHECK_EQUAL(ob.size(), remainder);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 1);
+        REQUIRE(ob.size() == remainder);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 1);
 
         try {
             ob.extractData(ob.size() + 1);
@@ -344,13 +344,13 @@ TEST_CASE("Buffers: TestExtractToInput", "[TestExtractToInput]") {
 
         InputBuffer ib = ob.extractData(remainder);
 
-        BOOST_CHECK_EQUAL(ib.size(), remainder);
-        BOOST_CHECK_EQUAL(ib.numChunks(), 1);
+        REQUIRE(ib.size() == remainder);
+        REQUIRE(ib.numChunks() == 1);
 
-        BOOST_CHECK_EQUAL(ob.size(), 0U);
-        BOOST_CHECK_EQUAL(ob.freeSpace(), kDefaultBlockSize / 2);
-        BOOST_CHECK_EQUAL(ob.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ob.numDataChunks(), 0);
+        REQUIRE(ob.size() == 0U);
+        REQUIRE(ob.freeSpace() == kDefaultBlockSize / 2);
+        REQUIRE(ob.numChunks() == 1);
+        REQUIRE(ob.numDataChunks() == 0);
     }
 }
 
@@ -363,10 +363,10 @@ TEST_CASE("Buffers: TestAppend", "[TestAppend]") {
     OutputBuffer a;
     a.append(ob);
 
-    BOOST_CHECK_EQUAL(a.size(), dataSize);
-    BOOST_CHECK_EQUAL(a.freeSpace(), 0U);
-    BOOST_CHECK_EQUAL(a.numChunks(), 0);
-    BOOST_CHECK_EQUAL(a.numDataChunks(), 2);
+    REQUIRE(a.size() == dataSize);
+    REQUIRE(a.freeSpace() == 0U);
+    REQUIRE(a.numChunks() == 0);
+    REQUIRE(a.numDataChunks() == 2);
 
     // reserve on a, then append from an input buffer
     a.reserve(7000);
@@ -374,10 +374,10 @@ TEST_CASE("Buffers: TestAppend", "[TestAppend]") {
     InputBuffer ib(ob);
     a.append(ib);
 
-    BOOST_CHECK_EQUAL(a.size(), dataSize * 2);
-    BOOST_CHECK_EQUAL(a.freeSpace(), 7000U);
-    BOOST_CHECK_EQUAL(a.numChunks(), 1);
-    BOOST_CHECK_EQUAL(a.numDataChunks(), 4);
+    REQUIRE(a.size() == dataSize * 2);
+    REQUIRE(a.freeSpace() == 7000U);
+    REQUIRE(a.numChunks() == 1);
+    REQUIRE(a.numDataChunks() == 4);
 
 }
 
@@ -393,7 +393,7 @@ TEST_CASE("Buffers: TestBufferStream", "[TestBufferStream]") {
 
     const OutputBuffer &buf = os.getBuffer();
     cout << "Buffer has " << buf.size() << " bytes\n";
-    BOOST_CHECK_EQUAL(buf.size(), junk.size() * i);
+    REQUIRE(buf.size() == junk.size() * i);
 
 }
 
@@ -418,25 +418,20 @@ void TestEof() {
         T d;
         char *addr = reinterpret_cast<char *> (&d);
         is.read(addr, sizeof (T));
-        BOOST_CHECK_EQUAL(is.gcount(), static_cast<std::streamsize> (sizeof (T)));
-        BOOST_CHECK_EQUAL(is.eof(), false);
+        REQUIRE(is.gcount() == static_cast<std::streamsize> (sizeof (T)));
+        REQUIRE(is.eof() == false);
     }
 
     char c;
     is.read(&c, sizeof (c));
-    BOOST_CHECK_EQUAL(is.gcount(), 0);
-    BOOST_CHECK_EQUAL(is.eof(), true);
+    REQUIRE(is.gcount() == 0);
+    REQUIRE(is.eof() == true);
 }
 
 TEST_CASE("Buffers: TestBufferStreamEof", "[TestBufferStreamEof]") {
-
-
     TestEof<int32_t>();
-
     TestEof<int64_t>();
-
     TestEof<float>();
-
     TestEof<double>();
 }
 
@@ -456,15 +451,15 @@ TEST_CASE("Buffers: TestSeekAndTell", "[TestSeekAndTell]") {
     cout << "Buffer has " << buf.size() << " bytes\n";
 
     istream is(os.getBuffer());
-    BOOST_CHECK_EQUAL(is.getBuffer().size(), junk.size() * i);
+    REQUIRE(is.getBuffer().size() == junk.size() * i);
     is.seekg(2000);
-    BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (2000));
+    REQUIRE(is.tellg() == static_cast<std::streampos> (2000));
     is.seekg(6000);
-    BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (6000));
+    REQUIRE(is.tellg() == static_cast<std::streampos> (6000));
     is.seekg(is.getBuffer().size());
-    BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (is.getBuffer().size()));
+    REQUIRE(is.tellg() == static_cast<std::streampos> (is.getBuffer().size()));
     is.seekg(is.getBuffer().size() + 1);
-    BOOST_CHECK_EQUAL(is.tellg(), static_cast<std::streampos> (-1));
+    REQUIRE(is.tellg() == static_cast<std::streampos> (-1));
 
 
 }
@@ -492,7 +487,7 @@ TEST_CASE("Buffers: TestReadSome", "[TestReadSome]") {
         cout << "Bytes avail = " << bytesAvail << endl;
         size_t in = static_cast<size_t> (is.readsome(datain, sizeof (datain)));
         cout << "Bytes read = " << in << endl;
-        BOOST_CHECK_EQUAL(bytesAvail, in);
+        REQUIRE(bytesAvail == in);
     }
 
 }
@@ -509,14 +504,14 @@ TEST_CASE("Buffers: TestSeek", "[TestSeek]") {
     tmp2.append(tmp3);
     tmp1.append(tmp2);
 
-    BOOST_CHECK_EQUAL(tmp3.numDataChunks(), 1);
-    BOOST_CHECK_EQUAL(tmp2.numDataChunks(), 2);
-    BOOST_CHECK_EQUAL(tmp1.numDataChunks(), 3);
+    REQUIRE(tmp3.numDataChunks() == 1);
+    REQUIRE(tmp2.numDataChunks() == 2);
+    REQUIRE(tmp1.numDataChunks() == 3);
 
     avro::InputBuffer buf(tmp1);
 
     cout << "Starting string: " << str << '\n';
-    BOOST_CHECK_EQUAL(static_cast<std::string::size_type> (buf.size()), str.size());
+    REQUIRE(static_cast<std::string::size_type> (buf.size()) == str.size());
 
     avro::istream is(buf);
 
@@ -525,24 +520,24 @@ TEST_CASE("Buffers: TestSeek", "[TestSeek]") {
     is.read(buffer, part1.size());
     std::string sample1(buffer, part1.size());
     cout << "After reading bytes: " << sample1 << '\n';
-    BOOST_CHECK_EQUAL(sample1, part1);
+    REQUIRE(sample1 == part1);
 
     const std::string part2 = "Message";
     is.read(buffer, part2.size());
     std::string sample2(buffer, part2.size());
     cout << "After reading remaining bytes: " << sample2 << '\n';
-    BOOST_CHECK_EQUAL(sample2, part2);
+    REQUIRE(sample2 == part2);
 
     cout << "Seeking back " << '\n';
     is.seekg(-static_cast<std::streamoff> (part2.size()), std::ios_base::cur);
 
     std::streampos loc = is.tellg();
     cout << "Saved loc = " << loc << '\n';
-    BOOST_CHECK_EQUAL(static_cast<std::string::size_type> (loc), (str.size() - part2.size()));
+    REQUIRE(static_cast<std::string::size_type> (loc) == (str.size() - part2.size()));
 
     cout << "Reading remaining bytes: " << is.rdbuf() << '\n';
     cout << "bytes avail = " << is.rdbuf()->in_avail() << '\n';
-    BOOST_CHECK_EQUAL(is.rdbuf()->in_avail(), 0);
+    REQUIRE(is.rdbuf()->in_avail() == 0);
 
     cout << "Moving to saved loc = " << loc << '\n';
     is.seekg(loc);
@@ -551,7 +546,7 @@ TEST_CASE("Buffers: TestSeek", "[TestSeek]") {
     std::ostringstream oss;
     oss << is.rdbuf();
     cout << "After reading bytes: " << oss.str() << '\n';
-    BOOST_CHECK_EQUAL(oss.str(), part2);
+    REQUIRE(oss.str() == part2);
 
 
 }
@@ -559,30 +554,30 @@ TEST_CASE("Buffers: TestSeek", "[TestSeek]") {
 TEST_CASE("Buffers: TestIterator", "[TestIterator]") {
 
     OutputBuffer ob(2 * kMaxBlockSize + 10);
-    BOOST_CHECK_EQUAL(ob.numChunks(), 3);
-    BOOST_CHECK_EQUAL(ob.size(), 0U);
-    BOOST_CHECK_EQUAL(ob.freeSpace(), 2 * kMaxBlockSize + kMinBlockSize);
+    REQUIRE(ob.numChunks() == 3);
+    REQUIRE(ob.size() == 0U);
+    REQUIRE(ob.freeSpace() == 2 * kMaxBlockSize + kMinBlockSize);
 
-    BOOST_CHECK_EQUAL(std::distance(ob.begin(), ob.end()), 3);
+    REQUIRE(std::distance(ob.begin(), ob.end()) == 3);
 
     OutputBuffer::const_iterator iter = ob.begin();
-    BOOST_CHECK_EQUAL(iter->size(), kMaxBlockSize);
+    REQUIRE(iter->size() == kMaxBlockSize);
     ++iter;
-    BOOST_CHECK_EQUAL(iter->size(), kMaxBlockSize);
+    REQUIRE(iter->size() == kMaxBlockSize);
     ++iter;
-    BOOST_CHECK_EQUAL(iter->size(), kMinBlockSize);
+    REQUIRE(iter->size() == kMinBlockSize);
     ++iter;
-    BOOST_CHECK(iter == ob.end());
+    REQUIRE(iter == ob.end());
 
     size_t toWrite = kMaxBlockSize + kMinBlockSize;
     ob.wroteTo(toWrite);
-    BOOST_CHECK_EQUAL(ob.size(), toWrite);
-    BOOST_CHECK_EQUAL(ob.freeSpace(), kMaxBlockSize);
-    BOOST_CHECK_EQUAL(ob.numChunks(), 2);
-    BOOST_CHECK_EQUAL(ob.numDataChunks(), 2);
+    REQUIRE(ob.size() == toWrite);
+    REQUIRE(ob.freeSpace() == kMaxBlockSize);
+    REQUIRE(ob.numChunks() == 2);
+    REQUIRE(ob.numDataChunks() == 2);
 
     InputBuffer ib = ob;
-    BOOST_CHECK_EQUAL(std::distance(ib.begin(), ib.end()), 2);
+    REQUIRE(std::distance(ib.begin(), ib.end()) == 2);
 
     size_t acc = 0;
     for (OutputBuffer::const_iterator iter = ob.begin();
@@ -590,7 +585,7 @@ TEST_CASE("Buffers: TestIterator", "[TestIterator]") {
       ++iter) {
         acc += iter->size();
     }
-    BOOST_CHECK_EQUAL(ob.freeSpace(), acc);
+    REQUIRE(ob.freeSpace() == acc);
 
     try {
         ob.wroteTo(acc + 1);
@@ -610,15 +605,15 @@ TEST_CASE("Buffers: TestSplit", "[TestSplit]") {
     char datain[12];
     avro::istream is(buf);
     size_t in = static_cast<size_t> (is.readsome(datain, sizeof (datain)));
-    BOOST_CHECK_EQUAL(in, sizeof (datain));
-    BOOST_CHECK_EQUAL(static_cast<size_t> (is.tellg()), sizeof (datain));
+    REQUIRE(in == sizeof (datain));
+    REQUIRE(static_cast<size_t> (is.tellg()) == sizeof (datain));
 
     OutputBuffer part2;
     part2.append(is.getBuffer());
-    BOOST_CHECK_EQUAL(part2.size(), buf.size());
+    REQUIRE(part2.size() == buf.size());
     InputBuffer part1 = part2.extractData(static_cast<size_t> (is.tellg()));
 
-    BOOST_CHECK_EQUAL(part2.size(), str.size() - in);
+    REQUIRE(part2.size() == str.size() - in);
 
     printBuffer(part1);
     printBuffer(part2);
@@ -641,20 +636,20 @@ TEST_CASE("Buffers: TestSplitOnBorder", "[TestSplitOnBorder]") {
         printBuffer(InputBuffer(buf));
     }
 
-    BOOST_CHECK_EQUAL(buf.numDataChunks(), 2);
+    REQUIRE(buf.numDataChunks() == 2);
     size_t bufsize = buf.size();
 
     boost::scoped_array<char> datain(new char[firstChunkSize]);
     avro::istream is(buf);
     size_t in = static_cast<size_t> (is.readsome(&datain[0], firstChunkSize));
-    BOOST_CHECK_EQUAL(in, firstChunkSize);
+    REQUIRE(in == firstChunkSize);
 
     OutputBuffer newBuf;
     newBuf.append(is.getBuffer());
     newBuf.discardData(static_cast<size_t> (is.tellg()));
-    BOOST_CHECK_EQUAL(newBuf.numDataChunks(), 1);
+    REQUIRE(newBuf.numDataChunks() == 1);
 
-    BOOST_CHECK_EQUAL(newBuf.size(), bufsize - in);
+    REQUIRE(newBuf.size() == bufsize - in);
 
     cout << is.rdbuf() << endl;
     printBuffer(newBuf);
@@ -668,7 +663,7 @@ TEST_CASE("Buffers: TestSplitTwice", "[TestSplitTwice]") {
     avro::OutputBuffer buf1;
     buf1.writeTo(msg1.c_str(), msg1.size());
 
-    BOOST_CHECK_EQUAL(buf1.size(), msg1.size());
+    REQUIRE(buf1.size() == msg1.size());
 
     printBuffer(buf1);
 
@@ -701,10 +696,9 @@ TEST_CASE("Buffers: TestCopy", "[TestCopy]") {
 
         wb.writeTo(msg.c_str(), msg.size());
 
-        BOOST_CHECK_EQUAL(msg.size(), wb.size());
-        BOOST_CHECK_EQUAL(wb.numDataChunks(), 1);
-        BOOST_CHECK_EQUAL(kDefaultBlockSize - msg.size(),
-          wb.freeSpace());
+        REQUIRE(msg.size() == wb.size());
+        REQUIRE(wb.numDataChunks() == 1);
+        REQUIRE((kDefaultBlockSize - msg.size()) == wb.freeSpace());
 
         // copy starting at offset 5 and copying 10 less bytes
         BufferReader br(wb);
@@ -713,21 +707,19 @@ TEST_CASE("Buffers: TestCopy", "[TestCopy]") {
 
         printBuffer(ib);
 
-        BOOST_CHECK_EQUAL(ib.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ib.size(), msg.size() - 10);
+        REQUIRE(ib.numChunks() == 1);
+        REQUIRE(ib.size() == msg.size() - 10);
 
         // buf 1 should be unchanged
-        BOOST_CHECK_EQUAL(msg.size(), wb.size());
-        BOOST_CHECK_EQUAL(wb.numDataChunks(), 1);
-        BOOST_CHECK_EQUAL(kDefaultBlockSize - msg.size(),
-          wb.freeSpace());
+        REQUIRE(msg.size() == wb.size());
+        REQUIRE(wb.numDataChunks() == 1);
+        REQUIRE((kDefaultBlockSize - msg.size()) == wb.freeSpace());
 
         // make sure wb is still functional
         wb.reserve(kDefaultBlockSize);
-        BOOST_CHECK_EQUAL(wb.size(), msg.size());
-        BOOST_CHECK_EQUAL(wb.numChunks(), 2);
-        BOOST_CHECK_EQUAL(kDefaultBlockSize * 2 - msg.size(),
-          wb.freeSpace());
+        REQUIRE(wb.size() == msg.size());
+        REQUIRE(wb.numChunks() == 2);
+        REQUIRE((kDefaultBlockSize * 2 - msg.size()) == wb.freeSpace());
     }
 
     // Test2, small data, large buffer
@@ -738,15 +730,14 @@ TEST_CASE("Buffers: TestCopy", "[TestCopy]") {
         const OutputBuffer::size_type bufsize = 3 * kMaxBlockSize;
 
         avro::OutputBuffer wb(bufsize);
-        BOOST_CHECK_EQUAL(wb.numChunks(), 3);
-        BOOST_CHECK_EQUAL(wb.freeSpace(), bufsize);
+        REQUIRE(wb.numChunks() == 3);
+        REQUIRE(wb.freeSpace() == bufsize);
 
         wb.writeTo(msg.c_str(), msg.size());
 
-        BOOST_CHECK_EQUAL(wb.size(), msg.size());
-        BOOST_CHECK_EQUAL(wb.numDataChunks(), 1);
-        BOOST_CHECK_EQUAL(bufsize - msg.size(),
-          wb.freeSpace());
+        REQUIRE(wb.size() == msg.size());
+        REQUIRE(wb.numDataChunks() == 1);
+        REQUIRE((bufsize - msg.size()) == wb.freeSpace());
 
         BufferReader br(wb);
         br.seek(5);
@@ -754,27 +745,26 @@ TEST_CASE("Buffers: TestCopy", "[TestCopy]") {
 
         printBuffer(ib);
 
-        BOOST_CHECK_EQUAL(ib.numChunks(), 1);
-        BOOST_CHECK_EQUAL(ib.size(), msg.size() - 10);
+        REQUIRE(ib.numChunks() == 1);
+        REQUIRE(ib.size() == msg.size() - 10);
 
         // wb should be unchanged
-        BOOST_CHECK_EQUAL(msg.size(), wb.size());
-        BOOST_CHECK_EQUAL(wb.numChunks(), 3);
-        BOOST_CHECK_EQUAL(wb.numDataChunks(), 1);
-        BOOST_CHECK_EQUAL(bufsize - msg.size(), wb.freeSpace());
+        REQUIRE(msg.size() == wb.size());
+        REQUIRE(wb.numChunks() == 3);
+        REQUIRE(wb.numDataChunks() == 1);
+        REQUIRE(bufsize - msg.size() == wb.freeSpace());
 
         // reserving a small amount should have no effect
         wb.reserve(1);
-        BOOST_CHECK_EQUAL(msg.size(), wb.size());
-        BOOST_CHECK_EQUAL(wb.numChunks(), 3);
-        BOOST_CHECK_EQUAL(bufsize - msg.size(), wb.freeSpace());
+        REQUIRE(msg.size() == wb.size());
+        REQUIRE(wb.numChunks() == 3);
+        REQUIRE(bufsize - msg.size() == wb.freeSpace());
 
         // reserve more (will get extra block)
         wb.reserve(bufsize);
-        BOOST_CHECK_EQUAL(msg.size(), wb.size());
-        BOOST_CHECK_EQUAL(wb.numChunks(), 4);
-        BOOST_CHECK_EQUAL(kMaxBlockSize * 3 - msg.size() + kMinBlockSize,
-          wb.freeSpace());
+        REQUIRE(msg.size() == wb.size());
+        REQUIRE(wb.numChunks() == 4);
+        REQUIRE((kMaxBlockSize * 3 - msg.size() + kMinBlockSize) == wb.freeSpace());
     }
 
     // Test3 Border case, buffer is exactly full
@@ -788,10 +778,10 @@ TEST_CASE("Buffers: TestCopy", "[TestCopy]") {
             wb.writeTo('a');
         }
 
-        BOOST_CHECK_EQUAL(wb.size(), bufsize);
-        BOOST_CHECK_EQUAL(wb.freeSpace(), 0U);
-        BOOST_CHECK_EQUAL(wb.numChunks(), 0);
-        BOOST_CHECK_EQUAL(wb.numDataChunks(), 2);
+        REQUIRE(wb.size() == bufsize);
+        REQUIRE(wb.freeSpace() == 0U);
+        REQUIRE(wb.numChunks() == 0);
+        REQUIRE(wb.numDataChunks() == 2);
 
         // copy where the chunks overlap
         BufferReader br(wb);
@@ -800,13 +790,13 @@ TEST_CASE("Buffers: TestCopy", "[TestCopy]") {
 
         printBuffer(ib);
 
-        BOOST_CHECK_EQUAL(ib.size(), 20U);
-        BOOST_CHECK_EQUAL(ib.numChunks(), 2);
+        REQUIRE(ib.size() == 20U);
+        REQUIRE(ib.numChunks() == 2);
 
         // wb should be unchanged
-        BOOST_CHECK_EQUAL(wb.size(), bufsize);
-        BOOST_CHECK_EQUAL(wb.freeSpace(), 0U);
-        BOOST_CHECK_EQUAL(wb.numDataChunks(), 2);
+        REQUIRE(wb.size() == bufsize);
+        REQUIRE(wb.freeSpace() == 0U);
+        REQUIRE(wb.numDataChunks() == 2);
     }
 
     // Test4, no data 
@@ -815,9 +805,9 @@ TEST_CASE("Buffers: TestCopy", "[TestCopy]") {
         const OutputBuffer::size_type bufsize = 2 * kMaxBlockSize;
         std::cout << "Test4\n";
         avro::OutputBuffer wb(bufsize);
-        BOOST_CHECK_EQUAL(wb.numChunks(), 2);
-        BOOST_CHECK_EQUAL(wb.size(), 0U);
-        BOOST_CHECK_EQUAL(wb.freeSpace(), bufsize);
+        REQUIRE(wb.numChunks() == 2);
+        REQUIRE(wb.size() == 0U);
+        REQUIRE(wb.freeSpace() == bufsize);
 
         avro::InputBuffer ib;
         try {
@@ -834,13 +824,13 @@ TEST_CASE("Buffers: TestCopy", "[TestCopy]") {
         }
 
 
-        BOOST_CHECK_EQUAL(ib.numChunks(), 0);
-        BOOST_CHECK_EQUAL(ib.size(), 0U);
+        REQUIRE(ib.numChunks() == 0);
+        REQUIRE(ib.size() == 0U);
 
         // wb should keep all blocks remaining
-        BOOST_CHECK_EQUAL(wb.numChunks(), 2);
-        BOOST_CHECK_EQUAL(wb.size(), 0U);
-        BOOST_CHECK_EQUAL(wb.freeSpace(), bufsize);
+        REQUIRE(wb.numChunks() == 2);
+        REQUIRE(wb.size() == 0U);
+        REQUIRE(wb.freeSpace() == bufsize);
     }
 }
 
@@ -880,7 +870,7 @@ bool safeToDelete = false;
 
 void deleteForeign(const std::string &val) {
     std::cout << "Deleting foreign string containing " << val << '\n';
-    BOOST_CHECK(safeToDelete);
+    REQUIRE(safeToDelete);
 }
 
 TEST_CASE("Buffers: TestForeign", "[TestForeign]") {
@@ -898,7 +888,7 @@ TEST_CASE("Buffers: TestForeign", "[TestForeign]") {
             buf.writeTo(world.c_str(), world.size());
 
             printBuffer(buf);
-            BOOST_CHECK_EQUAL(buf.size(), 18U);
+            REQUIRE(buf.size() == 18U);
             copy = buf;
         }
         std::cout << "Leaving inner scope\n";
@@ -908,7 +898,7 @@ TEST_CASE("Buffers: TestForeign", "[TestForeign]") {
     safeToDelete = false;
 }
 
-TEST_CASE("Buffers: TestForeign", "[TestForeign]") {
+TEST_CASE("Buffers: TestForeignDiscard", "[TestForeignDiscard]") {
     std::string hello = "hello ";
     std::string again = "again ";
     std::string there = "there ";
@@ -921,26 +911,26 @@ TEST_CASE("Buffers: TestForeign", "[TestForeign]") {
     buf.writeTo(world.c_str(), world.size());
 
     printBuffer(buf);
-    BOOST_CHECK_EQUAL(buf.size(), 24U);
+    REQUIRE(buf.size() == 24U);
 
     // discard some data including half the foreign buffer
     buf.discardData(9);
     printBuffer(buf);
-    BOOST_CHECK_EQUAL(buf.size(), 15U);
+    REQUIRE(buf.size() == 15U);
 
     // discard some more data, which will lop off the first foreign buffer
     safeToDelete = true;
     buf.discardData(6);
     safeToDelete = false;
     printBuffer(buf);
-    BOOST_CHECK_EQUAL(buf.size(), 9U);
+    REQUIRE(buf.size() == 9U);
 
     // discard some more data, which will lop off the second foreign buffer
     safeToDelete = true;
     buf.discardData(3);
     safeToDelete = false;
     printBuffer(buf);
-    BOOST_CHECK_EQUAL(buf.size(), 6U);
+    REQUIRE(buf.size() == 6U);
 }
 
 TEST_CASE("Buffers: TestPrinter", "[TestPrinter]") {

@@ -85,7 +85,7 @@ struct TestSchema {
             std::cout << "(intentional) exception: " << e.what() << '\n';
             caught = true;
         }
-        BOOST_CHECK_EQUAL(caught, true);
+        REQUIRE(caught == true);
 
         record.addField("myenum", myenum);
 
@@ -112,7 +112,7 @@ struct TestSchema {
             std::cout << "(intentional) exception: " << e.what() << '\n';
             caught = true;
         }
-        BOOST_CHECK_EQUAL(caught, true);
+        REQUIRE(caught == true);
 
         record.addField("mylong2", LongSchema());
 
@@ -126,30 +126,30 @@ struct TestSchema {
 
         size_t index = 0;
         bool found = node->nameIndex("mylongxxx", index);
-        BOOST_CHECK_EQUAL(found, false);
+        REQUIRE(found == false);
 
         found = node->nameIndex("mylong", index);
-        BOOST_CHECK_EQUAL(found, true);
-        BOOST_CHECK_EQUAL(index, 0U);
+        REQUIRE(found == true);
+        REQUIRE(index == 0U);
 
         found = node->nameIndex("mylong2", index);
-        BOOST_CHECK_EQUAL(found, true);
-        BOOST_CHECK_EQUAL(index, 8U);
+        REQUIRE(found == true);
+        REQUIRE(index == 8U);
 
         found = node->nameIndex("myenum", index);
-        BOOST_CHECK_EQUAL(found, true);
+        REQUIRE(found == true);
         NodePtr enumNode = node->leafAt(index);
 
         found = enumNode->nameIndex("one", index);
-        BOOST_CHECK_EQUAL(found, true);
-        BOOST_CHECK_EQUAL(index, 1U);
+        REQUIRE(found == true);
+        REQUIRE(index == 1U);
 
         found = enumNode->nameIndex("three", index);
-        BOOST_CHECK_EQUAL(found, true);
-        BOOST_CHECK_EQUAL(index, 3U);
+        REQUIRE(found == true);
+        REQUIRE(index == 3U);
 
         found = enumNode->nameIndex("four", index);
-        BOOST_CHECK_EQUAL(found, false);
+        REQUIRE(found == false);
     }
 
     template<typename Serializer>
@@ -294,7 +294,7 @@ struct TestSchema {
                 std::cout << i << ":" << d << '\n';
             }
         } while (size != 0);
-        BOOST_CHECK_EQUAL(d, 1000.0);
+        REQUIRE(d == 1000.0);
     }
 
     template <typename Parser>
@@ -304,7 +304,7 @@ struct TestSchema {
         printNext(p);
         float f = p.readFloat();
         std::cout << f << '\n';
-        BOOST_CHECK_EQUAL(f, -101.101f);
+        REQUIRE(f == -101.101f);
         p.readRecordEnd();
     }
 
@@ -313,7 +313,7 @@ struct TestSchema {
 
         boost::array<uint8_t, 16> input;
         p.readFixed(input);
-        BOOST_CHECK_EQUAL(input.size(), 16U);
+        REQUIRE(input.size() == 16U);
 
         for (int i = 0; i < 16; ++i) {
             std::cout << static_cast<int> (input[i]) << ' ';
@@ -329,7 +329,7 @@ struct TestSchema {
         printNext(p);
         int64_t longval = p.readLong();
         std::cout << longval << '\n';
-        BOOST_CHECK_EQUAL(longval, 1000);
+        REQUIRE(longval == 1000);
 
         readMap(p);
         readArray(p);
@@ -348,7 +348,7 @@ struct TestSchema {
         printNext(p);
         bool boolval = p.readBool();
         std::cout << boolval << '\n';
-        BOOST_CHECK_EQUAL(boolval, true);
+        REQUIRE(boolval == true);
 
         printNext(p);
         readFixed(p);
@@ -356,12 +356,12 @@ struct TestSchema {
         printNext(p);
         longval = p.readLong();
         std::cout << longval << '\n';
-        BOOST_CHECK_EQUAL(longval, 7010728798977672067LL);
+        REQUIRE(longval == 7010728798977672067LL);
 
         printNext(p);
         int32_t intval = p.readInt();
         std::cout << intval << '\n';
-        BOOST_CHECK_EQUAL(intval, -3456);
+        REQUIRE(intval == -3456);
         p.readRecordEnd();
     }
 
@@ -411,12 +411,12 @@ struct TestEncoding {
 
     void compare(int32_t val) {
         uint32_t encoded = encodeZigzag32(val);
-        BOOST_CHECK_EQUAL(decodeZigzag32(encoded), val);
+        REQUIRE(decodeZigzag32(encoded) == val);
     }
 
     void compare(int64_t val) {
         uint64_t encoded = encodeZigzag64(val);
-        BOOST_CHECK_EQUAL(decodeZigzag64(encoded), val);
+        REQUIRE(decodeZigzag64(encoded) == val);
     }
 
     template<typename IntType>
@@ -590,7 +590,7 @@ struct TestBadStuff {
         std::ifstream in("agjoewejefkjs");
         std::string error;
         bool result = avro::compileJsonSchema(in, schema, error);
-        BOOST_CHECK_EQUAL(result, false);
+        REQUIRE(result == false);
         std::cout << "(intentional) error: " << error << '\n';
     }
 
@@ -603,7 +603,7 @@ struct TestBadStuff {
         avro::ValidSchema schema;
         std::string error;
         bool result = avro::compileJsonSchema(in, schema, error);
-        BOOST_CHECK_EQUAL(result, false);
+        REQUIRE(result == false);
         std::cout << "(intentional) error: " << error << '\n';
     }
 
@@ -658,53 +658,53 @@ struct TestResolution {
     void test() {
         std::cout << "TestResolution\n";
 
-        BOOST_CHECK_EQUAL(resolve(long_, long_), RESOLVE_MATCH);
-        BOOST_CHECK_EQUAL(resolve(long_, bool_), RESOLVE_NO_MATCH);
-        BOOST_CHECK_EQUAL(resolve(bool_, long_), RESOLVE_NO_MATCH);
+        REQUIRE(resolve(long_, long_) == RESOLVE_MATCH);
+        REQUIRE(resolve(long_, bool_) == RESOLVE_NO_MATCH);
+        REQUIRE(resolve(bool_, long_) == RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(int_, long_), RESOLVE_PROMOTABLE_TO_LONG);
-        BOOST_CHECK_EQUAL(resolve(long_, int_), RESOLVE_NO_MATCH);
+        REQUIRE(resolve(int_, long_) == RESOLVE_PROMOTABLE_TO_LONG);
+        REQUIRE(resolve(long_, int_) == RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(int_, float_), RESOLVE_PROMOTABLE_TO_FLOAT);
-        BOOST_CHECK_EQUAL(resolve(float_, int_), RESOLVE_NO_MATCH);
+        REQUIRE(resolve(int_, float_) == RESOLVE_PROMOTABLE_TO_FLOAT);
+        REQUIRE(resolve(float_, int_) == RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(int_, double_), RESOLVE_PROMOTABLE_TO_DOUBLE);
-        BOOST_CHECK_EQUAL(resolve(double_, int_), RESOLVE_NO_MATCH);
+        REQUIRE(resolve(int_, double_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
+        REQUIRE(resolve(double_, int_) == RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(long_, float_), RESOLVE_PROMOTABLE_TO_FLOAT);
-        BOOST_CHECK_EQUAL(resolve(float_, long_), RESOLVE_NO_MATCH);
+        REQUIRE(resolve(long_, float_) == RESOLVE_PROMOTABLE_TO_FLOAT);
+        REQUIRE(resolve(float_, long_) == RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(long_, double_), RESOLVE_PROMOTABLE_TO_DOUBLE);
-        BOOST_CHECK_EQUAL(resolve(double_, long_), RESOLVE_NO_MATCH);
+        REQUIRE(resolve(long_, double_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
+        REQUIRE(resolve(double_, long_) == RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(float_, double_), RESOLVE_PROMOTABLE_TO_DOUBLE);
-        BOOST_CHECK_EQUAL(resolve(double_, float_), RESOLVE_NO_MATCH);
+        REQUIRE(resolve(float_, double_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
+        REQUIRE(resolve(double_, float_) == RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(int_, mapOfInt_), RESOLVE_NO_MATCH);
-        BOOST_CHECK_EQUAL(resolve(mapOfInt_, int_), RESOLVE_NO_MATCH);
+        REQUIRE(resolve(int_, mapOfInt_) == RESOLVE_NO_MATCH);
+        REQUIRE(resolve(mapOfInt_, int_) == RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(mapOfInt_, mapOfInt_), RESOLVE_MATCH);
-        BOOST_CHECK_EQUAL(resolve(mapOfDouble_, mapOfInt_), RESOLVE_NO_MATCH);
-        BOOST_CHECK_EQUAL(resolve(mapOfInt_, mapOfDouble_), RESOLVE_PROMOTABLE_TO_DOUBLE);
+        REQUIRE(resolve(mapOfInt_, mapOfInt_) == RESOLVE_MATCH);
+        REQUIRE(resolve(mapOfDouble_, mapOfInt_) == RESOLVE_NO_MATCH);
+        REQUIRE(resolve(mapOfInt_, mapOfDouble_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
 
-        BOOST_CHECK_EQUAL(resolve(long_, arrayOfLong_), RESOLVE_NO_MATCH);
-        BOOST_CHECK_EQUAL(resolve(arrayOfLong_, long_), RESOLVE_NO_MATCH);
+        REQUIRE(resolve(long_, arrayOfLong_) == RESOLVE_NO_MATCH);
+        REQUIRE(resolve(arrayOfLong_, long_) == RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(arrayOfLong_, arrayOfLong_), RESOLVE_MATCH);
-        BOOST_CHECK_EQUAL(resolve(arrayOfFloat_, arrayOfLong_), RESOLVE_NO_MATCH);
-        BOOST_CHECK_EQUAL(resolve(arrayOfLong_, arrayOfFloat_), RESOLVE_PROMOTABLE_TO_FLOAT);
+        REQUIRE(resolve(arrayOfLong_, arrayOfLong_) == RESOLVE_MATCH);
+        REQUIRE(resolve(arrayOfFloat_, arrayOfLong_) == RESOLVE_NO_MATCH);
+        REQUIRE(resolve(arrayOfLong_, arrayOfFloat_) == RESOLVE_PROMOTABLE_TO_FLOAT);
 
-        BOOST_CHECK_EQUAL(resolve(enumOne_, enumOne_), RESOLVE_MATCH);
-        BOOST_CHECK_EQUAL(resolve(enumOne_, enumTwo_), RESOLVE_NO_MATCH);
+        REQUIRE(resolve(enumOne_, enumOne_) == RESOLVE_MATCH);
+        REQUIRE(resolve(enumOne_, enumTwo_) == RESOLVE_NO_MATCH);
 
-        BOOST_CHECK_EQUAL(resolve(float_, unionOne_), RESOLVE_MATCH);
-        BOOST_CHECK_EQUAL(resolve(double_, unionOne_), RESOLVE_NO_MATCH);
-        BOOST_CHECK_EQUAL(resolve(float_, unionTwo_), RESOLVE_PROMOTABLE_TO_DOUBLE);
+        REQUIRE(resolve(float_, unionOne_) == RESOLVE_MATCH);
+        REQUIRE(resolve(double_, unionOne_) == RESOLVE_NO_MATCH);
+        REQUIRE(resolve(float_, unionTwo_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
 
-        BOOST_CHECK_EQUAL(resolve(unionOne_, float_), RESOLVE_MATCH);
-        BOOST_CHECK_EQUAL(resolve(unionOne_, double_), RESOLVE_PROMOTABLE_TO_DOUBLE);
-        BOOST_CHECK_EQUAL(resolve(unionTwo_, float_), RESOLVE_PROMOTABLE_TO_FLOAT);
-        BOOST_CHECK_EQUAL(resolve(unionOne_, unionTwo_), RESOLVE_MATCH);
+        REQUIRE(resolve(unionOne_, float_) == RESOLVE_MATCH);
+        REQUIRE(resolve(unionOne_, double_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
+        REQUIRE(resolve(unionTwo_, float_) == RESOLVE_PROMOTABLE_TO_FLOAT);
+        REQUIRE(resolve(unionOne_, unionTwo_) == RESOLVE_MATCH);
     }
 
 private:
@@ -728,25 +728,13 @@ private:
     ValidSchema unionTwo_;
 };
 
-template<typename T>
-void addTestCase(boost::unit_test::test_suite &test) {
-    boost::shared_ptr<T> newtest(new T);
-    test.add(BOOST_CLASS_TEST_CASE(&T::test, newtest));
-}
+TEST_CASE("Avro C++ unit test suite", "[all]") {
 
-boost::unit_test::test_suite*
-init_unit_test_suite(int argc, char* argv[]) {
-    using namespace boost::unit_test;
-
-    test_suite* test = BOOST_TEST_SUITE("Avro C++ unit test suite");
-
-    addTestCase<TestEncoding>(*test);
-    addTestCase<TestSchema>(*test);
-    addTestCase<TestNested>(*test);
-    addTestCase<TestGenerated>(*test);
-    addTestCase<TestBadStuff>(*test);
-    addTestCase<TestResolution>(*test);
-
-    return test;
+    TestEncoding().test();
+    TestSchema().test();
+    TestNested().test();
+    TestGenerated().test();
+    TestBadStuff().test();
+    TestResolution().test();
 }
 
