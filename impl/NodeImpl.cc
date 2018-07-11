@@ -23,19 +23,19 @@ namespace avro {
 
   SchemaResolution NodePrimitive::resolve(const Node &reader) const {
     if (type() == reader.type()) {
-      return RESOLVE_MATCH;
+      return SchemaResolution::RESOLVE_MATCH;
     }
 
-    if (type() == AVRO_INT && reader.type() == AVRO_LONG) {
-      return RESOLVE_PROMOTABLE_TO_LONG;
+    if ((type() == AVRO_INT) && reader.type() == AVRO_LONG) {
+      return SchemaResolution::RESOLVE_PROMOTABLE_TO_LONG;
     }
 
-    if (type() == AVRO_LONG && reader.type() == AVRO_FLOAT) {
-      return RESOLVE_PROMOTABLE_TO_FLOAT;
+    if ((type() == AVRO_INT || type() == AVRO_LONG) && reader.type() == AVRO_FLOAT) {
+      return SchemaResolution::RESOLVE_PROMOTABLE_TO_FLOAT;
     }
 
-    if (type() == AVRO_FLOAT && reader.type() == AVRO_DOUBLE) {
-      return RESOLVE_PROMOTABLE_TO_DOUBLE;
+    if ((type() == AVRO_INT || type() == AVRO_LONG || type() == AVRO_FLOAT) && reader.type() == AVRO_DOUBLE) {
+      return SchemaResolution::RESOLVE_PROMOTABLE_TO_DOUBLE;
     }
 
     return furtherResolution(reader);
@@ -44,7 +44,7 @@ namespace avro {
   SchemaResolution NodeRecord::resolve(const Node &reader) const {
     if (reader.type() == AVRO_RECORD) {
       if (name() == reader.name()) {
-        return RESOLVE_MATCH;
+        return SchemaResolution::RESOLVE_MATCH;
       }
     }
     return furtherResolution(reader);
@@ -52,7 +52,7 @@ namespace avro {
 
   SchemaResolution NodeEnum::resolve(const Node &reader) const {
     if (reader.type() == AVRO_ENUM) {
-      return (name() == reader.name()) ? RESOLVE_MATCH : RESOLVE_NO_MATCH;
+      return (name() == reader.name()) ? SchemaResolution::RESOLVE_MATCH : SchemaResolution::RESOLVE_NO_MATCH;
     }
     return furtherResolution(reader);
   }
@@ -82,15 +82,15 @@ namespace avro {
     // any writer type, so just search type by type returning the best match
     // found.
 
-    SchemaResolution match = RESOLVE_NO_MATCH;
+    SchemaResolution match = SchemaResolution::RESOLVE_NO_MATCH;
     for (size_t i = 0; i < leaves(); ++i) {
       const NodePtr &node = leafAt(i);
       SchemaResolution thisMatch = node->resolve(reader);
-      if (thisMatch == RESOLVE_MATCH) {
+      if (thisMatch == SchemaResolution::RESOLVE_MATCH) {
         match = thisMatch;
         break;
       }
-      if (match == RESOLVE_NO_MATCH) {
+      if (match == SchemaResolution::RESOLVE_NO_MATCH) {
         match = thisMatch;
       }
     }
@@ -103,7 +103,7 @@ namespace avro {
         (reader.fixedSize() == fixedSize()) &&
         (reader.name() == name())
         ) ?
-        RESOLVE_MATCH : RESOLVE_NO_MATCH;
+        SchemaResolution::RESOLVE_MATCH : SchemaResolution::RESOLVE_NO_MATCH;
     }
     return furtherResolution(reader);
   }
