@@ -19,12 +19,10 @@
 #ifndef avro_NodeImpl_hh__
 #define avro_NodeImpl_hh__
 
-#include "GenericDatum.hh"
-
 #include <limits>
 #include <set>
-#include <boost/weak_ptr.hpp>
 
+#include "GenericDatum.hh"
 #include "Node.hh"
 #include "NodeConcepts.hh"
 
