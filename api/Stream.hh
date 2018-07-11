@@ -20,10 +20,8 @@
 #define avro_Stream_hh__
 
 #include <memory>
-#include <string.h>
+#include <cstring>
 #include <cstdint>
-
-#include "boost/utility.hpp"
 #include "Exception.hh"
 
 namespace avro {
@@ -120,51 +118,51 @@ namespace avro {
   /* A convenience class for reading from an InputStream */
   struct StreamReader {
     /* The underlying input stream.*/
-    InputStream* in_;
+    InputStream* m_in;
 
     /* The next location to read from.*/
-    const uint8_t* next_;
+    const uint8_t* m_next;
 
     /* One past the last valid location.*/
-    const uint8_t* end_;
+    const uint8_t* m_end;
 
     /* Constructs an empty reader.*/
-    StreamReader() : in_(0), next_(0), end_(0) { }
+    StreamReader() : m_in(0), m_next(0), m_end(0) { }
 
     /* Constructs a reader with the given underlying stream.*/
-    StreamReader(InputStream& in) : in_(0), next_(0), end_(0) {
+    StreamReader(InputStream& in) : m_in(0), m_next(0), m_end(0) {
       reset(in);
     }
 
     /* Replaces the current input stream with the given one after backing up the original one if required.*/
     void reset(InputStream& is) {
-      if (in_ != 0 && end_ != next_) {
-        in_->backup(end_ - next_);
+      if (m_in != 0 && m_end != m_next) {
+        m_in->backup(m_end - m_next);
       }
-      in_ = &is;
-      next_ = end_ = 0;
+      m_in = &is;
+      m_next = m_end = 0;
     }
 
     /* Read just one byte from the underlying stream. If there are no more data, throws an exception.*/
     uint8_t read() {
-      if (next_ == end_) {
+      if (m_next == m_end) {
         more();
       }
-      return *next_++;
+      return *m_next++;
     }
 
     /* Reads the given number of bytes from the underlying stream. If there are not that many bytes, throws an exception.*/
     void readBytes(uint8_t* b, size_t n) {
       while (n > 0) {
-        if (next_ == end_) {
+        if (m_next == m_end) {
           more();
         }
-        size_t q = end_ - next_;
+        size_t q = m_end - m_next;
         if (q > n) {
           q = n;
         }
-        ::memcpy(b, next_, q);
-        next_ += q;
+        std::memcpy(b, m_next, q);
+        m_next += q;
         b += q;
         n -= q;
       }
@@ -172,12 +170,12 @@ namespace avro {
 
     /* Skips the given number of bytes. Of there are not so that many bytes, throws an exception.*/
     void skipBytes(size_t n) {
-      if (n > static_cast<size_t> (end_ - next_)) {
-        n -= end_ - next_;
-        next_ = end_;
-        in_->skip(n);
+      if (n > static_cast<size_t> (m_end - m_next)) {
+        n -= m_end - m_next;
+        m_next = m_end;
+        m_in->skip(n);
       } else {
-        next_ += n;
+        m_next += n;
       }
     }
 
@@ -185,9 +183,9 @@ namespace avro {
        @return true if some data could be obtained. False is no more data is available on the stream.*/
     bool fill() {
       size_t n = 0;
-      while (in_->next(&next_, &n)) {
+      while (m_in->next(&m_next, &n)) {
         if (n != 0) {
-          end_ = next_ + n;
+          m_end = m_next + n;
           return true;
         }
       }
@@ -203,7 +201,7 @@ namespace avro {
 
     /* Returns true if and only if the end of stream is not reached.*/
     bool hasMore() {
-      return (next_ == end_) ? fill() : true;
+      return (m_next == m_end) ? fill() : true;
     }
   };
 
@@ -253,7 +251,7 @@ namespace avro {
         if (q > n) {
           q = n;
         }
-        ::memcpy(next_, b, q);
+        std::memcpy(next_, b, q);
         next_ += q;
         b += q;
         n -= q;
