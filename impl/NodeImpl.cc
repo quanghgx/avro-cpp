@@ -23,19 +23,19 @@ namespace avro {
 
   SchemaResolution NodePrimitive::resolve(const Node &reader) const {
     if (type() == reader.type()) {
-      return SchemaResolution::RESOLVE_MATCH;
+      return SchemaResolution::MATCH;
     }
 
     if ((type() == AVRO_INT) && reader.type() == AVRO_LONG) {
-      return SchemaResolution::RESOLVE_PROMOTABLE_TO_LONG;
+      return SchemaResolution::PROMOTABLE_TO_LONG;
     }
 
     if ((type() == AVRO_INT || type() == AVRO_LONG) && reader.type() == AVRO_FLOAT) {
-      return SchemaResolution::RESOLVE_PROMOTABLE_TO_FLOAT;
+      return SchemaResolution::PROMOTABLE_TO_FLOAT;
     }
 
     if ((type() == AVRO_INT || type() == AVRO_LONG || type() == AVRO_FLOAT) && reader.type() == AVRO_DOUBLE) {
-      return SchemaResolution::RESOLVE_PROMOTABLE_TO_DOUBLE;
+      return SchemaResolution::PROMOTABLE_TO_DOUBLE;
     }
 
     return furtherResolution(reader);
@@ -44,7 +44,7 @@ namespace avro {
   SchemaResolution NodeRecord::resolve(const Node &reader) const {
     if (reader.type() == AVRO_RECORD) {
       if (name() == reader.name()) {
-        return SchemaResolution::RESOLVE_MATCH;
+        return SchemaResolution::MATCH;
       }
     }
     return furtherResolution(reader);
@@ -52,7 +52,7 @@ namespace avro {
 
   SchemaResolution NodeEnum::resolve(const Node &reader) const {
     if (reader.type() == AVRO_ENUM) {
-      return (name() == reader.name()) ? SchemaResolution::RESOLVE_MATCH : SchemaResolution::RESOLVE_NO_MATCH;
+      return (name() == reader.name()) ? SchemaResolution::MATCH : SchemaResolution::NO_MATCH;
     }
     return furtherResolution(reader);
   }
@@ -82,15 +82,15 @@ namespace avro {
     // any writer type, so just search type by type returning the best match
     // found.
 
-    SchemaResolution match = SchemaResolution::RESOLVE_NO_MATCH;
+    SchemaResolution match = SchemaResolution::NO_MATCH;
     for (size_t i = 0; i < leaves(); ++i) {
       const NodePtr &node = leafAt(i);
       SchemaResolution thisMatch = node->resolve(reader);
-      if (thisMatch == SchemaResolution::RESOLVE_MATCH) {
+      if (thisMatch == SchemaResolution::MATCH) {
         match = thisMatch;
         break;
       }
-      if (match == SchemaResolution::RESOLVE_NO_MATCH) {
+      if (match == SchemaResolution::NO_MATCH) {
         match = thisMatch;
       }
     }
@@ -103,7 +103,7 @@ namespace avro {
         (reader.fixedSize() == fixedSize()) &&
         (reader.name() == name())
         ) ?
-        SchemaResolution::RESOLVE_MATCH : SchemaResolution::RESOLVE_NO_MATCH;
+        SchemaResolution::MATCH : SchemaResolution::NO_MATCH;
     }
     return furtherResolution(reader);
   }

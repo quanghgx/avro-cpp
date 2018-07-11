@@ -125,7 +125,7 @@ namespace avro {
     void setLeafToSymbolic(int index, const NodePtr &node);
 
     SchemaResolution furtherResolution(const Node &reader) const {
-      SchemaResolution match = SchemaResolution::RESOLVE_NO_MATCH;
+      SchemaResolution match = SchemaResolution::NO_MATCH;
 
       if (reader.type() == AVRO_SYMBOLIC) {
 
@@ -144,14 +144,14 @@ namespace avro {
           SchemaResolution thisMatch = resolve(*node);
 
           // if matched then the search is done
-          if (thisMatch == SchemaResolution::RESOLVE_MATCH) {
+          if (thisMatch == SchemaResolution::MATCH) {
             match = thisMatch;
             break;
           }
 
           // thisMatch is either no match, or promotable, this will set match to 
           // promotable if it hasn't been set already
-          if (match == SchemaResolution::RESOLVE_NO_MATCH) {
+          if (match == SchemaResolution::NO_MATCH) {
             match = thisMatch;
           }
         }

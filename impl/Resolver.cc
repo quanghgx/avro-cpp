@@ -513,21 +513,21 @@ namespace avro {
 
       SchemaResolution match = writer->resolve(*reader);
 
-      if (match == SchemaResolution::RESOLVE_NO_MATCH) {
+      if (match == SchemaResolution::NO_MATCH) {
         instruction = new PrimitiveSkipper<T>();
       } else if (reader->type() == AVRO_UNION) {
         const CompoundLayout &compoundLayout = static_cast<const CompoundLayout &> (offset);
         instruction = new NonUnionToUnionParser(*this, writer, reader, compoundLayout);
-      } else if (match == SchemaResolution::RESOLVE_MATCH) {
+      } else if (match == SchemaResolution::MATCH) {
         const PrimitiveLayout &primitiveLayout = static_cast<const PrimitiveLayout &> (offset);
         instruction = new PrimitiveParser<T>(primitiveLayout);
-      } else if (match == SchemaResolution::RESOLVE_PROMOTABLE_TO_LONG) {
+      } else if (match == SchemaResolution::PROMOTABLE_TO_LONG) {
         const PrimitiveLayout &primitiveLayout = static_cast<const PrimitiveLayout &> (offset);
         instruction = new PrimitivePromoter<T, int64_t>(primitiveLayout);
-      } else if (match == SchemaResolution::RESOLVE_PROMOTABLE_TO_FLOAT) {
+      } else if (match == SchemaResolution::PROMOTABLE_TO_FLOAT) {
         const PrimitiveLayout &primitiveLayout = static_cast<const PrimitiveLayout &> (offset);
         instruction = new PrimitivePromoter<T, float>(primitiveLayout);
-      } else if (match == SchemaResolution::RESOLVE_PROMOTABLE_TO_DOUBLE) {
+      } else if (match == SchemaResolution::PROMOTABLE_TO_DOUBLE) {
         const PrimitiveLayout &primitiveLayout = static_cast<const PrimitiveLayout &> (offset);
         instruction = new PrimitivePromoter<T, double>(primitiveLayout);
       } else {
@@ -547,11 +547,11 @@ namespace avro {
     constructCompound(const NodePtr &writer, const NodePtr &reader, const Layout &offset) {
       Resolver *instruction;
 
-      SchemaResolution match = SchemaResolution::RESOLVE_NO_MATCH;
+      SchemaResolution match = SchemaResolution::NO_MATCH;
 
       match = writer->resolve(*reader);
 
-      if (match == SchemaResolution::RESOLVE_NO_MATCH) {
+      if (match == SchemaResolution::NO_MATCH) {
         instruction = new Skipper(*this, writer);
       } else if (writer->type() != AVRO_UNION && reader->type() == AVRO_UNION) {
         const CompoundLayout &compoundLayout = dynamic_cast<const CompoundLayout &> (offset);
@@ -716,7 +716,7 @@ namespace avro {
 
     SchemaResolution
     checkUnionMatch(const NodePtr &writer, const NodePtr &reader, size_t &index) {
-      SchemaResolution bestMatch = SchemaResolution::RESOLVE_NO_MATCH;
+      SchemaResolution bestMatch = SchemaResolution::NO_MATCH;
 
       index = 0;
       size_t leaves = reader->leaves();
@@ -726,12 +726,12 @@ namespace avro {
         const NodePtr &leaf = reader->leafAt(i);
         SchemaResolution newMatch = writer->resolve(*leaf);
 
-        if (newMatch == SchemaResolution::RESOLVE_MATCH) {
+        if (newMatch == SchemaResolution::MATCH) {
           bestMatch = newMatch;
           index = i;
           break;
         }
-        if (bestMatch == SchemaResolution::RESOLVE_NO_MATCH) {
+        if (bestMatch == SchemaResolution::NO_MATCH) {
           bestMatch = newMatch;
           index = i;
         }
@@ -759,7 +759,7 @@ namespace avro {
 
       SchemaResolution match = checkUnionMatch(w, reader, index);
 
-      if (match == SchemaResolution::RESOLVE_NO_MATCH) {
+      if (match == SchemaResolution::NO_MATCH) {
         resolvers_.push_back(factory.skipper(w));
         // push back a non-sensical number
         choiceMapping_.push_back(reader->leaves());
@@ -780,7 +780,7 @@ namespace avro {
     SchemaResolution bestMatch =
 #endif
       checkUnionMatch(writer, reader, choice_);
-    assert(bestMatch != SchemaResolution::RESOLVE_NO_MATCH);
+    assert(bestMatch != SchemaResolution::NO_MATCH);
     resolver_.reset(factory.construct(writer, reader->leafAt(choice_), offsets.at(choice_ + 2)));
   }
 
