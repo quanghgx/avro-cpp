@@ -220,7 +220,7 @@ namespace avro {
                     case 's':
                         break;
                     default:
-                        BOOST_FAIL("Unknown mnemonic: " << c);
+                        throw std::runtime_error("Unknown mnemonic");
                 }
             }
             return result;
@@ -293,7 +293,7 @@ namespace avro {
                         e.encodeUnionIndex(sc.extractInt());
                         break;
                     default:
-                        BOOST_FAIL("Unknown mnemonic: " << c);
+                        throw std::runtime_error("Unknown mnemonic");
                 }
             }
             e.flush();
@@ -352,10 +352,10 @@ namespace avro {
                     case 'R':
                         break;
                     default:
-                        BOOST_FAIL("Don't know how to skip: " << c);
+                        throw std::runtime_error("Don't know how to skip");
                 }
             }
-            BOOST_FAIL("End reached while trying to skip");
+            throw std::runtime_error("End reached while trying to skip");
             throw 0; // Just to keep the compiler happy.
         }
 
@@ -518,10 +518,10 @@ namespace avro {
                         static_cast<ResolvingDecoder&> (d).fieldOrder();
                         continue;
                     default:
-                        BOOST_FAIL("Unknown mnemonic: " << c);
+                        throw std::runtime_error("Unknown mnemonic");
                 }
             }
-            BOOST_CHECK(it == values.end());
+            REQUIRE(it == values.end());
         }
 
         ValidSchema makeValidSchema(const char* schema) {
@@ -1547,12 +1547,12 @@ testSuite.add(BOOST_PARAM_TEST_CASE(&testFunc<Factory>,         \
             d->init(*s2);
             BOOST_CHECK_EQUAL(d->decodeDouble(), std::numeric_limits<double>::infinity());
             BOOST_CHECK_EQUAL(d->decodeDouble(), -std::numeric_limits<double>::infinity());
-            BOOST_CHECK(boost::math::isnan(d->decodeDouble()));
-            BOOST_CHECK(d->decodeDouble() == std::numeric_limits<double>::max());
-            BOOST_CHECK(d->decodeDouble() == std::numeric_limits<double>::min());
+            REQUIRE(boost::math::isnan(d->decodeDouble()));
+            REQUIRE(d->decodeDouble() == std::numeric_limits<double>::max());
+            REQUIRE(d->decodeDouble() == std::numeric_limits<double>::min());
             BOOST_CHECK_EQUAL(d->decodeFloat(), std::numeric_limits<float>::infinity());
             BOOST_CHECK_EQUAL(d->decodeFloat(), -std::numeric_limits<float>::infinity());
-            BOOST_CHECK(boost::math::isnan(d->decodeFloat()));
+            REQUIRE(boost::math::isnan(d->decodeFloat()));
             BOOST_CHECK_CLOSE(d->decodeFloat(), std::numeric_limits<float>::max(), 0.00011);
             BOOST_CHECK_CLOSE(d->decodeFloat(), std::numeric_limits<float>::min(), 0.00011);
         }
