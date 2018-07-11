@@ -61,23 +61,23 @@ namespace avro {
     ProductionPtr ValidatingGrammarGenerator::doGenerate(const NodePtr& n,
       map<NodePtr, ProductionPtr> &m) {
       switch (n->type()) {
-        case AVRO_NULL:
+        case Type::AVRO_NULL:
           return make_shared<Production>(1, Symbol::nullSymbol());
-        case AVRO_BOOL:
+        case Type::AVRO_BOOL:
           return make_shared<Production>(1, Symbol::boolSymbol());
-        case AVRO_INT:
+        case Type::AVRO_INT:
           return make_shared<Production>(1, Symbol::intSymbol());
-        case AVRO_LONG:
+        case Type::AVRO_LONG:
           return make_shared<Production>(1, Symbol::longSymbol());
-        case AVRO_FLOAT:
+        case Type::AVRO_FLOAT:
           return make_shared<Production>(1, Symbol::floatSymbol());
-        case AVRO_DOUBLE:
+        case Type::AVRO_DOUBLE:
           return make_shared<Production>(1, Symbol::doubleSymbol());
-        case AVRO_STRING:
+        case Type::AVRO_STRING:
           return make_shared<Production>(1, Symbol::stringSymbol());
-        case AVRO_BYTES:
+        case Type::AVRO_BYTES:
           return make_shared<Production>(1, Symbol::bytesSymbol());
-        case AVRO_FIXED:
+        case Type::AVRO_FIXED:
         {
           ProductionPtr result = make_shared<Production>();
           result->push_back(Symbol::sizeCheckSymbol(n->fixedSize()));
@@ -85,7 +85,7 @@ namespace avro {
           m[n] = result;
           return result;
         }
-        case AVRO_RECORD:
+        case Type::AVRO_RECORD:
         {
           ProductionPtr result = make_shared<Production>();
 
@@ -101,7 +101,7 @@ namespace avro {
           m[n] = result;
           return result;
         }
-        case AVRO_ENUM:
+        case Type::AVRO_ENUM:
         {
           ProductionPtr result = make_shared<Production>();
           result->push_back(Symbol::sizeCheckSymbol(n->names()));
@@ -109,7 +109,7 @@ namespace avro {
           m[n] = result;
           return result;
         }
-        case AVRO_ARRAY:
+        case Type::AVRO_ARRAY:
         {
           ProductionPtr result = make_shared<Production>();
           result->push_back(Symbol::arrayEndSymbol());
@@ -117,7 +117,7 @@ namespace avro {
           result->push_back(Symbol::arrayStartSymbol());
           return result;
         }
-        case AVRO_MAP:
+        case Type::AVRO_MAP:
         {
           ProductionPtr pp = doGenerate(n->leafAt(1), m);
           ProductionPtr v(new Production(*pp));
@@ -128,7 +128,7 @@ namespace avro {
           result->push_back(Symbol::mapStartSymbol());
           return result;
         }
-        case AVRO_UNION:
+        case Type::AVRO_UNION:
         {
           vector<ProductionPtr> vv;
           size_t c = n->leaves();
@@ -141,7 +141,7 @@ namespace avro {
           result->push_back(Symbol::unionSymbol());
           return result;
         }
-        case AVRO_SYMBOLIC:
+        case Type::AVRO_SYMBOLIC:
         {
           shared_ptr<NodeSymbolic> ns = static_pointer_cast<NodeSymbolic>(n);
           NodePtr nn = ns->getNode();

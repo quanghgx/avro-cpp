@@ -515,7 +515,7 @@ namespace avro {
 
       if (match == SchemaResolution::NO_MATCH) {
         instruction = new PrimitiveSkipper<T>();
-      } else if (reader->type() == AVRO_UNION) {
+      } else if (reader->type() == Type::AVRO_UNION) {
         const CompoundLayout &compoundLayout = static_cast<const CompoundLayout &> (offset);
         instruction = new NonUnionToUnionParser(*this, writer, reader, compoundLayout);
       } else if (match == SchemaResolution::MATCH) {
@@ -553,10 +553,10 @@ namespace avro {
 
       if (match == SchemaResolution::NO_MATCH) {
         instruction = new Skipper(*this, writer);
-      } else if (writer->type() != AVRO_UNION && reader->type() == AVRO_UNION) {
+      } else if (writer->type() != Type::AVRO_UNION && reader->type() == Type::AVRO_UNION) {
         const CompoundLayout &compoundLayout = dynamic_cast<const CompoundLayout &> (offset);
         instruction = new NonUnionToUnionParser(*this, writer, reader, compoundLayout);
-      } else if (writer->type() == AVRO_UNION && reader->type() != AVRO_UNION) {
+      } else if (writer->type() == Type::AVRO_UNION && reader->type() != Type::AVRO_UNION) {
         instruction = new UnionToNonUnionParser(*this, writer, reader, offset);
       } else {
         const CompoundLayout &compoundLayout = dynamic_cast<const CompoundLayout &> (offset);
@@ -579,11 +579,13 @@ namespace avro {
 
       typedef Resolver * (ResolverFactory::*BuilderFunc)(const NodePtr &writer, const NodePtr &reader, const Layout & offset);
 
-      NodePtr currentWriter = (writer->type() == AVRO_SYMBOLIC) ?
-        resolveSymbol(writer) : writer;
+      NodePtr currentWriter = (writer->type() == Type::AVRO_SYMBOLIC) ?
+        resolveSymbol(writer) :
+        writer;
 
-      NodePtr currentReader = (reader->type() == AVRO_SYMBOLIC) ?
-        resolveSymbol(reader) : reader;
+      NodePtr currentReader = (reader->type() == Type::AVRO_SYMBOLIC) ?
+        resolveSymbol(reader) :
+        reader;
 
       static const BuilderFunc funcs[] = {
         &ResolverFactory::constructPrimitive<std::string>,
@@ -602,9 +604,9 @@ namespace avro {
         &ResolverFactory::constructCompound<FixedParser, FixedSkipper>
       };
 
-      static_assert((sizeof (funcs) / sizeof (BuilderFunc)) == (AVRO_NUM_TYPES));
+      //static_assert((sizeof (funcs) / sizeof (BuilderFunc)) == type_as_integer(Type::AVRO_NUM_TYPES));
 
-      BuilderFunc func = funcs[currentWriter->type()];
+      BuilderFunc func = funcs[type_as_integer(currentWriter->type())];
       assert(func);
 
       return ((this)->*(func))(currentWriter, currentReader, offset);
@@ -615,7 +617,7 @@ namespace avro {
 
       typedef Resolver * (ResolverFactory::*BuilderFunc)(const NodePtr & writer);
 
-      NodePtr currentWriter = (writer->type() == AVRO_SYMBOLIC) ?
+      NodePtr currentWriter = (writer->type() == Type::AVRO_SYMBOLIC) ?
         writer->leafAt(0) : writer;
 
       static const BuilderFunc funcs[] = {
@@ -635,9 +637,9 @@ namespace avro {
         &ResolverFactory::constructCompoundSkipper<FixedSkipper>
       };
 
-      static_assert((sizeof (funcs) / sizeof (BuilderFunc)) == (AVRO_NUM_TYPES));
+      //static_assert((sizeof (funcs) / sizeof (BuilderFunc)) == type_as_integer(Type::AVRO_NUM_TYPES));
 
-      BuilderFunc func = funcs[currentWriter->type()];
+      BuilderFunc func = funcs[type_as_integer(currentWriter->type())];
       assert(func);
 
       return ((this)->*(func))(currentWriter);

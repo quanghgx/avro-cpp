@@ -35,50 +35,50 @@ namespace avro {
 
   void GenericDatum::init(const NodePtr& schema) {
     NodePtr sc = schema;
-    if (type_ == AVRO_SYMBOLIC) {
+    if (type_ == Type::AVRO_SYMBOLIC) {
       sc = resolveSymbol(schema);
       type_ = sc->type();
     }
     switch (type_) {
-      case AVRO_NULL:
+      case Type::AVRO_NULL:
         break;
-      case AVRO_BOOL:
+      case Type::AVRO_BOOL:
         value_ = bool();
         break;
-      case AVRO_INT:
+      case Type::AVRO_INT:
         value_ = int32_t();
         break;
-      case AVRO_LONG:
+      case Type::AVRO_LONG:
         value_ = int64_t();
         break;
-      case AVRO_FLOAT:
+      case Type::AVRO_FLOAT:
         value_ = float();
         break;
-      case AVRO_DOUBLE:
+      case Type::AVRO_DOUBLE:
         value_ = double();
         break;
-      case AVRO_STRING:
+      case Type::AVRO_STRING:
         value_ = string();
         break;
-      case AVRO_BYTES:
+      case Type::AVRO_BYTES:
         value_ = vector<uint8_t>();
         break;
-      case AVRO_FIXED:
+      case Type::AVRO_FIXED:
         value_ = GenericFixed(sc);
         break;
-      case AVRO_RECORD:
+      case Type::AVRO_RECORD:
         value_ = GenericRecord(sc);
         break;
-      case AVRO_ENUM:
+      case Type::AVRO_ENUM:
         value_ = GenericEnum(sc);
         break;
-      case AVRO_ARRAY:
+      case Type::AVRO_ARRAY:
         value_ = GenericArray(sc);
         break;
-      case AVRO_MAP:
+      case Type::AVRO_MAP:
         value_ = GenericMap(sc);
         break;
-      case AVRO_UNION:
+      case Type::AVRO_UNION:
         value_ = GenericUnion(sc);
         break;
       default:
@@ -88,7 +88,7 @@ namespace avro {
   }
 
   GenericRecord::GenericRecord(const NodePtr& schema) :
-  GenericContainer(AVRO_RECORD, schema) {
+  GenericContainer(Type::AVRO_RECORD, schema) {
     fields_.resize(schema->leaves());
     for (size_t i = 0; i < schema->leaves(); ++i) {
       fields_[i] = GenericDatum(schema->leafAt(i));

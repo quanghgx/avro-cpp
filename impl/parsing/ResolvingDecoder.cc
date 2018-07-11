@@ -109,7 +109,7 @@ namespace avro {
       const size_t c = reader->leaves();
       for (size_t j = 0; j < c; ++j) {
         NodePtr r = reader->leafAt(j);
-        if (r->type() == AVRO_SYMBOLIC) {
+        if (r->type() == Type::AVRO_SYMBOLIC) {
           r = resolveSymbol(r);
         }
         if (t == r->type()) {
@@ -127,14 +127,14 @@ namespace avro {
         const NodePtr& r = reader->leafAt(j);
         Type rt = r->type();
         switch (t) {
-          case AVRO_INT:
-            if (rt == AVRO_LONG || rt == AVRO_DOUBLE || rt == AVRO_FLOAT) {
+          case Type::AVRO_INT:
+            if (rt == Type::AVRO_LONG || rt == Type::AVRO_DOUBLE || rt == Type::AVRO_FLOAT) {
               return j;
             }
             break;
-          case AVRO_LONG:
-          case AVRO_FLOAT:
-            if (rt == AVRO_DOUBLE) {
+          case Type::AVRO_LONG:
+          case Type::AVRO_FLOAT:
+            if (rt == Type::AVRO_DOUBLE) {
               return j;
             }
             break;
@@ -169,7 +169,7 @@ namespace avro {
 
     ProductionPtr ResolvingGrammarGenerator::getWriterProduction(
       const NodePtr& n, map<NodePtr, ProductionPtr>& m2) {
-      const NodePtr& nn = (n->type() == AVRO_SYMBOLIC) ?
+      const NodePtr& nn = (n->type() == Type::AVRO_SYMBOLIC) ?
         static_cast<const NodeSymbolic&> (*n).getNode() : n;
       map<NodePtr, ProductionPtr>::const_iterator it2 = m2.find(nn);
       if (it2 != m2.end()) {
@@ -231,7 +231,7 @@ namespace avro {
         NodePtr s = reader->leafAt(it->second);
         fieldOrder.push_back(it->second);
 
-        if (s->type() == AVRO_SYMBOLIC) {
+        if (s->type() == Type::AVRO_SYMBOLIC) {
           s = resolveSymbol(s);
         }
         shared_ptr<vector<uint8_t> > defaultBinary =
@@ -273,30 +273,30 @@ namespace avro {
       const NodePtr& w, const NodePtr& r,
       map<NodePair, ProductionPtr> &m,
       map<NodePtr, ProductionPtr> &m2) {
-      const NodePtr writer = w->type() == AVRO_SYMBOLIC ? resolveSymbol(w) : w;
-      const NodePtr reader = r->type() == AVRO_SYMBOLIC ? resolveSymbol(r) : r;
+      const NodePtr writer = w->type() == Type::AVRO_SYMBOLIC ? resolveSymbol(w) : w;
+      const NodePtr reader = r->type() == Type::AVRO_SYMBOLIC ? resolveSymbol(r) : r;
       Type writerType = writer->type();
       Type readerType = reader->type();
 
       if (writerType == readerType) {
         switch (writerType) {
-          case AVRO_NULL:
+          case Type::AVRO_NULL:
             return make_shared<Production>(1, Symbol::nullSymbol());
-          case AVRO_BOOL:
+          case Type::AVRO_BOOL:
             return make_shared<Production>(1, Symbol::boolSymbol());
-          case AVRO_INT:
+          case Type::AVRO_INT:
             return make_shared<Production>(1, Symbol::intSymbol());
-          case AVRO_LONG:
+          case Type::AVRO_LONG:
             return make_shared<Production>(1, Symbol::longSymbol());
-          case AVRO_FLOAT:
+          case Type::AVRO_FLOAT:
             return make_shared<Production>(1, Symbol::floatSymbol());
-          case AVRO_DOUBLE:
+          case Type::AVRO_DOUBLE:
             return make_shared<Production>(1, Symbol::doubleSymbol());
-          case AVRO_STRING:
+          case Type::AVRO_STRING:
             return make_shared<Production>(1, Symbol::stringSymbol());
-          case AVRO_BYTES:
+          case Type::AVRO_BYTES:
             return make_shared<Production>(1, Symbol::bytesSymbol());
-          case AVRO_FIXED:
+          case Type::AVRO_FIXED:
             if (writer->name() == reader->name() &&
               writer->fixedSize() == reader->fixedSize()) {
               ProductionPtr result = make_shared<Production>();
@@ -306,7 +306,7 @@ namespace avro {
               return result;
             }
             break;
-          case AVRO_RECORD:
+          case Type::AVRO_RECORD:
             if (writer->name() == reader->name()) {
               const pair<NodePtr, NodePtr> key(writer, reader);
               map<NodePair, ProductionPtr>::const_iterator kp = m.find(key);
@@ -321,7 +321,7 @@ namespace avro {
             }
             break;
 
-          case AVRO_ENUM:
+          case Type::AVRO_ENUM:
             if (writer->name() == reader->name()) {
               ProductionPtr result = make_shared<Production>();
               result->push_back(Symbol::enumAdjustSymbol(writer, reader));
@@ -331,7 +331,7 @@ namespace avro {
             }
             break;
 
-          case AVRO_ARRAY:
+          case Type::AVRO_ARRAY:
           {
             ProductionPtr p = getWriterProduction(writer->leafAt(0), m2);
             ProductionPtr p2 = doGenerate2(writer->leafAt(0), reader->leafAt(0), m, m2);
@@ -341,7 +341,7 @@ namespace avro {
             result->push_back(Symbol::arrayStartSymbol());
             return result;
           }
-          case AVRO_MAP:
+          case Type::AVRO_MAP:
           {
             ProductionPtr pp =
               doGenerate2(writer->leafAt(1), reader->leafAt(1), m, m2);
@@ -359,9 +359,9 @@ namespace avro {
             result->push_back(Symbol::mapStartSymbol());
             return result;
           }
-          case AVRO_UNION:
+          case Type::AVRO_UNION:
             return resolveUnion(writer, reader, m, m2);
-          case AVRO_SYMBOLIC:
+          case Type::AVRO_SYMBOLIC:
           {
             shared_ptr<NodeSymbolic> w =
               static_pointer_cast<NodeSymbolic>(writer);
@@ -379,34 +379,34 @@ namespace avro {
           default:
             throw Exception("Unknown node type");
         }
-      } else if (writerType == AVRO_UNION) {
+      } else if (writerType == Type::AVRO_UNION) {
         return resolveUnion(writer, reader, m, m2);
       } else {
         switch (readerType) {
-          case AVRO_LONG:
-            if (writerType == AVRO_INT) {
+          case Type::AVRO_LONG:
+            if (writerType == Type::AVRO_INT) {
               return make_shared<Production>(1,
                 Symbol::resolveSymbol(Symbol::sInt, Symbol::sLong));
             }
             break;
-          case AVRO_FLOAT:
-            if (writerType == AVRO_INT || writerType == AVRO_LONG) {
+          case Type::AVRO_FLOAT:
+            if (writerType == Type::AVRO_INT || writerType == Type::AVRO_LONG) {
               return make_shared<Production>(1,
-                Symbol::resolveSymbol(writerType == AVRO_INT ?
+                Symbol::resolveSymbol(writerType == Type::AVRO_INT ?
                 Symbol::sInt : Symbol::sLong, Symbol::sFloat));
             }
             break;
-          case AVRO_DOUBLE:
-            if (writerType == AVRO_INT || writerType == AVRO_LONG
-              || writerType == AVRO_FLOAT) {
+          case Type::AVRO_DOUBLE:
+            if (writerType == Type::AVRO_INT || writerType == Type::AVRO_LONG
+              || writerType == Type::AVRO_FLOAT) {
               return make_shared<Production>(1,
-                Symbol::resolveSymbol(writerType == AVRO_INT ?
-                Symbol::sInt : writerType == AVRO_LONG ?
+                Symbol::resolveSymbol(writerType == Type::AVRO_INT ?
+                Symbol::sInt : writerType == Type::AVRO_LONG ?
                 Symbol::sLong : Symbol::sFloat, Symbol::sDouble));
             }
             break;
 
-          case AVRO_UNION:
+          case Type::AVRO_UNION:
           {
             int j = bestBranch(writer, reader);
             if (j >= 0) {
@@ -418,15 +418,15 @@ namespace avro {
             }
           }
             break;
-          case AVRO_NULL:
-          case AVRO_BOOL:
-          case AVRO_INT:
-          case AVRO_STRING:
-          case AVRO_BYTES:
-          case AVRO_ENUM:
-          case AVRO_ARRAY:
-          case AVRO_MAP:
-          case AVRO_RECORD:
+          case Type::AVRO_NULL:
+          case Type::AVRO_BOOL:
+          case Type::AVRO_INT:
+          case Type::AVRO_STRING:
+          case Type::AVRO_BYTES:
+          case Type::AVRO_ENUM:
+          case Type::AVRO_ARRAY:
+          case Type::AVRO_MAP:
+          case Type::AVRO_RECORD:
             break;
           default:
             throw Exception("Unknown node type");

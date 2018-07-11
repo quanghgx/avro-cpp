@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 #include <sstream>
-
 #include "Compiler.hh"
 #include "Types.hh"
 #include "Schema.hh"
@@ -44,21 +43,21 @@ namespace avro {
 
   static NodePtr makePrimitive(const std::string& t) {
     if (t == "null") {
-      return NodePtr(new NodePrimitive(AVRO_NULL));
+      return NodePtr(new NodePrimitive(Type::AVRO_NULL));
     } else if (t == "boolean") {
-      return NodePtr(new NodePrimitive(AVRO_BOOL));
+      return NodePtr(new NodePrimitive(Type::AVRO_BOOL));
     } else if (t == "int") {
-      return NodePtr(new NodePrimitive(AVRO_INT));
+      return NodePtr(new NodePrimitive(Type::AVRO_INT));
     } else if (t == "long") {
-      return NodePtr(new NodePrimitive(AVRO_LONG));
+      return NodePtr(new NodePrimitive(Type::AVRO_LONG));
     } else if (t == "float") {
-      return NodePtr(new NodePrimitive(AVRO_FLOAT));
+      return NodePtr(new NodePrimitive(Type::AVRO_FLOAT));
     } else if (t == "double") {
-      return NodePtr(new NodePrimitive(AVRO_DOUBLE));
+      return NodePtr(new NodePrimitive(Type::AVRO_DOUBLE));
     } else if (t == "string") {
-      return NodePtr(new NodePrimitive(AVRO_STRING));
+      return NodePtr(new NodePrimitive(Type::AVRO_STRING));
     } else if (t == "bytes") {
-      return NodePtr(new NodePrimitive(AVRO_BYTES));
+      return NodePtr(new NodePrimitive(Type::AVRO_BYTES));
     } else {
       return NodePtr();
     }
@@ -163,36 +162,36 @@ namespace avro {
   static GenericDatum makeGenericDatum(NodePtr n,
     const Entity& e, const SymbolTable& st) {
     Type t = n->type();
-    if (t == AVRO_SYMBOLIC) {
+    if (t == Type::AVRO_SYMBOLIC) {
       n = st.find(n->name())->second;
       t = n->type();
     }
     switch (t) {
-      case AVRO_STRING:
+      case Type::AVRO_STRING:
         assertType(e, json::etString);
         return GenericDatum(e.stringValue());
-      case AVRO_BYTES:
+      case Type::AVRO_BYTES:
         assertType(e, json::etString);
         return GenericDatum(toBin(e.stringValue()));
-      case AVRO_INT:
+      case Type::AVRO_INT:
         assertType(e, json::etLong);
         return GenericDatum(static_cast<int32_t> (e.longValue()));
-      case AVRO_LONG:
+      case Type::AVRO_LONG:
         assertType(e, json::etLong);
         return GenericDatum(e.longValue());
-      case AVRO_FLOAT:
+      case Type::AVRO_FLOAT:
         assertType(e, json::etDouble);
         return GenericDatum(static_cast<float> (e.doubleValue()));
-      case AVRO_DOUBLE:
+      case Type::AVRO_DOUBLE:
         assertType(e, json::etDouble);
         return GenericDatum(e.doubleValue());
-      case AVRO_BOOL:
+      case Type::AVRO_BOOL:
         assertType(e, json::etBool);
         return GenericDatum(e.boolValue());
-      case AVRO_NULL:
+      case Type::AVRO_NULL:
         assertType(e, json::etNull);
         return GenericDatum();
-      case AVRO_RECORD:
+      case Type::AVRO_RECORD:
       {
         assertType(e, json::etObject);
         GenericRecord result(n);
@@ -208,10 +207,10 @@ namespace avro {
         }
         return GenericDatum(n, result);
       }
-      case AVRO_ENUM:
+      case Type::AVRO_ENUM:
         assertType(e, json::etString);
         return GenericDatum(n, GenericEnum(n, e.stringValue()));
-      case AVRO_ARRAY:
+      case Type::AVRO_ARRAY:
       {
         assertType(e, json::etArray);
         GenericArray result(n);
@@ -222,7 +221,7 @@ namespace avro {
         }
         return GenericDatum(n, result);
       }
-      case AVRO_MAP:
+      case Type::AVRO_MAP:
       {
         assertType(e, json::etObject);
         GenericMap result(n);
@@ -234,14 +233,14 @@ namespace avro {
         }
         return GenericDatum(n, result);
       }
-      case AVRO_UNION:
+      case Type::AVRO_UNION:
       {
         GenericUnion result(n);
         result.selectBranch(0);
         result.datum() = makeGenericDatum(n->leafAt(0), e, st);
         return GenericDatum(n, result);
       }
-      case AVRO_FIXED:
+      case Type::AVRO_FIXED:
         assertType(e, json::etString);
         return GenericDatum(n, GenericFixed(n, toBin(e.stringValue())));
       default:

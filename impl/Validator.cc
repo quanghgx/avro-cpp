@@ -24,7 +24,7 @@ namespace avro {
 
   Validator::Validator(const ValidSchema &schema) :
   schema_(schema),
-  nextType_(AVRO_NULL),
+  nextType_(Type::AVRO_NULL),
   expectedTypesFlag_(0),
   compoundStarted_(false),
   waitingForCount_(false),
@@ -35,8 +35,8 @@ namespace avro {
   void Validator::setWaitingForCount() {
     waitingForCount_ = true;
     count_ = 0;
-    expectedTypesFlag_ = typeToFlag(AVRO_INT) | typeToFlag(AVRO_LONG);
-    nextType_ = AVRO_LONG;
+    expectedTypesFlag_ = typeToFlag(Type::AVRO_INT) | typeToFlag(Type::AVRO_LONG);
+    nextType_ = Type::AVRO_LONG;
   }
 
   void Validator::enumAdvance() {
@@ -142,7 +142,7 @@ namespace avro {
       &Validator::unionAdvance,
       &Validator::fixedAdvance
     };
-    static_assert((sizeof (funcs) / sizeof (AdvanceFunc)) == (AVRO_NUM_TYPES));
+    //static_assert((sizeof (funcs) / sizeof (AdvanceFunc)) == (Type::AVRO_NUM_TYPES));
 
     expectedTypesFlag_ = 0;
     // loop until we encounter a next expected type, or we've exited all compound types 
@@ -150,7 +150,7 @@ namespace avro {
 
       Type type = compoundStack_.back().node->type();
 
-      AdvanceFunc func = funcs[type];
+      AdvanceFunc func = funcs[type_as_integer(type)];
 
       // only compound functions are put on the status stack so it is ok to
       // assume that func is not null
@@ -160,7 +160,7 @@ namespace avro {
     }
 
     if (compoundStack_.empty()) {
-      nextType_ = AVRO_NULL;
+      nextType_ = Type::AVRO_NULL;
     }
   }
 
@@ -185,37 +185,37 @@ namespace avro {
     // use flags instead of strictly types, so that we can be more lax about the type
     // (for example, a long should be able to accept an int type, but not vice versa)
     static const flag_t flags[] = {
-      typeToFlag(AVRO_STRING) | typeToFlag(AVRO_BYTES),
-      typeToFlag(AVRO_STRING) | typeToFlag(AVRO_BYTES),
-      typeToFlag(AVRO_INT),
-      typeToFlag(AVRO_INT) | typeToFlag(AVRO_LONG),
-      typeToFlag(AVRO_FLOAT),
-      typeToFlag(AVRO_DOUBLE),
-      typeToFlag(AVRO_BOOL),
-      typeToFlag(AVRO_NULL),
-      typeToFlag(AVRO_RECORD),
-      typeToFlag(AVRO_ENUM),
-      typeToFlag(AVRO_ARRAY),
-      typeToFlag(AVRO_MAP),
-      typeToFlag(AVRO_UNION),
-      typeToFlag(AVRO_FIXED)
+      typeToFlag(Type::AVRO_STRING) | typeToFlag(Type::AVRO_BYTES),
+      typeToFlag(Type::AVRO_STRING) | typeToFlag(Type::AVRO_BYTES),
+      typeToFlag(Type::AVRO_INT),
+      typeToFlag(Type::AVRO_INT) | typeToFlag(Type::AVRO_LONG),
+      typeToFlag(Type::AVRO_FLOAT),
+      typeToFlag(Type::AVRO_DOUBLE),
+      typeToFlag(Type::AVRO_BOOL),
+      typeToFlag(Type::AVRO_NULL),
+      typeToFlag(Type::AVRO_RECORD),
+      typeToFlag(Type::AVRO_ENUM),
+      typeToFlag(Type::AVRO_ARRAY),
+      typeToFlag(Type::AVRO_MAP),
+      typeToFlag(Type::AVRO_UNION),
+      typeToFlag(Type::AVRO_FIXED)
     };
-    static_assert((sizeof (flags) / sizeof (flag_t)) == (AVRO_NUM_TYPES));
+    //static_assert((sizeof (flags) / sizeof (flag_t)) == (Type::AVRO_NUM_TYPES));
 
-    expectedTypesFlag_ = flags[type];
+    expectedTypesFlag_ = flags[type_as_integer(type)];
   }
 
   void Validator::setupOperation(const NodePtr &node) {
     nextType_ = node->type();
 
-    if (nextType_ == AVRO_SYMBOLIC) {
+    if (nextType_ == Type::AVRO_SYMBOLIC) {
       NodePtr actualNode = resolveSymbol(node);
       assert(actualNode);
       setupOperation(actualNode);
       return;
     }
 
-    assert(nextType_ < AVRO_SYMBOLIC);
+    assert(nextType_ < Type::AVRO_SYMBOLIC);
 
     setupFlag(nextType_);
 
@@ -231,13 +231,13 @@ namespace avro {
 
     int idx = -1;
     // if the top of the stack is a record I want this record name
-    if (!compoundStack_.empty() && (isPrimitive(nextType_) || nextType_ == AVRO_RECORD)) {
+    if (!compoundStack_.empty() && (isPrimitive(nextType_) || nextType_ == Type::AVRO_RECORD)) {
       idx = compoundStack_.size() - 1;
     } else {
       idx = compoundStack_.size() - 2;
     }
 
-    if (idx >= 0 && compoundStack_[idx].node->type() == AVRO_RECORD) {
+    if (idx >= 0 && compoundStack_[idx].node->type() == Type::AVRO_RECORD) {
       name = compoundStack_[idx].node->name().simpleName();
       found = true;
     }
@@ -248,7 +248,7 @@ namespace avro {
     bool found = false;
     name.clear();
     int idx = isCompound(nextType_) ? compoundStack_.size() - 2 : compoundStack_.size() - 1;
-    if (idx >= 0 && compoundStack_[idx].node->type() == AVRO_RECORD) {
+    if (idx >= 0 && compoundStack_[idx].node->type() == Type::AVRO_RECORD) {
       size_t pos = compoundStack_[idx].pos - 1;
       const NodePtr &node = compoundStack_[idx].node;
       if (pos < node->leaves()) {

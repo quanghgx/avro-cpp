@@ -26,15 +26,15 @@ namespace avro {
       return SchemaResolution::MATCH;
     }
 
-    if ((type() == AVRO_INT) && reader.type() == AVRO_LONG) {
+    if ((type() == Type::AVRO_INT) && reader.type() == Type::AVRO_LONG) {
       return SchemaResolution::PROMOTABLE_TO_LONG;
     }
 
-    if ((type() == AVRO_INT || type() == AVRO_LONG) && reader.type() == AVRO_FLOAT) {
+    if ((type() == Type::AVRO_INT || type() == Type::AVRO_LONG) && reader.type() == Type::AVRO_FLOAT) {
       return SchemaResolution::PROMOTABLE_TO_FLOAT;
     }
 
-    if ((type() == AVRO_INT || type() == AVRO_LONG || type() == AVRO_FLOAT) && reader.type() == AVRO_DOUBLE) {
+    if ((type() == Type::AVRO_INT || type() == Type::AVRO_LONG || type() == Type::AVRO_FLOAT) && reader.type() == Type::AVRO_DOUBLE) {
       return SchemaResolution::PROMOTABLE_TO_DOUBLE;
     }
 
@@ -42,7 +42,7 @@ namespace avro {
   }
 
   SchemaResolution NodeRecord::resolve(const Node &reader) const {
-    if (reader.type() == AVRO_RECORD) {
+    if (reader.type() == Type::AVRO_RECORD) {
       if (name() == reader.name()) {
         return SchemaResolution::MATCH;
       }
@@ -51,14 +51,14 @@ namespace avro {
   }
 
   SchemaResolution NodeEnum::resolve(const Node &reader) const {
-    if (reader.type() == AVRO_ENUM) {
+    if (reader.type() == Type::AVRO_ENUM) {
       return (name() == reader.name()) ? SchemaResolution::MATCH : SchemaResolution::NO_MATCH;
     }
     return furtherResolution(reader);
   }
 
   SchemaResolution NodeArray::resolve(const Node &reader) const {
-    if (reader.type() == AVRO_ARRAY) {
+    if (reader.type() == Type::AVRO_ARRAY) {
       const NodePtr &arrayType = leafAt(0);
       return arrayType->resolve(*reader.leafAt(0));
     }
@@ -66,7 +66,7 @@ namespace avro {
   }
 
   SchemaResolution NodeMap::resolve(const Node &reader) const {
-    if (reader.type() == AVRO_MAP) {
+    if (reader.type() == Type::AVRO_MAP) {
       const NodePtr &mapType = leafAt(1);
       return mapType->resolve(*reader.leafAt(1));
     }
@@ -98,7 +98,7 @@ namespace avro {
   }
 
   SchemaResolution NodeFixed::resolve(const Node &reader) const {
-    if (reader.type() == AVRO_FIXED) {
+    if (reader.type() == Type::AVRO_FIXED) {
       return (
         (reader.fixedSize() == fixedSize()) &&
         (reader.name() == name())

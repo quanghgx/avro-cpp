@@ -278,16 +278,16 @@ public:
 
     const GenericDatum& ci = p.second;
     while (df.read(p)) {
-      REQUIRE(ci.type() == avro::AVRO_RECORD);
+      REQUIRE(ci.type() == avro::Type::AVRO_RECORD);
       const GenericRecord& r = ci.value<GenericRecord>();
       const size_t n = 2;
       REQUIRE(r.fieldCount() == n);
       const GenericDatum& f0 = r.fieldAt(0);
-      REQUIRE(f0.type() == avro::AVRO_LONG);
+      REQUIRE(f0.type() == avro::Type::AVRO_LONG);
       REQUIRE(f0.value<int64_t>() == re);
 
       const GenericDatum& f1 = r.fieldAt(1);
-      REQUIRE(f1.type() == avro::AVRO_LONG);
+      REQUIRE(f1.type() == avro::Type::AVRO_LONG);
       REQUIRE(f1.value<int64_t>() == im);
       re *= im;
       im += 3;
@@ -305,16 +305,16 @@ public:
 
     const GenericDatum& ci = p.second;
     while (df.read(p)) {
-      REQUIRE(ci.type() == avro::AVRO_RECORD);
+      REQUIRE(ci.type() == avro::Type::AVRO_RECORD);
       const GenericRecord& r = ci.value<GenericRecord>();
       const size_t n = 2;
       REQUIRE(r.fieldCount() == n);
       const GenericDatum& f0 = r.field("re");
-      REQUIRE(f0.type() == avro::AVRO_LONG);
+      REQUIRE(f0.type() == avro::Type::AVRO_LONG);
       REQUIRE(f0.value<int64_t>() == re);
 
       const GenericDatum& f1 = r.field("im");
-      REQUIRE(f1.type() == avro::AVRO_LONG);
+      REQUIRE(f1.type() == avro::Type::AVRO_LONG);
       REQUIRE(f1.value<int64_t>() == im);
       re *= im;
       im += 3;
@@ -332,12 +332,12 @@ public:
 
     const GenericDatum& ci = p.second;
     while (df.read(p)) {
-      REQUIRE(ci.type() == avro::AVRO_RECORD);
+      REQUIRE(ci.type() == avro::Type::AVRO_RECORD);
       const GenericRecord& r = ci.value<GenericRecord>();
       const size_t n = 1;
       REQUIRE(r.fieldCount() == n);
       const GenericDatum& f0 = r.fieldAt(0);
-      REQUIRE(f0.type() == avro::AVRO_LONG);
+      REQUIRE(f0.type() == avro::Type::AVRO_LONG);
       REQUIRE(f0.value<int64_t>() == re);
 
       re *= im;

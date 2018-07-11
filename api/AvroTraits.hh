@@ -38,7 +38,7 @@ namespace avro {
 
   template <typename T>
   struct type_to_avro {
-    static const Type type = AVRO_NUM_TYPES;
+    static const Type type = Type::AVRO_NUM_TYPES;
   };
 
   /**
@@ -68,7 +68,7 @@ namespace avro {
   };
 
   template <> struct type_to_avro< int32_t > {
-    static const Type type = AVRO_INT;
+    static const Type type = Type::AVRO_INT;
   };
 
   template <> struct is_promotable< int64_t > : public boost::true_type {
@@ -78,7 +78,7 @@ namespace avro {
   };
 
   template <> struct type_to_avro< int64_t > {
-    static const Type type = AVRO_LONG;
+    static const Type type = Type::AVRO_LONG;
   };
 
   template <> struct is_promotable< float > : public boost::true_type {
@@ -88,42 +88,42 @@ namespace avro {
   };
 
   template <> struct type_to_avro< float > {
-    static const Type type = AVRO_FLOAT;
+    static const Type type = Type::AVRO_FLOAT;
   };
 
   template <> struct is_serializable< double > : public boost::true_type {
   };
 
   template <> struct type_to_avro< double > {
-    static const Type type = AVRO_DOUBLE;
+    static const Type type = Type::AVRO_DOUBLE;
   };
 
   template <> struct is_serializable< bool > : public boost::true_type {
   };
 
   template <> struct type_to_avro< bool > {
-    static const Type type = AVRO_BOOL;
+    static const Type type = Type::AVRO_BOOL;
   };
 
   template <> struct is_serializable< Null > : public boost::true_type {
   };
 
   template <> struct type_to_avro< Null > {
-    static const Type type = AVRO_NULL;
+    static const Type type = Type::AVRO_NULL;
   };
 
   template <> struct is_serializable< std::string > : public boost::true_type {
   };
 
   template <> struct type_to_avro< std::string > {
-    static const Type type = AVRO_STRING;
+    static const Type type = Type::AVRO_STRING;
   };
 
   template <> struct is_serializable< std::vector<uint8_t> > : public boost::true_type {
   };
 
   template <> struct type_to_avro< std::vector<uint8_t> > {
-    static const Type type = AVRO_BYTES;
+    static const Type type = Type::AVRO_BYTES;
   };
 
 }

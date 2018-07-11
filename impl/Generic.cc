@@ -56,37 +56,37 @@ namespace avro {
       datum.selectBranch(d.decodeUnionIndex());
     }
     switch (datum.type()) {
-      case AVRO_NULL:
+      case Type::AVRO_NULL:
         d.decodeNull();
         break;
-      case AVRO_BOOL:
+      case Type::AVRO_BOOL:
         datum.value<bool>() = d.decodeBool();
         break;
-      case AVRO_INT:
+      case Type::AVRO_INT:
         datum.value<int32_t>() = d.decodeInt();
         break;
-      case AVRO_LONG:
+      case Type::AVRO_LONG:
         datum.value<int64_t>() = d.decodeLong();
         break;
-      case AVRO_FLOAT:
+      case Type::AVRO_FLOAT:
         datum.value<float>() = d.decodeFloat();
         break;
-      case AVRO_DOUBLE:
+      case Type::AVRO_DOUBLE:
         datum.value<double>() = d.decodeDouble();
         break;
-      case AVRO_STRING:
+      case Type::AVRO_STRING:
         d.decodeString(datum.value<string>());
         break;
-      case AVRO_BYTES:
+      case Type::AVRO_BYTES:
         d.decodeBytes(datum.value<bytes>());
         break;
-      case AVRO_FIXED:
+      case Type::AVRO_FIXED:
       {
         GenericFixed& f = datum.value<GenericFixed>();
         d.decodeFixed(f.schema()->fixedSize(), f.value());
       }
         break;
-      case AVRO_RECORD:
+      case Type::AVRO_RECORD:
       {
         GenericRecord& r = datum.value<GenericRecord>();
         size_t c = r.schema()->leaves();
@@ -103,10 +103,10 @@ namespace avro {
         }
       }
         break;
-      case AVRO_ENUM:
+      case Type::AVRO_ENUM:
         datum.value<GenericEnum>().set(d.decodeEnum());
         break;
-      case AVRO_ARRAY:
+      case Type::AVRO_ARRAY:
       {
         GenericArray& v = datum.value<GenericArray>();
         vector<GenericDatum>& r = v.value();
@@ -122,7 +122,7 @@ namespace avro {
         }
       }
         break;
-      case AVRO_MAP:
+      case Type::AVRO_MAP:
       {
         GenericMap& v = datum.value<GenericMap>();
         GenericMap::Value& r = v.value();
@@ -167,34 +167,34 @@ namespace avro {
       e.encodeUnionIndex(datum.unionBranch());
     }
     switch (datum.type()) {
-      case AVRO_NULL:
+      case Type::AVRO_NULL:
         e.encodeNull();
         break;
-      case AVRO_BOOL:
+      case Type::AVRO_BOOL:
         e.encodeBool(datum.value<bool>());
         break;
-      case AVRO_INT:
+      case Type::AVRO_INT:
         e.encodeInt(datum.value<int32_t>());
         break;
-      case AVRO_LONG:
+      case Type::AVRO_LONG:
         e.encodeLong(datum.value<int64_t>());
         break;
-      case AVRO_FLOAT:
+      case Type::AVRO_FLOAT:
         e.encodeFloat(datum.value<float>());
         break;
-      case AVRO_DOUBLE:
+      case Type::AVRO_DOUBLE:
         e.encodeDouble(datum.value<double>());
         break;
-      case AVRO_STRING:
+      case Type::AVRO_STRING:
         e.encodeString(datum.value<string>());
         break;
-      case AVRO_BYTES:
+      case Type::AVRO_BYTES:
         e.encodeBytes(datum.value<bytes>());
         break;
-      case AVRO_FIXED:
+      case Type::AVRO_FIXED:
         e.encodeFixed(datum.value<GenericFixed>().value());
         break;
-      case AVRO_RECORD:
+      case Type::AVRO_RECORD:
       {
         const GenericRecord& r = datum.value<GenericRecord>();
         size_t c = r.schema()->leaves();
@@ -203,10 +203,10 @@ namespace avro {
         }
       }
         break;
-      case AVRO_ENUM:
+      case Type::AVRO_ENUM:
         e.encodeEnum(datum.value<GenericEnum>().value());
         break;
-      case AVRO_ARRAY:
+      case Type::AVRO_ARRAY:
       {
         const GenericArray::Value& r = datum.value<GenericArray>().value();
         e.arrayStart();
@@ -221,7 +221,7 @@ namespace avro {
         e.arrayEnd();
       }
         break;
-      case AVRO_MAP:
+      case Type::AVRO_MAP:
       {
         const GenericMap::Value& r = datum.value<GenericMap>().value();
         e.mapStart();

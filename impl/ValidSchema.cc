@@ -44,7 +44,7 @@ namespace avro {
       SymbolMap::iterator it = symbolMap.find(nm);
       bool found = it != symbolMap.end() && nm == it->first;
 
-      if (node->type() == AVRO_SYMBOLIC) {
+      if (node->type() == Type::AVRO_SYMBOLIC) {
         if (!found) {
           throw Exception(format("Symbolic name \"%1%\" is unknown") %
             node->name());

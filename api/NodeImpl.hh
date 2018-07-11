@@ -127,12 +127,12 @@ namespace avro {
     SchemaResolution furtherResolution(const Node &reader) const {
       SchemaResolution match = SchemaResolution::NO_MATCH;
 
-      if (reader.type() == AVRO_SYMBOLIC) {
+      if (reader.type() == Type::AVRO_SYMBOLIC) {
 
         // resolve the symbolic type, and check again
         const NodePtr &node = reader.leafAt(0);
         match = resolve(*node);
-      } else if (reader.type() == AVRO_UNION) {
+      } else if (reader.type() == Type::AVRO_UNION) {
 
         // in this case, need to see if there is an exact match for the
         // writer's type, or if not, the first one that can be promoted to a
@@ -211,13 +211,13 @@ namespace avro {
   public:
 
     NodeSymbolic() :
-    NodeImplSymbolic(AVRO_SYMBOLIC) { }
+    NodeImplSymbolic(Type::AVRO_SYMBOLIC) { }
 
     explicit NodeSymbolic(const HasName &name) :
-    NodeImplSymbolic(AVRO_SYMBOLIC, name, NoLeaves(), NoLeafNames(), NoSize()) { }
+    NodeImplSymbolic(Type::AVRO_SYMBOLIC, name, NoLeaves(), NoLeafNames(), NoSize()) { }
 
     NodeSymbolic(const HasName &name, const NodePtr n) :
-    NodeImplSymbolic(AVRO_SYMBOLIC, name, NoLeaves(), NoLeafNames(), NoSize()), actualNode_(n) { }
+    NodeImplSymbolic(Type::AVRO_SYMBOLIC, name, NoLeaves(), NoLeafNames(), NoSize()), actualNode_(n) { }
     SchemaResolution resolve(const Node &reader) const;
 
     void printJson(std::ostream &os, int depth) const;
@@ -252,12 +252,12 @@ namespace avro {
     std::vector<GenericDatum> defaultValues;
   public:
 
-    NodeRecord() : NodeImplRecord(AVRO_RECORD) { }
+    NodeRecord() : NodeImplRecord(Type::AVRO_RECORD) { }
 
     NodeRecord(const HasName &name, const MultiLeaves &fields,
       const LeafNames &fieldsNames,
       const std::vector<GenericDatum>& dv) :
-    NodeImplRecord(AVRO_RECORD, name, fields, fieldsNames, NoSize()),
+    NodeImplRecord(Type::AVRO_RECORD, name, fields, fieldsNames, NoSize()),
     defaultValues(dv) {
       for (size_t i = 0; i < leafNameAttributes_.size(); ++i) {
         if (!nameIndex_.add(leafNameAttributes_.get(i), i)) {
@@ -291,10 +291,10 @@ namespace avro {
   public:
 
     NodeEnum() :
-    NodeImplEnum(AVRO_ENUM) { }
+    NodeImplEnum(Type::AVRO_ENUM) { }
 
     NodeEnum(const HasName &name, const LeafNames &symbols) :
-    NodeImplEnum(AVRO_ENUM, name, NoLeaves(), symbols, NoSize()) {
+    NodeImplEnum(Type::AVRO_ENUM, name, NoLeaves(), symbols, NoSize()) {
       for (size_t i = 0; i < leafNameAttributes_.size(); ++i) {
         if (!nameIndex_.add(leafNameAttributes_.get(i), i)) {
           throw Exception(boost::format("Cannot add duplicate name: %1%") % leafNameAttributes_.get(i));
@@ -318,10 +318,10 @@ namespace avro {
   public:
 
     NodeArray() :
-    NodeImplArray(AVRO_ARRAY) { }
+    NodeImplArray(Type::AVRO_ARRAY) { }
 
     explicit NodeArray(const SingleLeaf &items) :
-    NodeImplArray(AVRO_ARRAY, NoName(), items, NoLeafNames(), NoSize()) { }
+    NodeImplArray(Type::AVRO_ARRAY, NoName(), items, NoLeafNames(), NoSize()) { }
 
     SchemaResolution resolve(const Node &reader) const;
 
@@ -336,15 +336,15 @@ namespace avro {
   public:
 
     NodeMap() :
-    NodeImplMap(AVRO_MAP) {
-      NodePtr key(new NodePrimitive(AVRO_STRING));
+    NodeImplMap(Type::AVRO_MAP) {
+      NodePtr key(new NodePrimitive(Type::AVRO_STRING));
       doAddLeaf(key);
     }
 
     explicit NodeMap(const SingleLeaf &values) :
-    NodeImplMap(AVRO_MAP, NoName(), values, NoLeafNames(), NoSize()) {
+    NodeImplMap(Type::AVRO_MAP, NoName(), values, NoLeafNames(), NoSize()) {
       // need to add the key for the map too
-      NodePtr key(new NodePrimitive(AVRO_STRING));
+      NodePtr key(new NodePrimitive(Type::AVRO_STRING));
       doAddLeaf(key);
 
       // key goes before value
@@ -364,10 +364,10 @@ namespace avro {
   public:
 
     NodeUnion() :
-    NodeImplUnion(AVRO_UNION) { }
+    NodeImplUnion(Type::AVRO_UNION) { }
 
     explicit NodeUnion(const MultiLeaves &types) :
-    NodeImplUnion(AVRO_UNION, NoName(), types, NoLeafNames(), NoSize()) { }
+    NodeImplUnion(Type::AVRO_UNION, NoName(), types, NoLeafNames(), NoSize()) { }
 
     SchemaResolution resolve(const Node &reader) const;
 
@@ -380,41 +380,41 @@ namespace avro {
           std::string name;
           const NodePtr& n = leafAttributes_.get(i);
           switch (n->type()) {
-            case AVRO_STRING:
+            case Type::AVRO_STRING:
               name = "string";
               break;
-            case AVRO_BYTES:
+            case Type::AVRO_BYTES:
               name = "bytes";
               break;
-            case AVRO_INT:
+            case Type::AVRO_INT:
               name = "int";
               break;
-            case AVRO_LONG:
+            case Type::AVRO_LONG:
               name = "long";
               break;
-            case AVRO_FLOAT:
+            case Type::AVRO_FLOAT:
               name = "float";
               break;
-            case AVRO_DOUBLE:
+            case Type::AVRO_DOUBLE:
               name = "double";
               break;
-            case AVRO_BOOL:
+            case Type::AVRO_BOOL:
               name = "bool";
               break;
-            case AVRO_NULL:
+            case Type::AVRO_NULL:
               name = "null";
               break;
-            case AVRO_ARRAY:
+            case Type::AVRO_ARRAY:
               name = "array";
               break;
-            case AVRO_MAP:
+            case Type::AVRO_MAP:
               name = "map";
               break;
-            case AVRO_RECORD:
-            case AVRO_ENUM:
-            case AVRO_UNION:
-            case AVRO_FIXED:
-            case AVRO_SYMBOLIC:
+            case Type::AVRO_RECORD:
+            case Type::AVRO_ENUM:
+            case Type::AVRO_UNION:
+            case Type::AVRO_FIXED:
+            case Type::AVRO_SYMBOLIC:
               name = n->name().fullname();
               break;
             default:
@@ -435,10 +435,10 @@ namespace avro {
   public:
 
     NodeFixed() :
-    NodeImplFixed(AVRO_FIXED) { }
+    NodeImplFixed(Type::AVRO_FIXED) { }
 
     NodeFixed(const HasName &name, const HasSize &size) :
-    NodeImplFixed(AVRO_FIXED, name, NoLeaves(), NoLeafNames(), size) { }
+    NodeImplFixed(Type::AVRO_FIXED, name, NoLeaves(), NoLeafNames(), size) { }
 
     SchemaResolution resolve(const Node &reader) const;
 
@@ -488,7 +488,7 @@ namespace avro {
       if (C::hasAttribute) {
         os << "name " << nameAt(i) << '\n';
       }
-      if (type() != AVRO_SYMBOLIC && leafAttributes_.hasAttribute) {
+      if (type() != Type::AVRO_SYMBOLIC && leafAttributes_.hasAttribute) {
         leafAt(i)->printBasicInfo(os);
       }
     }
@@ -498,7 +498,7 @@ namespace avro {
   }
 
   inline NodePtr resolveSymbol(const NodePtr &node) {
-    if (node->type() != AVRO_SYMBOLIC) {
+    if (node->type() != Type::AVRO_SYMBOLIC) {
       throw Exception("Only symbolic nodes may be resolved");
     }
     std::shared_ptr<NodeSymbolic> symNode = std::static_pointer_cast<NodeSymbolic>(node);

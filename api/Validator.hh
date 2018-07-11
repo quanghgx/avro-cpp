@@ -43,7 +43,7 @@ namespace avro {
     }
 
     Type nextTypeExpected() const {
-      return AVRO_UNKNOWN;
+      return Type::AVRO_UNKNOWN;
     }
 
     int nextSizeExpected() const {
@@ -101,7 +101,7 @@ namespace avro {
       if (nextSizeExpected() != size) {
         throw Exception(boost::format("Wrong size for fixed, got %1%, expected %2%") % size % nextSizeExpected());
       }
-      checkTypeExpected(AVRO_FIXED);
+      checkTypeExpected(Type::AVRO_FIXED);
     }
 
   private:
@@ -109,7 +109,7 @@ namespace avro {
     typedef uint32_t flag_t;
 
     flag_t typeToFlag(Type type) const {
-      flag_t flag = (1L << type);
+      flag_t flag = (1L << type_as_integer(type));
       return flag;
     }
 

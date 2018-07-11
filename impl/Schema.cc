@@ -75,17 +75,17 @@ namespace avro {
 
   void
   UnionSchema::addType(const Schema &typeSchema) {
-    if (typeSchema.type() == AVRO_UNION) {
+    if (typeSchema.type() == Type::AVRO_UNION) {
       throw Exception("Cannot add unions to unions");
     }
 
-    if (typeSchema.type() == AVRO_RECORD) {
+    if (typeSchema.type() == Type::AVRO_RECORD) {
       // check for duplicate records
       size_t types = node_->leaves();
       for (size_t i = 0; i < types; ++i) {
         const NodePtr &leaf = node_->leafAt(i);
         // TODO, more checks?
-        if (leaf->type() == AVRO_RECORD && leaf->name() == typeSchema.root()->name()) {
+        if (leaf->type() == Type::AVRO_RECORD && leaf->name() == typeSchema.root()->name()) {
           throw Exception("Records in unions cannot have duplicate names");
         }
       }

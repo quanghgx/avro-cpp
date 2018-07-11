@@ -47,30 +47,30 @@ namespace avro {
     reader_(buffer) { }
 
     void readValue(Null &) {
-      validator_.checkTypeExpected(AVRO_NULL);
+      validator_.checkTypeExpected(Type::AVRO_NULL);
     }
 
     void readValue(bool &val) {
-      validator_.checkTypeExpected(AVRO_BOOL);
+      validator_.checkTypeExpected(Type::AVRO_BOOL);
       uint8_t ival = 0;
       reader_.read(ival);
       val = (ival != 0);
     }
 
     void readValue(int32_t &val) {
-      validator_.checkTypeExpected(AVRO_INT);
+      validator_.checkTypeExpected(Type::AVRO_INT);
       uint32_t encoded = static_cast<uint32_t> (readVarInt());
       val = decodeZigzag32(encoded);
     }
 
     void readValue(int64_t &val) {
-      validator_.checkTypeExpected(AVRO_LONG);
+      validator_.checkTypeExpected(Type::AVRO_LONG);
       uint64_t encoded = readVarInt();
       val = decodeZigzag64(encoded);
     }
 
     void readValue(float &val) {
-      validator_.checkTypeExpected(AVRO_FLOAT);
+      validator_.checkTypeExpected(Type::AVRO_FLOAT);
 
       union {
         float f;
@@ -81,7 +81,7 @@ namespace avro {
     }
 
     void readValue(double &val) {
-      validator_.checkTypeExpected(AVRO_DOUBLE);
+      validator_.checkTypeExpected(Type::AVRO_DOUBLE);
 
       union {
         double d;
@@ -92,13 +92,13 @@ namespace avro {
     }
 
     void readValue(std::string &val) {
-      validator_.checkTypeExpected(AVRO_STRING);
+      validator_.checkTypeExpected(Type::AVRO_STRING);
       size_t size = static_cast<size_t> (readSize());
       reader_.read(val, size);
     }
 
     void readBytes(std::vector<uint8_t> &val) {
-      validator_.checkTypeExpected(AVRO_BYTES);
+      validator_.checkTypeExpected(Type::AVRO_BYTES);
       size_t size = static_cast<size_t> (readSize());
       val.resize(size);
       reader_.read(reinterpret_cast<char *> (&val[0]), size);
@@ -120,34 +120,34 @@ namespace avro {
     }
 
     void readRecord() {
-      validator_.checkTypeExpected(AVRO_RECORD);
-      validator_.checkTypeExpected(AVRO_LONG);
+      validator_.checkTypeExpected(Type::AVRO_RECORD);
+      validator_.checkTypeExpected(Type::AVRO_LONG);
       validator_.setCount(1);
     }
 
     void readRecordEnd() {
-      validator_.checkTypeExpected(AVRO_RECORD);
-      validator_.checkTypeExpected(AVRO_LONG);
+      validator_.checkTypeExpected(Type::AVRO_RECORD);
+      validator_.checkTypeExpected(Type::AVRO_LONG);
       validator_.setCount(0);
     }
 
     int64_t readArrayBlockSize() {
-      validator_.checkTypeExpected(AVRO_ARRAY);
+      validator_.checkTypeExpected(Type::AVRO_ARRAY);
       return readCount();
     }
 
     int64_t readUnion() {
-      validator_.checkTypeExpected(AVRO_UNION);
+      validator_.checkTypeExpected(Type::AVRO_UNION);
       return readCount();
     }
 
     int64_t readEnum() {
-      validator_.checkTypeExpected(AVRO_ENUM);
+      validator_.checkTypeExpected(Type::AVRO_ENUM);
       return readCount();
     }
 
     int64_t readMapBlockSize() {
-      validator_.checkTypeExpected(AVRO_MAP);
+      validator_.checkTypeExpected(Type::AVRO_MAP);
       return readCount();
     }
 
@@ -186,7 +186,7 @@ namespace avro {
     }
 
     int64_t readCount() {
-      validator_.checkTypeExpected(AVRO_LONG);
+      validator_.checkTypeExpected(Type::AVRO_LONG);
       int64_t count = readSize();
       validator_.setCount(count);
       return count;

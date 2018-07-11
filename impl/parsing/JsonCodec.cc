@@ -69,20 +69,20 @@ namespace avro {
     ProductionPtr JsonGrammarGenerator::doGenerate(const NodePtr& n,
       std::map<NodePtr, ProductionPtr> &m) {
       switch (n->type()) {
-        case AVRO_NULL:
-        case AVRO_BOOL:
-        case AVRO_INT:
-        case AVRO_LONG:
-        case AVRO_FLOAT:
-        case AVRO_DOUBLE:
-        case AVRO_STRING:
-        case AVRO_BYTES:
-        case AVRO_FIXED:
-        case AVRO_ARRAY:
-        case AVRO_MAP:
-        case AVRO_SYMBOLIC:
+        case Type::AVRO_NULL:
+        case Type::AVRO_BOOL:
+        case Type::AVRO_INT:
+        case Type::AVRO_LONG:
+        case Type::AVRO_FLOAT:
+        case Type::AVRO_DOUBLE:
+        case Type::AVRO_STRING:
+        case Type::AVRO_BYTES:
+        case Type::AVRO_FIXED:
+        case Type::AVRO_ARRAY:
+        case Type::AVRO_MAP:
+        case Type::AVRO_SYMBOLIC:
           return ValidatingGrammarGenerator::doGenerate(n, m);
-        case AVRO_RECORD:
+        case Type::AVRO_RECORD:
         {
           ProductionPtr result = make_shared<Production>();
 
@@ -103,7 +103,7 @@ namespace avro {
           m[n] = result;
           return result;
         }
-        case AVRO_ENUM:
+        case Type::AVRO_ENUM:
         {
           vector<string> nn;
           size_t c = n->names();
@@ -117,7 +117,7 @@ namespace avro {
           m[n] = result;
           return result;
         }
-        case AVRO_UNION:
+        case Type::AVRO_UNION:
         {
           size_t c = n->leaves();
 
@@ -130,7 +130,7 @@ namespace avro {
           for (size_t i = 0; i < c; ++i) {
             const NodePtr& nn = n->leafAt(i);
             ProductionPtr v = doGenerate(nn, m);
-            if (nn->type() != AVRO_NULL) {
+            if (nn->type() != Type::AVRO_NULL) {
               ProductionPtr v2 = make_shared<Production>();
               v2->push_back(Symbol::recordEndSymbol());
               copy(v->begin(), v->end(), back_inserter(*v2));

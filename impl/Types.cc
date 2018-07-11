@@ -41,24 +41,24 @@ namespace avro {
       "symbolic"
     };
 
-    static_assert((sizeof (typeToString) / sizeof (std::string)) == (AVRO_NUM_TYPES + 1));
+    //static_assert((sizeof (typeToString) / sizeof (std::string)) == (Type::AVRO_NUM_TYPES + 1));
 
   }
 
 
   /* This static assert exists because a 32 bit integer is used as a bit-flag for each type, and it would be a problem for this flag if we
      ever supported more than 32 types*/
-  static_assert(AVRO_NUM_TYPES < 32);
+  //static_assert(Type::AVRO_NUM_TYPES < 32);
 
   const std::string toString(Type type) {
-    return isAvroTypeOrPseudoType(type) ? strings::typeToString[type] : "Undefined type";
+    return isAvroTypeOrPseudoType(type) ? strings::typeToString[type_as_integer(type)] : "Undefined type";
   }
 
   std::ostream &operator<<(std::ostream &os, Type type) {
     if (isAvroTypeOrPseudoType(type)) {
-      os << strings::typeToString[type];
+      os << strings::typeToString[type_as_integer(type)];
     } else {
-      os << static_cast<int> (type);
+      os << type_as_integer(type);
     }
     return os;
   }

@@ -78,7 +78,7 @@ namespace avro {
 
     /* Returns true if and only if this datum is a union.*/
     bool isUnion() const {
-      return type_ == AVRO_UNION;
+      return type_ == Type::AVRO_UNION;
     }
 
     /* Returns the index of the current branch, if this is a union. isUnion().*/
@@ -88,30 +88,30 @@ namespace avro {
     void selectBranch(size_t branch);
 
     /* Makes a new AVRO_NULL datum.*/
-    GenericDatum() : type_(AVRO_NULL) { }
+    GenericDatum() : type_(Type::AVRO_NULL) { }
 
     /* Makes a new AVRO_BOOL datum whose value is of type bool.*/
-    GenericDatum(bool v) : type_(AVRO_BOOL), value_(v) { }
+    GenericDatum(bool v) : type_(Type::AVRO_BOOL), value_(v) { }
 
     /* Makes a new AVRO_INT datum whose value is of type int32_t.*/
-    GenericDatum(int32_t v) : type_(AVRO_INT), value_(v) { }
+    GenericDatum(int32_t v) : type_(Type::AVRO_INT), value_(v) { }
 
     /* Makes a new AVRO_LONG datum whose value is of type int64_t*/
 
-    GenericDatum(int64_t v) : type_(AVRO_LONG), value_(v) { }
+    GenericDatum(int64_t v) : type_(Type::AVRO_LONG), value_(v) { }
 
     /* Makes a new AVRO_FLOAT datum whose value is of type float*/
-    GenericDatum(float v) : type_(AVRO_FLOAT), value_(v) { }
+    GenericDatum(float v) : type_(Type::AVRO_FLOAT), value_(v) { }
 
     /* Makes a new AVRO_DOUBLE datum whose value is of type double.*/
-    GenericDatum(double v) : type_(AVRO_DOUBLE), value_(v) { }
+    GenericDatum(double v) : type_(Type::AVRO_DOUBLE), value_(v) { }
 
     /* Makes a new AVRO_STRING datum whose value is of type std::string.*/
-    GenericDatum(const std::string& v) : type_(AVRO_STRING), value_(v) { }
+    GenericDatum(const std::string& v) : type_(Type::AVRO_STRING), value_(v) { }
 
     /* Makes a new AVRO_BYTES datum whose value is of type std::vector<uint8_t>*/
     GenericDatum(const std::vector<uint8_t>& v) :
-    type_(AVRO_BYTES), value_(v) { }
+    type_(Type::AVRO_BYTES), value_(v) { }
 
     /* Constructs a datum corresponding to the given avro type. The value will the appropriate default corresponding to the data type.
         @param schema The schema that defines the avro type.*/
@@ -161,7 +161,7 @@ namespace avro {
     /* Constructs a generic union corresponding to the given schema \p schema, and the given value. The schema should be of Avro type union
        and the value should correspond to one of the branches of the union.*/
     GenericUnion(const NodePtr& schema) :
-    GenericContainer(AVRO_UNION, schema), curBranch_(schema->leaves()) {
+    GenericContainer(Type::AVRO_UNION, schema), curBranch_(schema->leaves()) {
       selectBranch(0);
     }
 
@@ -265,7 +265,7 @@ namespace avro {
      * Constructs a generic array corresponding to the given schema \p schema,
      * which should be of Avro type array.
      */
-    GenericArray(const NodePtr& schema) : GenericContainer(AVRO_ARRAY, schema) { }
+    GenericArray(const NodePtr& schema) : GenericContainer(Type::AVRO_ARRAY, schema) { }
 
     /*Returns the contents of this array.*/
     const Value& value() const {
@@ -290,7 +290,7 @@ namespace avro {
      * Constructs a generic map corresponding to the given schema \p schema,
      * which should be of Avro type map.
      */
-    GenericMap(const NodePtr& schema) : GenericContainer(AVRO_MAP, schema) { }
+    GenericMap(const NodePtr& schema) : GenericContainer(Type::AVRO_MAP, schema) { }
 
     /*Returns the contents of this map.*/
     const Value& value() const {
@@ -324,10 +324,10 @@ namespace avro {
      * which should be of Avro type enum.
      */
     GenericEnum(const NodePtr& schema) :
-    GenericContainer(AVRO_ENUM, schema), value_(0) { }
+    GenericContainer(Type::AVRO_ENUM, schema), value_(0) { }
 
     GenericEnum(const NodePtr& schema, const std::string& symbol) :
-    GenericContainer(AVRO_ENUM, schema), value_(index(schema, symbol)) { }
+    GenericContainer(Type::AVRO_ENUM, schema), value_(index(schema, symbol)) { }
 
     /**
      * Returns the symbol corresponding to the cardinal \p n. If the
@@ -386,12 +386,12 @@ namespace avro {
      * Constructs a generic enum corresponding to the given schema \p schema,
      * which should be of Avro type fixed.
      */
-    GenericFixed(const NodePtr& schema) : GenericContainer(AVRO_FIXED, schema) {
+    GenericFixed(const NodePtr& schema) : GenericContainer(Type::AVRO_FIXED, schema) {
       value_.resize(schema->fixedSize());
     }
 
     GenericFixed(const NodePtr& schema, const std::vector<uint8_t>& v) :
-    GenericContainer(AVRO_FIXED, schema), value_(v) { }
+    GenericContainer(Type::AVRO_FIXED, schema), value_(v) { }
 
     /*Returns the contents of this fixed.*/
     const std::vector<uint8_t>& value() const {
@@ -405,19 +405,19 @@ namespace avro {
   };
 
   inline Type GenericDatum::type() const {
-    return (type_ == AVRO_UNION) ?
+    return (type_ == Type::AVRO_UNION) ?
       boost::any_cast<GenericUnion>(&value_)->datum().type() :
       type_;
   }
 
   template<typename T> T& GenericDatum::value() {
-    return (type_ == AVRO_UNION) ?
+    return (type_ == Type::AVRO_UNION) ?
       boost::any_cast<GenericUnion>(&value_)->datum().value<T>() :
       *boost::any_cast<T>(&value_);
   }
 
   template<typename T> const T& GenericDatum::value() const {
-    return (type_ == AVRO_UNION) ?
+    return (type_ == Type::AVRO_UNION) ?
       boost::any_cast<GenericUnion>(&value_)->datum().value<T>() :
       *boost::any_cast<T>(&value_);
   }

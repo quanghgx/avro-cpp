@@ -41,29 +41,29 @@ namespace avro {
     explicit WriterImpl(const ValidSchema &schema) : validator_(schema) { }
 
     void writeValue(const Null &) {
-      validator_.checkTypeExpected(AVRO_NULL);
+      validator_.checkTypeExpected(Type::AVRO_NULL);
     }
 
     void writeValue(bool val) {
-      validator_.checkTypeExpected(AVRO_BOOL);
+      validator_.checkTypeExpected(Type::AVRO_BOOL);
       int8_t byte = (val != 0);
       buffer_.writeTo(byte);
     }
 
     void writeValue(int32_t val) {
-      validator_.checkTypeExpected(AVRO_INT);
+      validator_.checkTypeExpected(Type::AVRO_INT);
       boost::array<uint8_t, 5> bytes;
       size_t size = encodeInt32(val, bytes);
       buffer_.writeTo(reinterpret_cast<const char *> (bytes.data()), size);
     }
 
     void writeValue(int64_t val) {
-      validator_.checkTypeExpected(AVRO_LONG);
+      validator_.checkTypeExpected(Type::AVRO_LONG);
       putLong(val);
     }
 
     void writeValue(float val) {
-      validator_.checkTypeExpected(AVRO_FLOAT);
+      validator_.checkTypeExpected(Type::AVRO_FLOAT);
 
       union {
         float f;
@@ -75,7 +75,7 @@ namespace avro {
     }
 
     void writeValue(double val) {
-      validator_.checkTypeExpected(AVRO_DOUBLE);
+      validator_.checkTypeExpected(Type::AVRO_DOUBLE);
 
       union {
         double d;
@@ -87,12 +87,12 @@ namespace avro {
     }
 
     void writeValue(const std::string &val) {
-      validator_.checkTypeExpected(AVRO_STRING);
+      validator_.checkTypeExpected(Type::AVRO_STRING);
       putBytes(val.c_str(), val.size());
     }
 
     void writeBytes(const void *val, size_t size) {
-      validator_.checkTypeExpected(AVRO_BYTES);
+      validator_.checkTypeExpected(Type::AVRO_BYTES);
       putBytes(val, size);
     }
 
@@ -109,19 +109,19 @@ namespace avro {
     }
 
     void writeRecord() {
-      validator_.checkTypeExpected(AVRO_RECORD);
-      validator_.checkTypeExpected(AVRO_LONG);
+      validator_.checkTypeExpected(Type::AVRO_RECORD);
+      validator_.checkTypeExpected(Type::AVRO_LONG);
       validator_.setCount(1);
     }
 
     void writeRecordEnd() {
-      validator_.checkTypeExpected(AVRO_RECORD);
-      validator_.checkTypeExpected(AVRO_LONG);
+      validator_.checkTypeExpected(Type::AVRO_RECORD);
+      validator_.checkTypeExpected(Type::AVRO_LONG);
       validator_.setCount(0);
     }
 
     void writeArrayBlock(int64_t size) {
-      validator_.checkTypeExpected(AVRO_ARRAY);
+      validator_.checkTypeExpected(Type::AVRO_ARRAY);
       writeCount(size);
     }
 
@@ -130,7 +130,7 @@ namespace avro {
     }
 
     void writeMapBlock(int64_t size) {
-      validator_.checkTypeExpected(AVRO_MAP);
+      validator_.checkTypeExpected(Type::AVRO_MAP);
       writeCount(size);
     }
 
@@ -139,12 +139,12 @@ namespace avro {
     }
 
     void writeUnion(int64_t choice) {
-      validator_.checkTypeExpected(AVRO_UNION);
+      validator_.checkTypeExpected(Type::AVRO_UNION);
       writeCount(choice);
     }
 
     void writeEnum(int64_t choice) {
-      validator_.checkTypeExpected(AVRO_ENUM);
+      validator_.checkTypeExpected(Type::AVRO_ENUM);
       writeCount(choice);
     }
 
@@ -166,7 +166,7 @@ namespace avro {
     }
 
     void writeCount(int64_t count) {
-      validator_.checkTypeExpected(AVRO_LONG);
+      validator_.checkTypeExpected(Type::AVRO_LONG);
       validator_.setCount(count);
       putLong(count);
     }

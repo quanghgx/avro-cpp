@@ -25,7 +25,7 @@
 namespace avro {
 
   /* The "type" for the schema.*/
-  enum Type {
+  enum class Type : int {
     AVRO_STRING, /* String */
     AVRO_BYTES, /* Sequence of variable length bytes data */
     AVRO_INT, /* 32-bit integer */
@@ -45,31 +45,36 @@ namespace avro {
     AVRO_NUM_TYPES, /* Marker */
 
     /* The following is a pseudo-type used in implementation*/
-    AVRO_SYMBOLIC = AVRO_NUM_TYPES, /* User internally to avoid circular references. */
+    AVRO_SYMBOLIC = Type::AVRO_NUM_TYPES, /* User internally to avoid circular references. */
     AVRO_UNKNOWN = -1 /* Used internally. */
 
   };
 
+  /* Get type as integer value*/
+  inline int type_as_integer(Type t) {
+    return static_cast<std::underlying_type<Type>::type> (t);
+  }
+
   /* Returns true if and only if the given type is a primitive. Primitive types are: string, bytes, int, long, float, double, boolean and 
      null*/
   inline bool isPrimitive(Type t) {
-    return (t >= AVRO_STRING) && (t < AVRO_RECORD);
+    return (t >= Type::AVRO_STRING) && (t < Type::AVRO_RECORD);
   }
 
   /* Returns true if and only if the given type is a non primitive valid type. Primitive types are: string, bytes, int, long, float, double, 
      boolean and null*/
   inline bool isCompound(Type t) {
-    return (t >= AVRO_RECORD) && (t < AVRO_NUM_TYPES);
+    return (t >= Type::AVRO_RECORD) && (t < Type::AVRO_NUM_TYPES);
   }
 
   /* Returns true if and only if the given type is a valid avro type.*/
   inline bool isAvroType(Type t) {
-    return (t >= AVRO_STRING) && (t < AVRO_NUM_TYPES);
+    return (t >= Type::AVRO_STRING) && (t < Type::AVRO_NUM_TYPES);
   }
 
   /* Returns true if and only if the given type is within the valid range of enumeration.*/
   inline bool isAvroTypeOrPseudoType(Type t) {
-    return (t >= AVRO_STRING) && (t <= AVRO_NUM_TYPES);
+    return (t >= Type::AVRO_STRING) && (t <= Type::AVRO_NUM_TYPES);
   }
 
   /* Converts the given type into a string. Useful for generating messages.*/

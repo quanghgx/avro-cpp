@@ -57,49 +57,49 @@ namespace avro {
   class NullSchema : public Schema {
   public:
 
-    NullSchema() : Schema(new NodePrimitive(AVRO_NULL)) { }
+    NullSchema() : Schema(new NodePrimitive(Type::AVRO_NULL)) { }
   };
 
   class BoolSchema : public Schema {
   public:
 
-    BoolSchema() : Schema(new NodePrimitive(AVRO_BOOL)) { }
+    BoolSchema() : Schema(new NodePrimitive(Type::AVRO_BOOL)) { }
   };
 
   class IntSchema : public Schema {
   public:
 
-    IntSchema() : Schema(new NodePrimitive(AVRO_INT)) { }
+    IntSchema() : Schema(new NodePrimitive(Type::AVRO_INT)) { }
   };
 
   class LongSchema : public Schema {
   public:
 
-    LongSchema() : Schema(new NodePrimitive(AVRO_LONG)) { }
+    LongSchema() : Schema(new NodePrimitive(Type::AVRO_LONG)) { }
   };
 
   class FloatSchema : public Schema {
   public:
 
-    FloatSchema() : Schema(new NodePrimitive(AVRO_FLOAT)) { }
+    FloatSchema() : Schema(new NodePrimitive(Type::AVRO_FLOAT)) { }
   };
 
   class DoubleSchema : public Schema {
   public:
 
-    DoubleSchema() : Schema(new NodePrimitive(AVRO_DOUBLE)) { }
+    DoubleSchema() : Schema(new NodePrimitive(Type::AVRO_DOUBLE)) { }
   };
 
   class StringSchema : public Schema {
   public:
 
-    StringSchema() : Schema(new NodePrimitive(AVRO_STRING)) { }
+    StringSchema() : Schema(new NodePrimitive(Type::AVRO_STRING)) { }
   };
 
   class BytesSchema : public Schema {
   public:
 
-    BytesSchema() : Schema(new NodePrimitive(AVRO_BYTES)) { }
+    BytesSchema() : Schema(new NodePrimitive(Type::AVRO_BYTES)) { }
   };
 
   class RecordSchema : public Schema {
