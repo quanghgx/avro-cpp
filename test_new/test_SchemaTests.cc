@@ -22,197 +22,197 @@
 #include "ValidSchema.hh"
 
 namespace avro {
-    namespace schema {
+  namespace schema {
 
-        const char* basicSchemas[] = {
-            "\"null\"",
-            "\"boolean\"",
-            "\"int\"",
-            "\"long\"",
-            "\"float\"",
-            "\"double\"",
-            "\"bytes\"",
-            "\"string\"",
+    const char* basicSchemas[] = {
+      "\"null\"",
+      "\"boolean\"",
+      "\"int\"",
+      "\"long\"",
+      "\"float\"",
+      "\"double\"",
+      "\"bytes\"",
+      "\"string\"",
 
-            // Primitive types - longer
-            "{ \"type\": \"null\" }",
-            "{ \"type\": \"boolean\" }",
-            "{ \"type\": \"int\" }",
-            "{ \"type\": \"long\" }",
-            "{ \"type\": \"float\" }",
-            "{ \"type\": \"double\" }",
-            "{ \"type\": \"bytes\" }",
-            "{ \"type\": \"string\" }",
+      // Primitive types - longer
+      "{ \"type\": \"null\" }",
+      "{ \"type\": \"boolean\" }",
+      "{ \"type\": \"int\" }",
+      "{ \"type\": \"long\" }",
+      "{ \"type\": \"float\" }",
+      "{ \"type\": \"double\" }",
+      "{ \"type\": \"bytes\" }",
+      "{ \"type\": \"string\" }",
 
-            // Record
-            "{\"type\": \"record\",\"name\": \"Test\",\"fields\": []}",
-            "{\"type\": \"record\",\"name\": \"Test\",\"fields\": "
-            "[{\"name\": \"f\",\"type\": \"long\"}]}",
-            "{\"type\": \"record\",\"name\": \"Test\",\"fields\": "
-            "[{\"name\": \"f1\",\"type\": \"long\"},"
-            "{\"name\": \"f2\", \"type\": \"int\"}]}",
-            "{\"type\": \"error\",\"name\": \"Test\",\"fields\": "
-            "[{\"name\": \"f1\",\"type\": \"long\"},"
-            "{\"name\": \"f2\", \"type\": \"int\"}]}",
+      // Record
+      "{\"type\": \"record\",\"name\": \"Test\",\"fields\": []}",
+      "{\"type\": \"record\",\"name\": \"Test\",\"fields\": "
+      "[{\"name\": \"f\",\"type\": \"long\"}]}",
+      "{\"type\": \"record\",\"name\": \"Test\",\"fields\": "
+      "[{\"name\": \"f1\",\"type\": \"long\"},"
+      "{\"name\": \"f2\", \"type\": \"int\"}]}",
+      "{\"type\": \"error\",\"name\": \"Test\",\"fields\": "
+      "[{\"name\": \"f1\",\"type\": \"long\"},"
+      "{\"name\": \"f2\", \"type\": \"int\"}]}",
 
-            // Recursive.
-            "{\"type\":\"record\",\"name\":\"LongList\","
-            "\"fields\":[{\"name\":\"value\",\"type\":\"long\"},"
-            "{\"name\":\"next\",\"type\":[\"LongList\",\"null\"]}]}",
-            // Enum
-            "{\"type\": \"enum\", \"name\": \"Test\", \"symbols\": [\"A\", \"B\"]}",
+      // Recursive.
+      "{\"type\":\"record\",\"name\":\"LongList\","
+      "\"fields\":[{\"name\":\"value\",\"type\":\"long\"},"
+      "{\"name\":\"next\",\"type\":[\"LongList\",\"null\"]}]}",
+      // Enum
+      "{\"type\": \"enum\", \"name\": \"Test\", \"symbols\": [\"A\", \"B\"]}",
 
-            // Array
-            "{\"type\": \"array\", \"items\": \"long\"}",
-            "{\"type\": \"array\",\"items\": {\"type\": \"enum\", "
-            "\"name\": \"Test\", \"symbols\": [\"A\", \"B\"]}}",
+      // Array
+      "{\"type\": \"array\", \"items\": \"long\"}",
+      "{\"type\": \"array\",\"items\": {\"type\": \"enum\", "
+      "\"name\": \"Test\", \"symbols\": [\"A\", \"B\"]}}",
 
-            // Map
-            "{\"type\": \"map\", \"values\": \"long\"}",
-            "{\"type\": \"map\",\"values\": {\"type\": \"enum\", "
-            "\"name\": \"Test\", \"symbols\": [\"A\", \"B\"]}}",
+      // Map
+      "{\"type\": \"map\", \"values\": \"long\"}",
+      "{\"type\": \"map\",\"values\": {\"type\": \"enum\", "
+      "\"name\": \"Test\", \"symbols\": [\"A\", \"B\"]}}",
 
-            // Union
-            "[\"string\", \"null\", \"long\"]",
+      // Union
+      "[\"string\", \"null\", \"long\"]",
 
-            // Fixed
-            "{ \"type\": \"fixed\", \"name\": \"Test\", \"size\": 1}",
-            "{\"type\": \"fixed\", \"name\": \"MyFixed\", "
-            "\"namespace\": \"org.apache.hadoop.avro\", \"size\": 1}",
-            "{ \"type\": \"fixed\", \"name\": \"Test\", \"size\": 1}",
-            "{ \"type\": \"fixed\", \"name\": \"Test\", \"size\": 1}",
+      // Fixed
+      "{ \"type\": \"fixed\", \"name\": \"Test\", \"size\": 1}",
+      "{\"type\": \"fixed\", \"name\": \"MyFixed\", "
+      "\"namespace\": \"org.apache.hadoop.avro\", \"size\": 1}",
+      "{ \"type\": \"fixed\", \"name\": \"Test\", \"size\": 1}",
+      "{ \"type\": \"fixed\", \"name\": \"Test\", \"size\": 1}",
 
-            // Extra attributes (should be ignored)
-            "{\"type\": \"null\", \"extra attribute\": \"should be ignored\"}",
-            "{\"type\": \"boolean\", \"extra1\": 1, \"extra2\": 2, \"extra3\": 3}",
-            "{\"type\": \"record\",\"name\": \"Test\",\"fields\": "
-            "[{\"name\": \"f\",\"type\": \"long\"}], \"extra attribute\": 1}",
-            "{\"type\": \"enum\", \"name\": \"Test\", \"symbols\": [\"A\", \"B\"],"
-            "\"extra attribute\": 1}",
-            "{\"type\": \"array\", \"items\": \"long\", \"extra attribute\": 1}",
-            "{\"type\": \"map\", \"values\": \"long\", \"extra attribute\": 1}",
-            "{\"type\": \"fixed\", \"name\": \"Test\", \"size\": 1, \"extra attribute\": 1}",
-        };
+      // Extra attributes (should be ignored)
+      "{\"type\": \"null\", \"extra attribute\": \"should be ignored\"}",
+      "{\"type\": \"boolean\", \"extra1\": 1, \"extra2\": 2, \"extra3\": 3}",
+      "{\"type\": \"record\",\"name\": \"Test\",\"fields\": "
+      "[{\"name\": \"f\",\"type\": \"long\"}], \"extra attribute\": 1}",
+      "{\"type\": \"enum\", \"name\": \"Test\", \"symbols\": [\"A\", \"B\"],"
+      "\"extra attribute\": 1}",
+      "{\"type\": \"array\", \"items\": \"long\", \"extra attribute\": 1}",
+      "{\"type\": \"map\", \"values\": \"long\", \"extra attribute\": 1}",
+      "{\"type\": \"fixed\", \"name\": \"Test\", \"size\": 1, \"extra attribute\": 1}",
+    };
 
-        const char* basicSchemaErrors[] = {
-            // Record
-            // No fields
-            "{\"type\":\"record\",\"name\":\"LongList\"}",
-            // Fields not an array
-            "{\"type\":\"record\",\"name\":\"LongList\", \"fields\": \"hi\"}",
+    const char* basicSchemaErrors[] = {
+      // Record
+      // No fields
+      "{\"type\":\"record\",\"name\":\"LongList\"}",
+      // Fields not an array
+      "{\"type\":\"record\",\"name\":\"LongList\", \"fields\": \"hi\"}",
 
-            // Undefined name
-            "{\"type\":\"record\",\"name\":\"LongList\","
-            "\"fields\":[{\"name\":\"value\",\"type\":\"long\"},"
-            "{\"name\":\"next\",\"type\":[\"LongListA\",\"null\"]}]}",
+      // Undefined name
+      "{\"type\":\"record\",\"name\":\"LongList\","
+      "\"fields\":[{\"name\":\"value\",\"type\":\"long\"},"
+      "{\"name\":\"next\",\"type\":[\"LongListA\",\"null\"]}]}",
 
-            // Enum
-            // Symbols not an array
-            "{\"type\": \"enum\", \"name\": \"Status\", \"symbols\": "
-            "\"Normal Caution Critical\"}",
-            // Name not a string
-            "{\"type\": \"enum\", \"name\": [ 0, 1, 1, 2, 3, 5, 8 ], "
-            "\"symbols\": [\"Golden\", \"Mean\"]}",
-            // No name
-            "{\"type\": \"enum\", \"symbols\" : [\"I\", \"will\", "
-            "\"fail\", \"no\", \"name\"]}",
-            // Duplicate symbol
-            "{\"type\": \"enum\", \"name\": \"Test\","
-            "\"symbols\" : [\"AA\", \"AA\"]}",
+      // Enum
+      // Symbols not an array
+      "{\"type\": \"enum\", \"name\": \"Status\", \"symbols\": "
+      "\"Normal Caution Critical\"}",
+      // Name not a string
+      "{\"type\": \"enum\", \"name\": [ 0, 1, 1, 2, 3, 5, 8 ], "
+      "\"symbols\": [\"Golden\", \"Mean\"]}",
+      // No name
+      "{\"type\": \"enum\", \"symbols\" : [\"I\", \"will\", "
+      "\"fail\", \"no\", \"name\"]}",
+      // Duplicate symbol
+      "{\"type\": \"enum\", \"name\": \"Test\","
+      "\"symbols\" : [\"AA\", \"AA\"]}",
 
-            // Union
-            // Duplicate type
-            "[\"string\", \"long\", \"long\"]",
-            // Duplicate type
-            "[{\"type\": \"array\", \"items\": \"long\"}, "
-            "{\"type\": \"array\", \"items\": \"string\"}]",
+      // Union
+      // Duplicate type
+      "[\"string\", \"long\", \"long\"]",
+      // Duplicate type
+      "[{\"type\": \"array\", \"items\": \"long\"}, "
+      "{\"type\": \"array\", \"items\": \"string\"}]",
 
-            // Fixed
-            // No size
-            "{\"type\": \"fixed\", \"name\": \"Missing size\"}",
-            // No name
-            "{\"type\": \"fixed\", \"size\": 314}",
-        };
+      // Fixed
+      // No size
+      "{\"type\": \"fixed\", \"name\": \"Missing size\"}",
+      // No name
+      "{\"type\": \"fixed\", \"size\": 314}",
+    };
 
-        const char* roundTripSchemas[] = {
-            "\"null\"",
-            "\"boolean\"",
-            "\"int\"",
-            "\"long\"",
-            "\"float\"",
-            "\"double\"",
-            "\"bytes\"",
-            "\"string\"",
-            // Record
-            "{\"type\":\"record\",\"name\":\"Test\",\"fields\":[]}",
-            "{\"type\":\"record\",\"name\":\"Test\",\"fields\":"
-            "[{\"name\":\"f\",\"type\":\"long\"}]}",
-            "{\"type\":\"record\",\"name\":\"Test\",\"fields\":"
-            "[{\"name\":\"f1\",\"type\":\"long\"},"
-            "{\"name\":\"f2\",\"type\":\"int\"}]}",
-            /* Avro-C++ cannot do a round-trip on error schemas. 
-             * "{\"type\":\"error\",\"name\":\"Test\",\"fields\":"
-             *       "[{\"name\":\"f1\",\"type\":\"long\"},"
-             *       "{\"name\":\"f2\",\"type\":\"int\"}]}"
-             */
-            // Recursive.
-            "{\"type\":\"record\",\"name\":\"LongList\","
-            "\"fields\":[{\"name\":\"value\",\"type\":\"long\"},"
-            "{\"name\":\"next\",\"type\":[\"LongList\",\"null\"]}]}",
-            // Enum
-            "{\"type\":\"enum\",\"name\":\"Test\",\"symbols\":[\"A\",\"B\"]}",
+    const char* roundTripSchemas[] = {
+      "\"null\"",
+      "\"boolean\"",
+      "\"int\"",
+      "\"long\"",
+      "\"float\"",
+      "\"double\"",
+      "\"bytes\"",
+      "\"string\"",
+      // Record
+      "{\"type\":\"record\",\"name\":\"Test\",\"fields\":[]}",
+      "{\"type\":\"record\",\"name\":\"Test\",\"fields\":"
+      "[{\"name\":\"f\",\"type\":\"long\"}]}",
+      "{\"type\":\"record\",\"name\":\"Test\",\"fields\":"
+      "[{\"name\":\"f1\",\"type\":\"long\"},"
+      "{\"name\":\"f2\",\"type\":\"int\"}]}",
+      /* Avro-C++ cannot do a round-trip on error schemas. 
+       * "{\"type\":\"error\",\"name\":\"Test\",\"fields\":"
+       *       "[{\"name\":\"f1\",\"type\":\"long\"},"
+       *       "{\"name\":\"f2\",\"type\":\"int\"}]}"
+       */
+      // Recursive.
+      "{\"type\":\"record\",\"name\":\"LongList\","
+      "\"fields\":[{\"name\":\"value\",\"type\":\"long\"},"
+      "{\"name\":\"next\",\"type\":[\"LongList\",\"null\"]}]}",
+      // Enum
+      "{\"type\":\"enum\",\"name\":\"Test\",\"symbols\":[\"A\",\"B\"]}",
 
-            // Array
-            "{\"type\":\"array\",\"items\":\"long\"}",
-            "{\"type\":\"array\",\"items\":{\"type\":\"enum\","
-            "\"name\":\"Test\",\"symbols\":[\"A\",\"B\"]}}",
+      // Array
+      "{\"type\":\"array\",\"items\":\"long\"}",
+      "{\"type\":\"array\",\"items\":{\"type\":\"enum\","
+      "\"name\":\"Test\",\"symbols\":[\"A\",\"B\"]}}",
 
-            // Map
-            "{\"type\":\"map\",\"values\":\"long\"}",
-            "{\"type\":\"map\",\"values\":{\"type\":\"enum\","
-            "\"name\":\"Test\",\"symbols\":[\"A\",\"B\"]}}",
+      // Map
+      "{\"type\":\"map\",\"values\":\"long\"}",
+      "{\"type\":\"map\",\"values\":{\"type\":\"enum\","
+      "\"name\":\"Test\",\"symbols\":[\"A\",\"B\"]}}",
 
-            // Union
-            "[\"string\",\"null\",\"long\"]",
+      // Union
+      "[\"string\",\"null\",\"long\"]",
 
-            // Fixed
-            "{\"type\":\"fixed\",\"name\":\"Test\",\"size\":1}",
-            "{\"type\":\"fixed\",\"namespace\":\"org.apache.hadoop.avro\","
-            "\"name\":\"MyFixed\",\"size\":1}",
-            "{\"type\":\"fixed\",\"name\":\"Test\",\"size\":1}",
-            "{\"type\":\"fixed\",\"name\":\"Test\",\"size\":1}"
-        };
+      // Fixed
+      "{\"type\":\"fixed\",\"name\":\"Test\",\"size\":1}",
+      "{\"type\":\"fixed\",\"namespace\":\"org.apache.hadoop.avro\","
+      "\"name\":\"MyFixed\",\"size\":1}",
+      "{\"type\":\"fixed\",\"name\":\"Test\",\"size\":1}",
+      "{\"type\":\"fixed\",\"name\":\"Test\",\"size\":1}"
+    };
 
-        static void testBasic(const char* schema) {
-            compileJsonSchemaFromString(schema);
-        }
-
-        static void testBasic_fail(const char* schema) {
-            REQUIRE_THROWS_AS(compileJsonSchemaFromString(schema), Exception);
-        }
-
-        static void testCompile(const char* schema) {
-            compileJsonSchemaFromString(std::string(schema));
-        }
-
-        // Test that the JSON output from a valid schema matches the JSON that was 
-        // used to construct it, apart from whitespace changes.
-
-        static void testRoundTrip(const char* schema) {
-            avro::ValidSchema compiledSchema = compileJsonSchemaFromString(std::string(schema));
-            std::ostringstream os;
-            compiledSchema.toJson(os);
-            std::string result = os.str();
-            result.erase(std::remove_if(result.begin(), result.end(), ::isspace), result.end()); // Remove whitespace
-            REQUIRE(result == std::string(schema));
-        }
-
+    static void testBasic(const char* schema) {
+      compileJsonSchemaFromString(schema);
     }
+
+    static void testBasic_fail(const char* schema) {
+      REQUIRE_THROWS_AS(compileJsonSchemaFromString(schema), Exception);
+    }
+
+    static void testCompile(const char* schema) {
+      compileJsonSchemaFromString(std::string(schema));
+    }
+
+    // Test that the JSON output from a valid schema matches the JSON that was 
+    // used to construct it, apart from whitespace changes.
+
+    static void testRoundTrip(const char* schema) {
+      avro::ValidSchema compiledSchema = compileJsonSchemaFromString(std::string(schema));
+      std::ostringstream os;
+      compiledSchema.toJson(os);
+      std::string result = os.str();
+      result.erase(std::remove_if(result.begin(), result.end(), ::isspace), result.end()); // Remove whitespace
+      REQUIRE(result == std::string(schema));
+    }
+
+  }
 }
 
 TEST_CASE("Avro C++ unit tests for schemas", "[testSchema]") {
-    for (auto& item : avro::schema::basicSchemas) avro::schema::testBasic(item);
-    for (auto& item : avro::schema::basicSchemaErrors) avro::schema::testBasic_fail(item);
-    for (auto& item : avro::schema::basicSchemas) avro::schema::testCompile(item);
-    for (auto& item : avro::schema::roundTripSchemas) avro::schema::testRoundTrip(item);
+  for (auto& item : avro::schema::basicSchemas) avro::schema::testBasic(item);
+  for (auto& item : avro::schema::basicSchemaErrors) avro::schema::testBasic_fail(item);
+  for (auto& item : avro::schema::basicSchemas) avro::schema::testCompile(item);
+  for (auto& item : avro::schema::roundTripSchemas) avro::schema::testRoundTrip(item);
 }

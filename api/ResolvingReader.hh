@@ -20,8 +20,6 @@
 #define avro_ResolvingReader_hh__
 
 #include <cstdint>
-#include <boost/noncopyable.hpp>
-
 #include "ResolverSchema.hh"
 #include "Reader.hh"
 

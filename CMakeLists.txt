@@ -29,7 +29,6 @@ project (Avro-cpp)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
 
 find_package (Boost 1.38 REQUIRED  COMPONENTS filesystem system program_options iostreams)
-
 include_directories (3rd api ${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIRS})
 
 set (AVRO_SOURCE_FILES
@@ -60,12 +59,42 @@ set_target_properties (avrocpp_s PROPERTIES  VERSION ${AVRO_VERSION_MAJOR}.${AVR
 
 target_link_libraries (avrocpp ${Boost_LIBRARIES})
 
+# -----------------------------------------------------------------------
+# Tools
+#
 add_executable (precompile test/precompile.cc)
 target_link_libraries (precompile avrocpp_s ${Boost_LIBRARIES})
 
 add_executable (avrogencpp impl/avrogencpp.cc)
 target_link_libraries (avrogencpp avrocpp_s ${Boost_LIBRARIES})
 
+# -----------------------------------------------------------------------
+# Examples
+#
+add_executable (example_custom examples/custom.cc)
+target_link_libraries (example_custom avrocpp_s ${Boost_LIBRARIES})
+
+add_executable (example_datafile examples/datafile.cc)
+target_link_libraries (example_datafile avrocpp_s ${Boost_LIBRARIES})
+
+add_executable (example_generated examples/generated.cc)
+target_link_libraries (example_generated avrocpp_s ${Boost_LIBRARIES})
+
+add_executable (example_generic examples/generic.cc)
+target_link_libraries (example_generic avrocpp_s ${Boost_LIBRARIES})
+
+add_executable (example_resolving examples/resolving.cc)
+target_link_libraries (example_resolving avrocpp_s ${Boost_LIBRARIES})
+
+add_executable (example_schemaload examples/schemaload.cc)
+target_link_libraries (example_schemaload avrocpp_s ${Boost_LIBRARIES})
+
+add_executable (example_validating examples/validating.cc)
+target_link_libraries (example_validating avrocpp_s ${Boost_LIBRARIES})
+
+# -----------------------------------------------------------------------
+# Installation
+#
 set (CPACK_PACKAGE_FILE_NAME "avrocpp-${AVRO_VERSION_MAJOR}")
 
 include (CPack)
@@ -81,6 +110,8 @@ install (DIRECTORY api/ DESTINATION include/avro
     FILES_MATCHING PATTERN *.hh)
 
 # -----------------------------------------------------------------------
+# Unit tests (with catch2)
+#
 file (GLOB_RECURSE CATCH2_TESTS "test_new/*.cc")
 add_executable (catch2_test ${CATCH2_TESTS})
 target_link_libraries (catch2_test avrocpp_s ${Boost_LIBRARIES})

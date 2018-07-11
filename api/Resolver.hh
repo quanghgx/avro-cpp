@@ -19,7 +19,6 @@
 #ifndef avro_Resolver_hh__
 #define avro_Resolver_hh__
 
-#include <boost/noncopyable.hpp>
 #include "Reader.hh"
 #include <cstdint>
 

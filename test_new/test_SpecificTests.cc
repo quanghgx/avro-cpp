@@ -27,167 +27,167 @@ using boost::array;
 
 namespace avro {
 
-    class C {
-        int32_t i_;
-        int64_t l_;
+  class C {
+    int32_t i_;
+    int64_t l_;
+  public:
+
+    C() : i_(0), l_(0) {
+    }
+
+    C(int32_t i, int64_t l) : i_(i), l_(l) {
+    }
+
+    int32_t i() const {
+      return i_;
+    }
+
+    int64_t l() const {
+      return l_;
+    }
+
+    void i(int32_t ii) {
+      i_ = ii;
+    }
+
+    void l(int64_t ll) {
+      l_ = ll;
+    }
+
+    bool operator==(const C& oth) const {
+      return i_ == oth.i_ && l_ == oth.l_;
+    }
+  };
+
+  template <> struct codec_traits<C> {
+
+    static void encode(Encoder& e, const C& c) {
+      e.encodeInt(c.i());
+      e.encodeLong(c.l());
+    }
+
+    static void decode(Decoder& d, C& c) {
+      c.i(d.decodeInt());
+      c.l(d.decodeLong());
+    }
+  };
+
+  namespace specific {
+
+    class Test {
+      auto_ptr<OutputStream> os;
+      EncoderPtr e;
+      DecoderPtr d;
     public:
 
-        C() : i_(0), l_(0) {
-        }
+      Test() : os(memoryOutputStream()), e(binaryEncoder()), d(binaryDecoder()) {
+        e->init(*os);
+      }
 
-        C(int32_t i, int64_t l) : i_(i), l_(l) {
-        }
+      template <typename T> void encode(const T& t) {
+        avro::encode(*e, t);
+        e->flush();
+      }
 
-        int32_t i() const {
-            return i_;
-        }
-
-        int64_t l() const {
-            return l_;
-        }
-
-        void i(int32_t ii) {
-            i_ = ii;
-        }
-
-        void l(int64_t ll) {
-            l_ = ll;
-        }
-
-        bool operator==(const C& oth) const {
-            return i_ == oth.i_ && l_ == oth.l_;
-        }
+      template <typename T> void decode(T& t) {
+        auto_ptr<InputStream> is = memoryInputStream(*os);
+        d->init(*is);
+        avro::decode(*d, t);
+      }
     };
 
-    template <> struct codec_traits<C> {
+    template <typename T> T encodeAndDecode(const T& t) {
+      Test tst;
 
-        static void encode(Encoder& e, const C& c) {
-            e.encodeInt(c.i());
-            e.encodeLong(c.l());
-        }
+      tst.encode(t);
 
-        static void decode(Decoder& d, C& c) {
-            c.i(d.decodeInt());
-            c.l(d.decodeLong());
-        }
-    };
+      T actual = T();
 
-    namespace specific {
-
-        class Test {
-            auto_ptr<OutputStream> os;
-            EncoderPtr e;
-            DecoderPtr d;
-        public:
-
-            Test() : os(memoryOutputStream()), e(binaryEncoder()), d(binaryDecoder()) {
-                e->init(*os);
-            }
-
-            template <typename T> void encode(const T& t) {
-                avro::encode(*e, t);
-                e->flush();
-            }
-
-            template <typename T> void decode(T& t) {
-                auto_ptr<InputStream> is = memoryInputStream(*os);
-                d->init(*is);
-                avro::decode(*d, t);
-            }
-        };
-
-        template <typename T> T encodeAndDecode(const T& t) {
-            Test tst;
-
-            tst.encode(t);
-
-            T actual = T();
-
-            tst.decode(actual);
-            return actual;
-        }
-
-        TEST_CASE("Specific tests: testBool", "[testBool]") {
-            bool b = encodeAndDecode(true);
-            REQUIRE(b == true);
-        }
-
-        TEST_CASE("Specific tests: testInt", "[testInt]") {
-            int32_t n = 10;
-            int32_t b = encodeAndDecode(n);
-            REQUIRE(b == n);
-        }
-
-        TEST_CASE("Specific tests: testLong", "[testLong]") {
-            int64_t n = -109;
-            int64_t b = encodeAndDecode(n);
-            REQUIRE(b == n);
-        }
-
-        TEST_CASE("Specific tests: testFloat", "[testFloat]") {
-            float n = 10.19f;
-            float b = encodeAndDecode(n);
-            REQUIRE(std::abs(b - n) < 0.00001f);
-        }
-
-        TEST_CASE("Specific tests: testDouble", "[testDouble]") {
-            double n = 10.00001;
-            double b = encodeAndDecode(n);
-            REQUIRE(std::abs(b - n) < 0.00000001);
-        }
-
-        TEST_CASE("Specific tests: testString", "[testString]") {
-            string n = "abc";
-            string b = encodeAndDecode(n);
-            REQUIRE(b == n);
-        }
-
-        TEST_CASE("Specific tests: testBytes", "[testBytes]") {
-            uint8_t values[] = {1, 7, 23, 47, 83};
-            vector<uint8_t> n(values, values + 5);
-            vector<uint8_t> b = encodeAndDecode(n);
-            REQUIRE(b == n);
-        }
-
-        TEST_CASE("Specific tests: testFixed", "[testFixed]") {
-            array<uint8_t, 5> n = {
-                { 1, 7, 23, 47, 83}
-            };
-            array<uint8_t, 5> b = encodeAndDecode(n);
-            REQUIRE(b == n);
-        }
-
-        TEST_CASE("Specific tests: testArray", "[testArray]") {
-            int32_t values[] = {101, 709, 409, 34};
-            vector<int32_t> n(values, values + 4);
-            vector<int32_t> b = encodeAndDecode(n);
-
-            REQUIRE(b == n);
-        }
-
-        TEST_CASE("Specific tests: testBoolArray", "[testBoolArray]") {
-            bool values[] = {true, false, true, false};
-            vector<bool> n(values, values + 4);
-            vector<bool> b = encodeAndDecode(n);
-
-            REQUIRE(b == n);
-        }
-
-        TEST_CASE("Specific tests: testMap", "[testMap]") {
-            map<string, int32_t> n;
-            n["a"] = 1;
-            n["b"] = 101;
-
-            map<string, int32_t> b = encodeAndDecode(n);
-
-            REQUIRE(b == n);
-        }
-
-        TEST_CASE("Specific tests: testCustom", "[testCustom]") {
-            C n(10, 1023);
-            C b = encodeAndDecode(n);
-            REQUIRE(b == n);
-        }
-
+      tst.decode(actual);
+      return actual;
     }
+
+    TEST_CASE("Specific tests: testBool", "[testBool]") {
+      bool b = encodeAndDecode(true);
+      REQUIRE(b == true);
+    }
+
+    TEST_CASE("Specific tests: testInt", "[testInt]") {
+      int32_t n = 10;
+      int32_t b = encodeAndDecode(n);
+      REQUIRE(b == n);
+    }
+
+    TEST_CASE("Specific tests: testLong", "[testLong]") {
+      int64_t n = -109;
+      int64_t b = encodeAndDecode(n);
+      REQUIRE(b == n);
+    }
+
+    TEST_CASE("Specific tests: testFloat", "[testFloat]") {
+      float n = 10.19f;
+      float b = encodeAndDecode(n);
+      REQUIRE(std::abs(b - n) < 0.00001f);
+    }
+
+    TEST_CASE("Specific tests: testDouble", "[testDouble]") {
+      double n = 10.00001;
+      double b = encodeAndDecode(n);
+      REQUIRE(std::abs(b - n) < 0.00000001);
+    }
+
+    TEST_CASE("Specific tests: testString", "[testString]") {
+      string n = "abc";
+      string b = encodeAndDecode(n);
+      REQUIRE(b == n);
+    }
+
+    TEST_CASE("Specific tests: testBytes", "[testBytes]") {
+      uint8_t values[] = {1, 7, 23, 47, 83};
+      vector<uint8_t> n(values, values + 5);
+      vector<uint8_t> b = encodeAndDecode(n);
+      REQUIRE(b == n);
+    }
+
+    TEST_CASE("Specific tests: testFixed", "[testFixed]") {
+      array<uint8_t, 5> n = {
+        { 1, 7, 23, 47, 83}
+      };
+      array<uint8_t, 5> b = encodeAndDecode(n);
+      REQUIRE(b == n);
+    }
+
+    TEST_CASE("Specific tests: testArray", "[testArray]") {
+      int32_t values[] = {101, 709, 409, 34};
+      vector<int32_t> n(values, values + 4);
+      vector<int32_t> b = encodeAndDecode(n);
+
+      REQUIRE(b == n);
+    }
+
+    TEST_CASE("Specific tests: testBoolArray", "[testBoolArray]") {
+      bool values[] = {true, false, true, false};
+      vector<bool> n(values, values + 4);
+      vector<bool> b = encodeAndDecode(n);
+
+      REQUIRE(b == n);
+    }
+
+    TEST_CASE("Specific tests: testMap", "[testMap]") {
+      map<string, int32_t> n;
+      n["a"] = 1;
+      n["b"] = 101;
+
+      map<string, int32_t> b = encodeAndDecode(n);
+
+      REQUIRE(b == n);
+    }
+
+    TEST_CASE("Specific tests: testCustom", "[testCustom]") {
+      C n(10, 1023);
+      C b = encodeAndDecode(n);
+      REQUIRE(b == n);
+    }
+
+  }
 }

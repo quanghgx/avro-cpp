@@ -22,10 +22,10 @@
 #include "Decoder.hh"
 
 TEST_CASE("Avro C++ unit tests for large schemas", "[testLargeSchema]") {
-    std::ifstream in("jsonschemas/large_schema.avsc");
-    avro::ValidSchema vs;
-    avro::compileJsonSchema(in, vs);
-    avro::DecoderPtr d = avro::binaryDecoder();
-    avro::DecoderPtr vd = avro::validatingDecoder(vs, d);
-    avro::DecoderPtr rd = avro::resolvingDecoder(vs, vs, d);
+  std::ifstream in("jsonschemas/large_schema.avsc");
+  avro::ValidSchema vs;
+  avro::compileJsonSchema(in, vs);
+  avro::DecoderPtr d = avro::binaryDecoder();
+  avro::DecoderPtr vd = avro::validatingDecoder(vs, d);
+  avro::DecoderPtr rd = avro::resolvingDecoder(vs, vs, d);
 }

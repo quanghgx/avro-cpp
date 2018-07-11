@@ -21,8 +21,6 @@
 
 #include <cstdint>
 #include <vector>
-#include <boost/noncopyable.hpp>
-
 #include "Zigzag.hh"
 #include "Types.hh"
 #include "Validator.hh"

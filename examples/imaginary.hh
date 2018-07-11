@@ -22,25 +22,29 @@
 
 
 #include "boost/any.hpp"
-#include "avro/Specific.hh"
-#include "avro/Encoder.hh"
-#include "avro/Decoder.hh"
+#include "Specific.hh"
+#include "Encoder.hh"
+#include "Decoder.hh"
 
 namespace i {
-struct cpx {
+
+  struct cpx {
     double im;
-};
+  };
 
 }
 namespace avro {
-template<> struct codec_traits<i::cpx> {
+
+  template<> struct codec_traits<i::cpx> {
+
     static void encode(Encoder& e, const i::cpx& v) {
-        avro::encode(e, v.im);
+      avro::encode(e, v.im);
     }
+
     static void decode(Decoder& d, i::cpx& v) {
-        avro::decode(d, v.im);
+      avro::decode(d, v.im);
     }
-};
+  };
 
 }
 #endif

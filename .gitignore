@@ -46,3 +46,8 @@
 /catch2_test
 *.so
 *.a
+/example_generic
+/example_custom
+/example_schemaload
+/example_datafile
+/example_generated

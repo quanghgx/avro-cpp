@@ -19,9 +19,7 @@
 #ifndef avro_Node_hh__
 #define avro_Node_hh__
 
-
 #include <cassert>
-#include <boost/noncopyable.hpp>
 #include <memory>
 
 #include "Exception.hh"

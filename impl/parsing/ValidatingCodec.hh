@@ -21,8 +21,6 @@
 
 #include <map>
 #include <vector>
-#include "boost/make_shared.hpp"
-
 #include "Symbol.hh"
 #include "ValidSchema.hh"
 #include "NodeImpl.hh"

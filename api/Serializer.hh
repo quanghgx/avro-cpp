@@ -19,8 +19,6 @@
 #ifndef avro_Serializer_hh__
 #define avro_Serializer_hh__
 
-#include <boost/noncopyable.hpp>
-
 #include "Writer.hh"
 
 namespace avro {

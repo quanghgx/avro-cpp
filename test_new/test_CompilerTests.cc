@@ -24,7 +24,7 @@
 /* Assert that empty defaults don't make json schema compilation violate bounds checks, as they did in AVRO-1853. Please note that on Linux 
    bounds are only checked in Debug builds (CMAKE_BUILD_TYPE=Debug).*/
 TEST_CASE("Avro C++ unit tests for Compiler.cc", "[testEmptyBytesDefault]") {
-    std::string input = "{\n\
+  std::string input = "{\n\
     \"type\": \"record\",\n\
     \"name\": \"testrecord\",\n\
     \"fields\": [\n\
@@ -36,20 +36,20 @@ TEST_CASE("Avro C++ unit tests for Compiler.cc", "[testEmptyBytesDefault]") {
         ]\n\
     }\n\
     ";
-    std::string expected =
-      "{\n"
-      "    \"type\": \"record\",\n"
-      "    \"name\": \"testrecord\",\n"
-      "    \"fields\": [\n"
-      "        {\n"
-      "            \"name\": \"testbytes\",\n"
-      "            \"type\": \"bytes\"\n"
-      "        }\n"
-      "    ]\n"
-      "}\n";
+  std::string expected =
+    "{\n"
+    "    \"type\": \"record\",\n"
+    "    \"name\": \"testrecord\",\n"
+    "    \"fields\": [\n"
+    "        {\n"
+    "            \"name\": \"testbytes\",\n"
+    "            \"type\": \"bytes\"\n"
+    "        }\n"
+    "    ]\n"
+    "}\n";
 
-    avro::ValidSchema schema = avro::compileJsonSchemaFromString(input);
-    std::ostringstream actual;
-    schema.toJson(actual);
-    REQUIRE(expected == actual.str());
+  avro::ValidSchema schema = avro::compileJsonSchemaFromString(input);
+  std::ostringstream actual;
+  schema.toJson(actual);
+  REQUIRE(expected == actual.str());
 }
