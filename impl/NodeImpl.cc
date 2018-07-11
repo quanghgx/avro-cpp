@@ -21,45 +21,27 @@
 
 namespace avro {
 
-  SchemaResolution
-  NodePrimitive::resolve(const Node &reader) const {
+  SchemaResolution NodePrimitive::resolve(const Node &reader) const {
     if (type() == reader.type()) {
       return RESOLVE_MATCH;
     }
 
-    switch (type()) {
+    if (type() == AVRO_INT && reader.type() == AVRO_LONG) {
+      return RESOLVE_PROMOTABLE_TO_LONG;
+    }
 
-      case AVRO_INT:
+    if (type() == AVRO_LONG && reader.type() == AVRO_FLOAT) {
+      return RESOLVE_PROMOTABLE_TO_FLOAT;
+    }
 
-        if (reader.type() == AVRO_LONG) {
-          return RESOLVE_PROMOTABLE_TO_LONG;
-        }
-
-        // fall-through intentional
-
-      case AVRO_LONG:
-
-        if (reader.type() == AVRO_FLOAT) {
-          return RESOLVE_PROMOTABLE_TO_FLOAT;
-        }
-
-        // fall-through intentional
-
-      case AVRO_FLOAT:
-
-        if (reader.type() == AVRO_DOUBLE) {
-          return RESOLVE_PROMOTABLE_TO_DOUBLE;
-        }
-
-      default:
-        break;
+    if (type() == AVRO_FLOAT && reader.type() == AVRO_DOUBLE) {
+      return RESOLVE_PROMOTABLE_TO_DOUBLE;
     }
 
     return furtherResolution(reader);
   }
 
-  SchemaResolution
-  NodeRecord::resolve(const Node &reader) const {
+  SchemaResolution NodeRecord::resolve(const Node &reader) const {
     if (reader.type() == AVRO_RECORD) {
       if (name() == reader.name()) {
         return RESOLVE_MATCH;
@@ -68,16 +50,14 @@ namespace avro {
     return furtherResolution(reader);
   }
 
-  SchemaResolution
-  NodeEnum::resolve(const Node &reader) const {
+  SchemaResolution NodeEnum::resolve(const Node &reader) const {
     if (reader.type() == AVRO_ENUM) {
       return (name() == reader.name()) ? RESOLVE_MATCH : RESOLVE_NO_MATCH;
     }
     return furtherResolution(reader);
   }
 
-  SchemaResolution
-  NodeArray::resolve(const Node &reader) const {
+  SchemaResolution NodeArray::resolve(const Node &reader) const {
     if (reader.type() == AVRO_ARRAY) {
       const NodePtr &arrayType = leafAt(0);
       return arrayType->resolve(*reader.leafAt(0));
@@ -85,8 +65,7 @@ namespace avro {
     return furtherResolution(reader);
   }
 
-  SchemaResolution
-  NodeMap::resolve(const Node &reader) const {
+  SchemaResolution NodeMap::resolve(const Node &reader) const {
     if (reader.type() == AVRO_MAP) {
       const NodePtr &mapType = leafAt(1);
       return mapType->resolve(*reader.leafAt(1));
@@ -94,8 +73,7 @@ namespace avro {
     return furtherResolution(reader);
   }
 
-  SchemaResolution
-  NodeUnion::resolve(const Node &reader) const {
+  SchemaResolution NodeUnion::resolve(const Node &reader) const {
 
     // If the writer is union, resolution only needs to occur when the selected
     // type of the writer is known, so this function is not very helpful.
@@ -119,8 +97,7 @@ namespace avro {
     return match;
   }
 
-  SchemaResolution
-  NodeFixed::resolve(const Node &reader) const {
+  SchemaResolution NodeFixed::resolve(const Node &reader) const {
     if (reader.type() == AVRO_FIXED) {
       return (
         (reader.fixedSize() == fixedSize()) &&
@@ -131,14 +108,12 @@ namespace avro {
     return furtherResolution(reader);
   }
 
-  SchemaResolution
-  NodeSymbolic::resolve(const Node &reader) const {
+  SchemaResolution NodeSymbolic::resolve(const Node &reader) const {
     const NodePtr &node = leafAt(0);
     return node->resolve(reader);
   }
 
-  // Wrap an indentation in a struct for ostream operator<< 
-
+  /* Wrap an indentation in a struct for ostream operator<< */
   struct indent {
 
     indent(int depth) :
@@ -147,8 +122,7 @@ namespace avro {
     int d;
   };
 
-  /// ostream operator for indent
-
+  /* ostream operator for indent*/
   std::ostream& operator<<(std::ostream &os, indent x) {
     static const std::string spaces("    ");
     while (x.d--) {
@@ -157,13 +131,11 @@ namespace avro {
     return os;
   }
 
-  void
-  NodePrimitive::printJson(std::ostream &os, int depth) const {
+  void NodePrimitive::printJson(std::ostream &os, int depth) const {
     os << '\"' << type() << '\"';
   }
 
-  void
-  NodeSymbolic::printJson(std::ostream &os, int depth) const {
+  void NodeSymbolic::printJson(std::ostream &os, int depth) const {
     os << '\"' << nameAttribute_.get() << '\"';
   }
 
@@ -174,8 +146,7 @@ namespace avro {
     os << indent(depth) << "\"name\": \"" << n.simpleName() << "\",\n";
   }
 
-  void
-  NodeRecord::printJson(std::ostream &os, int depth) const {
+  void NodeRecord::printJson(std::ostream &os, int depth) const {
     os << "{\n";
     os << indent(++depth) << "\"type\": \"record\",\n";
     printName(os, nameAttribute_.get(), depth);
@@ -198,8 +169,7 @@ namespace avro {
     os << indent(--depth) << '}';
   }
 
-  void
-  NodeEnum::printJson(std::ostream &os, int depth) const {
+  void NodeEnum::printJson(std::ostream &os, int depth) const {
     os << "{\n";
     os << indent(++depth) << "\"type\": \"enum\",\n";
     printName(os, nameAttribute_.get(), depth);
@@ -218,8 +188,7 @@ namespace avro {
     os << indent(--depth) << '}';
   }
 
-  void
-  NodeArray::printJson(std::ostream &os, int depth) const {
+  void NodeArray::printJson(std::ostream &os, int depth) const {
     os << "{\n";
     os << indent(depth + 1) << "\"type\": \"array\",\n";
     os << indent(depth + 1) << "\"items\": ";
@@ -228,8 +197,7 @@ namespace avro {
     os << indent(depth) << '}';
   }
 
-  void
-  NodeMap::printJson(std::ostream &os, int depth) const {
+  void NodeMap::printJson(std::ostream &os, int depth) const {
     os << "{\n";
     os << indent(depth + 1) << "\"type\": \"map\",\n";
     os << indent(depth + 1) << "\"values\": ";
@@ -238,8 +206,7 @@ namespace avro {
     os << indent(depth) << '}';
   }
 
-  void
-  NodeUnion::printJson(std::ostream &os, int depth) const {
+  void NodeUnion::printJson(std::ostream &os, int depth) const {
     os << "[\n";
     int fields = leafAttributes_.size();
     ++depth;
@@ -254,8 +221,7 @@ namespace avro {
     os << indent(--depth) << ']';
   }
 
-  void
-  NodeFixed::printJson(std::ostream &os, int depth) const {
+  void NodeFixed::printJson(std::ostream &os, int depth) const {
     os << "{\n";
     os << indent(++depth) << "\"type\": \"fixed\",\n";
     printName(os, nameAttribute_.get(), depth);
