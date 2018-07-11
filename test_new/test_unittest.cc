@@ -658,53 +658,53 @@ struct TestResolution {
   void test() {
     std::cout << "TestResolution\n";
 
-    REQUIRE(resolve(long_, long_) == RESOLVE_MATCH);
-    REQUIRE(resolve(long_, bool_) == RESOLVE_NO_MATCH);
-    REQUIRE(resolve(bool_, long_) == RESOLVE_NO_MATCH);
+    REQUIRE(resolve(long_, long_) == SchemaResolution::RESOLVE_MATCH);
+    REQUIRE(resolve(long_, bool_) == SchemaResolution::RESOLVE_NO_MATCH);
+    REQUIRE(resolve(bool_, long_) == SchemaResolution::RESOLVE_NO_MATCH);
 
-    REQUIRE(resolve(int_, long_) == RESOLVE_PROMOTABLE_TO_LONG);
-    REQUIRE(resolve(long_, int_) == RESOLVE_NO_MATCH);
+    REQUIRE(resolve(int_, long_) == SchemaResolution::RESOLVE_PROMOTABLE_TO_LONG);
+    REQUIRE(resolve(long_, int_) == SchemaResolution::RESOLVE_NO_MATCH);
 
-    REQUIRE(resolve(int_, float_) == RESOLVE_PROMOTABLE_TO_FLOAT);
-    REQUIRE(resolve(float_, int_) == RESOLVE_NO_MATCH);
+    REQUIRE(resolve(int_, float_) == SchemaResolution::RESOLVE_PROMOTABLE_TO_FLOAT);
+    REQUIRE(resolve(float_, int_) == SchemaResolution::RESOLVE_NO_MATCH);
 
-    REQUIRE(resolve(int_, double_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
-    REQUIRE(resolve(double_, int_) == RESOLVE_NO_MATCH);
+    REQUIRE(resolve(int_, double_) == SchemaResolution::RESOLVE_PROMOTABLE_TO_DOUBLE);
+    REQUIRE(resolve(double_, int_) == SchemaResolution::RESOLVE_NO_MATCH);
 
-    REQUIRE(resolve(long_, float_) == RESOLVE_PROMOTABLE_TO_FLOAT);
-    REQUIRE(resolve(float_, long_) == RESOLVE_NO_MATCH);
+    REQUIRE(resolve(long_, float_) == SchemaResolution::RESOLVE_PROMOTABLE_TO_FLOAT);
+    REQUIRE(resolve(float_, long_) == SchemaResolution::RESOLVE_NO_MATCH);
 
-    REQUIRE(resolve(long_, double_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
-    REQUIRE(resolve(double_, long_) == RESOLVE_NO_MATCH);
+    REQUIRE(resolve(long_, double_) == SchemaResolution::RESOLVE_PROMOTABLE_TO_DOUBLE);
+    REQUIRE(resolve(double_, long_) == SchemaResolution::RESOLVE_NO_MATCH);
 
-    REQUIRE(resolve(float_, double_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
-    REQUIRE(resolve(double_, float_) == RESOLVE_NO_MATCH);
+    REQUIRE(resolve(float_, double_) == SchemaResolution::RESOLVE_PROMOTABLE_TO_DOUBLE);
+    REQUIRE(resolve(double_, float_) == SchemaResolution::RESOLVE_NO_MATCH);
 
-    REQUIRE(resolve(int_, mapOfInt_) == RESOLVE_NO_MATCH);
-    REQUIRE(resolve(mapOfInt_, int_) == RESOLVE_NO_MATCH);
+    REQUIRE(resolve(int_, mapOfInt_) == SchemaResolution::RESOLVE_NO_MATCH);
+    REQUIRE(resolve(mapOfInt_, int_) == SchemaResolution::RESOLVE_NO_MATCH);
 
-    REQUIRE(resolve(mapOfInt_, mapOfInt_) == RESOLVE_MATCH);
-    REQUIRE(resolve(mapOfDouble_, mapOfInt_) == RESOLVE_NO_MATCH);
-    REQUIRE(resolve(mapOfInt_, mapOfDouble_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
+    REQUIRE(resolve(mapOfInt_, mapOfInt_) == SchemaResolution::RESOLVE_MATCH);
+    REQUIRE(resolve(mapOfDouble_, mapOfInt_) == SchemaResolution::RESOLVE_NO_MATCH);
+    REQUIRE(resolve(mapOfInt_, mapOfDouble_) == SchemaResolution::RESOLVE_PROMOTABLE_TO_DOUBLE);
 
-    REQUIRE(resolve(long_, arrayOfLong_) == RESOLVE_NO_MATCH);
-    REQUIRE(resolve(arrayOfLong_, long_) == RESOLVE_NO_MATCH);
+    REQUIRE(resolve(long_, arrayOfLong_) == SchemaResolution::RESOLVE_NO_MATCH);
+    REQUIRE(resolve(arrayOfLong_, long_) == SchemaResolution::RESOLVE_NO_MATCH);
 
-    REQUIRE(resolve(arrayOfLong_, arrayOfLong_) == RESOLVE_MATCH);
-    REQUIRE(resolve(arrayOfFloat_, arrayOfLong_) == RESOLVE_NO_MATCH);
-    REQUIRE(resolve(arrayOfLong_, arrayOfFloat_) == RESOLVE_PROMOTABLE_TO_FLOAT);
+    REQUIRE(resolve(arrayOfLong_, arrayOfLong_) == SchemaResolution::RESOLVE_MATCH);
+    REQUIRE(resolve(arrayOfFloat_, arrayOfLong_) == SchemaResolution::RESOLVE_NO_MATCH);
+    REQUIRE(resolve(arrayOfLong_, arrayOfFloat_) == SchemaResolution::RESOLVE_PROMOTABLE_TO_FLOAT);
 
-    REQUIRE(resolve(enumOne_, enumOne_) == RESOLVE_MATCH);
-    REQUIRE(resolve(enumOne_, enumTwo_) == RESOLVE_NO_MATCH);
+    REQUIRE(resolve(enumOne_, enumOne_) == SchemaResolution::RESOLVE_MATCH);
+    REQUIRE(resolve(enumOne_, enumTwo_) == SchemaResolution::RESOLVE_NO_MATCH);
 
-    REQUIRE(resolve(float_, unionOne_) == RESOLVE_MATCH);
-    REQUIRE(resolve(double_, unionOne_) == RESOLVE_NO_MATCH);
-    REQUIRE(resolve(float_, unionTwo_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
+    REQUIRE(resolve(float_, unionOne_) == SchemaResolution::RESOLVE_MATCH);
+    REQUIRE(resolve(double_, unionOne_) == SchemaResolution::RESOLVE_NO_MATCH);
+    REQUIRE(resolve(float_, unionTwo_) == SchemaResolution::RESOLVE_PROMOTABLE_TO_DOUBLE);
 
-    REQUIRE(resolve(unionOne_, float_) == RESOLVE_MATCH);
-    REQUIRE(resolve(unionOne_, double_) == RESOLVE_PROMOTABLE_TO_DOUBLE);
-    REQUIRE(resolve(unionTwo_, float_) == RESOLVE_PROMOTABLE_TO_FLOAT);
-    REQUIRE(resolve(unionOne_, unionTwo_) == RESOLVE_MATCH);
+    REQUIRE(resolve(unionOne_, float_) == SchemaResolution::RESOLVE_MATCH);
+    REQUIRE(resolve(unionOne_, double_) == SchemaResolution::RESOLVE_PROMOTABLE_TO_DOUBLE);
+    REQUIRE(resolve(unionTwo_, float_) == SchemaResolution::RESOLVE_PROMOTABLE_TO_FLOAT);
+    REQUIRE(resolve(unionOne_, unionTwo_) == SchemaResolution::RESOLVE_MATCH);
   }
 
 private:
