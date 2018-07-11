@@ -31,22 +31,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
 find_package (Boost 1.38 REQUIRED  COMPONENTS filesystem system program_options iostreams)
 include_directories (3rd api ${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIRS})
 
-set (AVRO_SOURCE_FILES
-        impl/Compiler.cc impl/Node.cc
-        impl/NodeImpl.cc impl/ResolverSchema.cc impl/Schema.cc
-        impl/Types.cc impl/ValidSchema.cc impl/Zigzag.cc
-        impl/BinaryEncoder.cc impl/BinaryDecoder.cc
-        impl/Stream.cc impl/FileStream.cc
-        impl/Generic.cc impl/GenericDatum.cc
-        impl/DataFile.cc
-        impl/parsing/Symbol.cc
-        impl/parsing/ValidatingCodec.cc
-        impl/parsing/JsonCodec.cc
-        impl/parsing/ResolvingDecoder.cc
-        impl/json/JsonIO.cc
-        impl/json/JsonDom.cc
-        impl/Resolver.cc impl/Validator.cc
-        )
+file (GLOB_RECURSE AVRO_SOURCE_FILES "impl/*.cc")
 
 add_library (avrocpp SHARED ${AVRO_SOURCE_FILES})
 set_property (TARGET avrocpp APPEND PROPERTY COMPILE_DEFINITIONS AVRO_DYN_LINK)

@@ -57,8 +57,8 @@ namespace avro {
     const size_t syncInterval_;
     Codec codec_;
 
-    std::auto_ptr<OutputStream> stream_;
-    std::auto_ptr<OutputStream> buffer_;
+    std::shared_ptr<OutputStream> stream_;
+    std::shared_ptr<OutputStream> buffer_;
     const DataFileSync sync_;
     int64_t objectCount_;
 
@@ -66,7 +66,7 @@ namespace avro {
 
     Metadata metadata_;
 
-    static std::auto_ptr<OutputStream> makeStream(const char* filename);
+    static std::shared_ptr<OutputStream> makeStream(const char* filename);
     static DataFileSync makeSync();
 
     void writeHeader();
@@ -117,7 +117,7 @@ namespace avro {
   /* An Avro datafile that can store objects of type T.*/
   template <typename T>
   class DataFileWriter {
-    std::auto_ptr<DataFileWriterBase> base_;
+    std::shared_ptr<DataFileWriterBase> base_;
   public:
 
     DataFileWriter(const DataFileWriter&) = delete;
@@ -157,7 +157,7 @@ namespace avro {
   /*The type independent portion of reader.*/
   class DataFileReaderBase {
     const std::string filename_;
-    const std::auto_ptr<InputStream> stream_;
+    const std::shared_ptr<InputStream> stream_;
     const DecoderPtr decoder_;
     int64_t objectCount_;
     bool eof_;
@@ -166,7 +166,7 @@ namespace avro {
     ValidSchema readerSchema_;
     ValidSchema dataSchema_;
     DecoderPtr dataDecoder_;
-    std::auto_ptr<InputStream> dataStream_;
+    std::shared_ptr<InputStream> dataStream_;
     typedef std::map<std::string, std::vector<uint8_t> > Metadata;
 
     Metadata metadata_;
@@ -237,7 +237,7 @@ namespace avro {
   /*Reads the contents of data file one after another.*/
   template <typename T>
   class DataFileReader {
-    std::auto_ptr<DataFileReaderBase> base_;
+    std::shared_ptr<DataFileReaderBase> base_;
   public:
 
     DataFileReader(const DataFileReader&) = delete;
@@ -270,7 +270,7 @@ namespace avro {
      * The schema present in the data file will be used for reading
      * from this reader.
      */
-    DataFileReader(std::auto_ptr<DataFileReaderBase> base) : base_(base) {
+    DataFileReader(std::shared_ptr<DataFileReaderBase> base) : base_(base) {
       base_->init();
     }
 
@@ -283,7 +283,7 @@ namespace avro {
      * The argument readerSchema will be used for reading
      * from this reader.
      */
-    DataFileReader(std::auto_ptr<DataFileReaderBase> base,
+    DataFileReader(std::shared_ptr<DataFileReaderBase> base,
       const ValidSchema& readerSchema) : base_(base) {
       base_->init(readerSchema);
     }

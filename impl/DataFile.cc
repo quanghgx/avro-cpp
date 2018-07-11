@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
+#include <sstream>
+#include <memory>
 #include "DataFile.hh"
 #include "Compiler.hh"
 #include "Exception.hh"
-
-#include <sstream>
 
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/iostreams/device/file.hpp>
@@ -29,7 +29,7 @@
 #include <boost/crc.hpp>  // for boost::crc_32_type
 
 namespace avro {
-  using std::auto_ptr;
+  using std::shared_ptr;
   using std::ostringstream;
   using std::istringstream;
   using std::vector;
@@ -110,7 +110,7 @@ namespace avro {
       int64_t byteCount = buffer_->byteCount();
       avro::encode(*encoderPtr_, byteCount);
       encoderPtr_->flush();
-      std::auto_ptr<InputStream> in = memoryInputStream(*buffer_);
+      std::shared_ptr<InputStream> in = memoryInputStream(*buffer_);
       copy(*in, *stream_);
     } else if (codec_ == DEFLATE_CODEC) {
       std::vector<char> buf;
@@ -121,12 +121,12 @@ namespace avro {
         const uint8_t* data;
         size_t len;
 
-        std::auto_ptr<InputStream> input = memoryInputStream(*buffer_);
+        std::shared_ptr<InputStream> input = memoryInputStream(*buffer_);
         while (input->next(&data, &len)) {
           boost::iostreams::write(os, reinterpret_cast<const char*> (data), len);
         }
       } // make sure all is flushed
-      std::auto_ptr<InputStream> in = memoryInputStream(
+      std::shared_ptr<InputStream> in = memoryInputStream(
         reinterpret_cast<const uint8_t*> (&buf[0]), buf.size());
       int64_t byteCount = buf.size();
       avro::encode(*encoderPtr_, byteCount);
@@ -280,8 +280,8 @@ namespace avro {
     }
   };
 
-  auto_ptr<InputStream> boundedInputStream(InputStream& in, size_t limit) {
-    return auto_ptr<InputStream>(new BoundedInputStream(in, limit));
+  shared_ptr<InputStream> boundedInputStream(InputStream& in, size_t limit) {
+    return shared_ptr<InputStream>(new BoundedInputStream(in, limit));
   }
 
   bool DataFileReaderBase::readDataBlock() {
@@ -298,7 +298,7 @@ namespace avro {
     avro::decode(*decoder_, byteCount);
     decoder_->init(*stream_);
 
-    auto_ptr<InputStream> st = boundedInputStream(*stream_, static_cast<size_t> (byteCount));
+    shared_ptr<InputStream> st = boundedInputStream(*stream_, static_cast<size_t> (byteCount));
     if (codec_ == NULL_CODEC) {
       dataDecoder_->init(*st);
       dataStream_ = st;
@@ -315,7 +315,7 @@ namespace avro {
       os_->push(boost::iostreams::basic_array_source<char>(
         &compressed_[0], compressed_.size()));
 
-      std::auto_ptr<InputStream> in = istreamInputStream(*os_);
+      std::shared_ptr<InputStream> in = istreamInputStream(*os_);
       dataDecoder_->init(*in);
       dataStream_ = in;
     } else {

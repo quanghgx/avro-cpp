@@ -44,13 +44,13 @@ namespace avro {
 
 int
 main() {
-  std::auto_ptr<avro::OutputStream> out = avro::memoryOutputStream();
+  std::shared_ptr<avro::OutputStream> out = avro::memoryOutputStream();
   avro::EncoderPtr e = avro::binaryEncoder();
   e->init(*out);
   std::complex<double> c1(1.0, 2.0);
   avro::encode(*e, c1);
 
-  std::auto_ptr<avro::InputStream> in = avro::memoryInputStream(*out);
+  std::shared_ptr<avro::InputStream> in = avro::memoryInputStream(*out);
   avro::DecoderPtr d = avro::binaryDecoder();
   d->init(*in);
 

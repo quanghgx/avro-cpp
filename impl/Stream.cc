@@ -164,20 +164,20 @@ namespace avro {
     }
   };
 
-  std::auto_ptr<OutputStream> memoryOutputStream(size_t chunkSize) {
-    return std::auto_ptr<OutputStream>(new MemoryOutputStream(chunkSize));
+  std::shared_ptr<OutputStream> memoryOutputStream(size_t chunkSize) {
+    return std::shared_ptr<OutputStream>(new MemoryOutputStream(chunkSize));
   }
 
-  std::auto_ptr<InputStream> memoryInputStream(const uint8_t* data, size_t len) {
-    return std::auto_ptr<InputStream>(new MemoryInputStream2(data, len));
+  std::shared_ptr<InputStream> memoryInputStream(const uint8_t* data, size_t len) {
+    return std::shared_ptr<InputStream>(new MemoryInputStream2(data, len));
   }
 
-  std::auto_ptr<InputStream> memoryInputStream(const OutputStream& source) {
+  std::shared_ptr<InputStream> memoryInputStream(const OutputStream& source) {
     const MemoryOutputStream& mos =
       dynamic_cast<const MemoryOutputStream&> (source);
     return (mos.m_data.empty()) ?
-      std::auto_ptr<InputStream>(new MemoryInputStream2(0, 0)) :
-      std::auto_ptr<InputStream>(new MemoryInputStream(mos.m_data,
+      std::shared_ptr<InputStream>(new MemoryInputStream2(0, 0)) :
+      std::shared_ptr<InputStream>(new MemoryInputStream(mos.m_data,
       mos.m_chunk_size,
       (mos.m_chunk_size - mos.m_available)));
   }

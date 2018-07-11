@@ -34,7 +34,7 @@ main() {
   avro::ValidSchema cpxSchema;
   avro::compileJsonSchema(ifs, cpxSchema);
 
-  std::auto_ptr<avro::OutputStream> out = avro::memoryOutputStream();
+  std::shared_ptr<avro::OutputStream> out = avro::memoryOutputStream();
   avro::EncoderPtr e = avro::binaryEncoder();
   e->init(*out);
   c::cpx c1;
@@ -42,7 +42,7 @@ main() {
   c1.im = 105.77;
   avro::encode(*e, c1);
 
-  std::auto_ptr<avro::InputStream> in = avro::memoryInputStream(*out);
+  std::shared_ptr<avro::InputStream> in = avro::memoryInputStream(*out);
   avro::DecoderPtr d = avro::binaryDecoder();
   d->init(*in);
 

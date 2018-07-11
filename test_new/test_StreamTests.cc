@@ -109,17 +109,17 @@ namespace avro {
 
     template <typename V>
     void testEmpty_memoryStream() {
-      std::auto_ptr<OutputStream> os = memoryOutputStream();
-      std::auto_ptr<InputStream> is = memoryInputStream(*os);
+      std::shared_ptr<OutputStream> os = memoryOutputStream();
+      std::shared_ptr<InputStream> is = memoryInputStream(*os);
       V()(*is);
     }
 
     template <typename F, typename V>
     void testNonEmpty_memoryStream(const TestData& td) {
-      std::auto_ptr<OutputStream> os = memoryOutputStream(td.chunkSize);
+      std::shared_ptr<OutputStream> os = memoryOutputStream(td.chunkSize);
       F()(*os, td.dataSize);
 
-      std::auto_ptr<InputStream> is = memoryInputStream(*os);
+      std::shared_ptr<InputStream> is = memoryInputStream(*os);
       V()(*is, td.dataSize);
     }
 
@@ -130,7 +130,7 @@ namespace avro {
       }
 
       uint8_t v2 = 0;
-      std::auto_ptr<InputStream> is = memoryInputStream(v.empty() ? &v2 : &v[0], v.size());
+      std::shared_ptr<InputStream> is = memoryInputStream(v.empty() ? &v2 : &v[0], v.size());
       Verify1()(*is, td.dataSize);
     }
 
@@ -151,9 +151,9 @@ namespace avro {
     void testEmpty_fileStream() {
       FileRemover fr(filename);
       {
-        std::auto_ptr<OutputStream> os = fileOutputStream(filename);
+        std::shared_ptr<OutputStream> os = fileOutputStream(filename);
       }
-      std::auto_ptr<InputStream> is = fileInputStream(filename);
+      std::shared_ptr<InputStream> is = fileInputStream(filename);
       V()(*is);
     }
 
@@ -161,12 +161,12 @@ namespace avro {
     void testNonEmpty_fileStream(const TestData& td) {
       FileRemover fr(filename);
       {
-        std::auto_ptr<OutputStream> os = fileOutputStream(filename,
+        std::shared_ptr<OutputStream> os = fileOutputStream(filename,
           td.chunkSize);
         F()(*os, td.dataSize);
       }
 
-      std::auto_ptr<InputStream> is = fileInputStream(filename, td.chunkSize);
+      std::shared_ptr<InputStream> is = fileInputStream(filename, td.chunkSize);
       V()(*is, td.dataSize);
     }
 

@@ -39,7 +39,7 @@ main() {
   avro::ValidSchema cpxSchema = load("cpx.json");
   avro::ValidSchema imaginarySchema = load("imaginary.json");
 
-  std::auto_ptr<avro::OutputStream> out = avro::memoryOutputStream();
+  std::shared_ptr<avro::OutputStream> out = avro::memoryOutputStream();
   avro::EncoderPtr e = avro::binaryEncoder();
   e->init(*out);
   c::cpx c1;
@@ -47,7 +47,7 @@ main() {
   c1.im = 105.77;
   avro::encode(*e, c1);
 
-  std::auto_ptr<avro::InputStream> in = avro::memoryInputStream(*out);
+  std::shared_ptr<avro::InputStream> in = avro::memoryInputStream(*out);
   avro::DecoderPtr d = avro::resolvingDecoder(cpxSchema, imaginarySchema, avro::binaryDecoder());
   d->init(*in);
 

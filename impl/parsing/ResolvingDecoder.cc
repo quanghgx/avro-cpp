@@ -44,8 +44,6 @@ namespace avro {
     using std::shared_ptr;
     using std::static_pointer_cast;
     using std::make_shared;
-
-    using std::auto_ptr;
     using std::map;
     using std::pair;
     using std::vector;
@@ -150,7 +148,7 @@ namespace avro {
     static shared_ptr<vector<uint8_t> > getAvroBinary(
       const GenericDatum& defaultValue) {
       EncoderPtr e = binaryEncoder();
-      auto_ptr<OutputStream> os = memoryOutputStream();
+      shared_ptr<OutputStream> os = memoryOutputStream();
       e->init(*os);
       GenericWriter::write(*e, defaultValue);
       e->flush();
@@ -439,7 +437,7 @@ namespace avro {
 
     class ResolvingDecoderHandler {
       shared_ptr<vector<uint8_t> > defaultData_;
-      auto_ptr<InputStream> inp_;
+      shared_ptr<InputStream> inp_;
       DecoderPtr backup_;
       DecoderPtr& base_;
       const DecoderPtr binDecoder;

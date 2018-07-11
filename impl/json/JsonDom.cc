@@ -102,7 +102,7 @@ namespace avro::json {
   }
 
   Entity loadEntity(const uint8_t* text, size_t len) {
-    std::auto_ptr<InputStream> in = memoryInputStream(text, len);
+    std::shared_ptr<InputStream> in = memoryInputStream(text, len);
     return loadEntity(*in);
   }
 
@@ -157,12 +157,12 @@ namespace avro::json {
   }
 
   std::string Entity::toString() const {
-    std::auto_ptr<OutputStream> out = memoryOutputStream();
+    std::shared_ptr<OutputStream> out = memoryOutputStream();
     JsonGenerator<JsonNullFormatter> g;
     g.init(*out);
     writeEntity(g, *this);
     g.flush();
-    std::auto_ptr<InputStream> in = memoryInputStream(*out);
+    std::shared_ptr<InputStream> in = memoryInputStream(*out);
     const uint8_t *p = 0;
     size_t n = 0;
     size_t c = 0;
@@ -172,7 +172,7 @@ namespace avro::json {
     std::string result;
     result.resize(c);
     c = 0;
-    std::auto_ptr<InputStream> in2 = memoryInputStream(*out);
+    std::shared_ptr<InputStream> in2 = memoryInputStream(*out);
     while (in2->next(&p, &n)) {
       ::memcpy(&result[c], p, n);
       c += n;

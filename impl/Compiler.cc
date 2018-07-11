@@ -435,7 +435,7 @@ namespace avro {
   }
 
   ValidSchema compileJsonSchemaFromFile(const char* filename) {
-    std::auto_ptr<InputStream> s = fileInputStream(filename);
+    std::shared_ptr<InputStream> s = fileInputStream(filename);
     return compileJsonSchemaFromStream(*s);
   }
 
@@ -454,7 +454,7 @@ namespace avro {
   }
 
   static ValidSchema compile(std::istream& is) {
-    std::auto_ptr<InputStream> in = istreamInputStream(is);
+    std::shared_ptr<InputStream> in = istreamInputStream(is);
     return compileJsonSchemaFromStream(*in);
   }
 

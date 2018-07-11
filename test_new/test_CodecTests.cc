@@ -18,6 +18,12 @@
 
 #include <catch.hpp>
 #include <iostream>
+#include <memory>
+#include <cstdint>
+#include <vector>
+#include <stack>
+#include <string>
+#include <functional>
 
 #include "Encoder.hh"
 #include "Decoder.hh"
@@ -26,11 +32,6 @@
 #include "Generic.hh"
 #include "Specific.hh"
 
-#include <cstdint>
-#include <vector>
-#include <stack>
-#include <string>
-#include <functional>
 #include <boost/bind.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
@@ -40,7 +41,7 @@ namespace avro {
   /*
   void dump(const OutputStream& os)
   {
-      std::auto_ptr<InputStream> in = memoryInputStream(os);
+      std::shared_ptr<InputStream> in = memoryInputStream(os);
       const char *b;
       size_t n;
       std::cout << os.byteCount() << std::endl;
@@ -87,7 +88,7 @@ namespace avro {
     using std::ostringstream;
     using std::back_inserter;
     using std::copy;
-    using std::auto_ptr;
+    using std::shared_ptr;
 
     template <typename T>
     T from_string(const std::string& s) {
@@ -226,11 +227,11 @@ namespace avro {
       return result;
     }
 
-    static auto_ptr<OutputStream> generate(Encoder& e, const char* calls,
+    static shared_ptr<OutputStream> generate(Encoder& e, const char* calls,
       const vector<string>& values) {
       Scanner sc(calls);
       vector<string>::const_iterator it = values.begin();
-      auto_ptr<OutputStream> ob = memoryOutputStream();
+      shared_ptr<OutputStream> ob = memoryOutputStream();
       e.init(*ob);
 
       while (!sc.isDone()) {
@@ -530,7 +531,7 @@ namespace avro {
     }
 
     void testEncoder(const EncoderPtr& e, const char* writerCalls,
-      vector<string>& v, auto_ptr<OutputStream>& p) {
+      vector<string>& v, shared_ptr<OutputStream>& p) {
       v = randomValues(writerCalls);
       p = generate(*e, writerCalls, v);
     }
@@ -606,7 +607,7 @@ namespace avro {
 
       for (unsigned int i = 0; i < count; ++i) {
         vector<string> v;
-        auto_ptr<OutputStream> p;
+        shared_ptr<OutputStream> p;
         testEncoder(CodecFactory::newEncoder(vs), td.calls, v, p);
         // dump(*p);
 
@@ -616,7 +617,7 @@ namespace avro {
             << " schema: " << td.schema
             << " calls: " << td.calls
             << " skip-level: " << skipLevel << "\n";
-          auto_ptr<InputStream> in = memoryInputStream(*p);
+          shared_ptr<InputStream> in = memoryInputStream(*p);
           testDecoder(CodecFactory::newDecoder(vs), v, *in,
             td.calls, skipLevel);
         }
@@ -638,7 +639,7 @@ namespace avro {
 
       for (unsigned int i = 0; i < count; ++i) {
         vector<string> v;
-        auto_ptr<OutputStream> p;
+        shared_ptr<OutputStream> p;
         testEncoder(CodecFactory::newEncoder(vs), td.writerCalls, v, p);
         // dump(*p);
 
@@ -651,7 +652,7 @@ namespace avro {
             << " reader schema: " << td.readerSchema
             << " reader calls: " << td.readerCalls
             << " skip-level: " << skipLevel << "\n";
-          auto_ptr<InputStream> in = memoryInputStream(*p);
+          shared_ptr<InputStream> in = memoryInputStream(*p);
           testDecoder(CodecFactory::newDecoder(vs, rvs), v, *in,
             td.readerCalls, skipLevel);
         }
@@ -680,7 +681,7 @@ namespace avro {
       ValidSchema vs = makeValidSchema(td.writerSchema);
 
       vector<string> wd = mkValues(td.writerValues);
-      auto_ptr<OutputStream> p =
+      shared_ptr<OutputStream> p =
         generate(*CodecFactory::newEncoder(vs), td.writerCalls, wd);
       // dump(*p);
 
@@ -694,7 +695,7 @@ namespace avro {
           << " reader schema: " << td.readerSchema
           << " reader calls: " << td.readerCalls
           << " skip-level: " << skipLevel << "\n";
-        auto_ptr<InputStream> in = memoryInputStream(*p);
+        shared_ptr<InputStream> in = memoryInputStream(*p);
         testDecoder(CodecFactory::newDecoder(vs, rvs), rd, *in,
           td.readerCalls, skipLevel);
       }
@@ -712,9 +713,9 @@ namespace avro {
       ValidSchema vs = makeValidSchema(td.schema);
 
       vector<string> v;
-      auto_ptr<OutputStream> p;
+      shared_ptr<OutputStream> p;
       testEncoder(CodecFactory::newEncoder(vs), td.correctCalls, v, p);
-      auto_ptr<InputStream> in = memoryInputStream(*p);
+      shared_ptr<InputStream> in = memoryInputStream(*p);
       REQUIRE_THROWS_AS(testDecoder(CodecFactory::newDecoder(vs), v, *in, td.incorrectCalls, td.depth), Exception);
     }
 
@@ -728,7 +729,7 @@ namespace avro {
       ValidSchema vs = makeValidSchema(td.schema);
 
       vector<string> v;
-      auto_ptr<OutputStream> p;
+      shared_ptr<OutputStream> p;
       REQUIRE_THROWS_AS(testEncoder(CodecFactory::newEncoder(vs), td.incorrectCalls, v, p), Exception);
     }
 
@@ -744,17 +745,17 @@ namespace avro {
 
       for (unsigned int i = 0; i < count; ++i) {
         vector<string> v;
-        auto_ptr<OutputStream> p;
+        shared_ptr<OutputStream> p;
         testEncoder(CodecFactory::newEncoder(vs), td.calls, v, p);
         // dump(*p);
         DecoderPtr d1 = CodecFactory::newDecoder(vs);
-        auto_ptr<InputStream> in1 = memoryInputStream(*p);
+        shared_ptr<InputStream> in1 = memoryInputStream(*p);
         d1->init(*in1);
         GenericDatum datum(vs);
         avro::decode(*d1, datum);
 
         EncoderPtr e2 = CodecFactory::newEncoder(vs);
-        auto_ptr<OutputStream> ob = memoryOutputStream();
+        shared_ptr<OutputStream> ob = memoryOutputStream();
         e2->init(*ob);
 
         avro::encode(*e2, datum);
@@ -763,7 +764,7 @@ namespace avro {
         std::cout << "Test: " << testNo << ' '
           << " schema: " << td.schema
           << " calls: " << td.calls << "\n";
-        auto_ptr<InputStream> in2 = memoryInputStream(*ob);
+        shared_ptr<InputStream> in2 = memoryInputStream(*ob);
         testDecoder(CodecFactory::newDecoder(vs), v, *in2,
           td.calls, td.depth);
       }
@@ -785,11 +786,11 @@ namespace avro {
 
       for (unsigned int i = 0; i < count; ++i) {
         vector<string> v;
-        auto_ptr<OutputStream> p;
+        shared_ptr<OutputStream> p;
         testEncoder(CodecFactory::newEncoder(wvs), td.writerCalls, v, p);
         // dump(*p);
         DecoderPtr d1 = CodecFactory::newDecoder(wvs);
-        auto_ptr<InputStream> in1 = memoryInputStream(*p);
+        shared_ptr<InputStream> in1 = memoryInputStream(*p);
         d1->init(*in1);
 
         GenericReader gr(wvs, rvs, d1);
@@ -797,7 +798,7 @@ namespace avro {
         gr.read(datum);
 
         EncoderPtr e2 = CodecFactory::newEncoder(rvs);
-        auto_ptr<OutputStream> ob = memoryOutputStream();
+        shared_ptr<OutputStream> ob = memoryOutputStream();
         e2->init(*ob);
         avro::encode(*e2, datum);
         e2->flush();
@@ -807,7 +808,7 @@ namespace avro {
           << " writer-calls: " << td.writerCalls
           << " reader-schema: " << td.readerSchema
           << " calls: " << td.readerCalls << "\n";
-        auto_ptr<InputStream> in2 = memoryInputStream(*ob);
+        shared_ptr<InputStream> in2 = memoryInputStream(*ob);
         testDecoder(CodecFactory::newDecoder(rvs), v, *in2,
           td.readerCalls, td.depth);
       }
@@ -823,11 +824,11 @@ namespace avro {
 
       const vector<string> wd = mkValues(td.writerValues);
 
-      auto_ptr<OutputStream> p = generate(*CodecFactory::newEncoder(wvs),
+      shared_ptr<OutputStream> p = generate(*CodecFactory::newEncoder(wvs),
         td.writerCalls, wd);
       // dump(*p);
       DecoderPtr d1 = CodecFactory::newDecoder(wvs);
-      auto_ptr<InputStream> in1 = memoryInputStream(*p);
+      shared_ptr<InputStream> in1 = memoryInputStream(*p);
       d1->init(*in1);
 
       GenericReader gr(wvs, rvs, d1);
@@ -835,7 +836,7 @@ namespace avro {
       gr.read(datum);
 
       EncoderPtr e2 = CodecFactory::newEncoder(rvs);
-      auto_ptr<OutputStream> ob = memoryOutputStream();
+      shared_ptr<OutputStream> ob = memoryOutputStream();
       e2->init(*ob);
       avro::encode(*e2, datum);
       e2->flush();
@@ -1458,7 +1459,7 @@ namespace avro {
 
     EncoderPtr e = binaryEncoder();
     {
-      std::auto_ptr<OutputStream> s1 = memoryOutputStream();
+      std::shared_ptr<OutputStream> s1 = memoryOutputStream();
       e->init(*s1);
       e->encodeInt(100);
       e->encodeDouble(4.73);
@@ -1466,7 +1467,7 @@ namespace avro {
     }
 
     {
-      std::auto_ptr<OutputStream> s2 = memoryOutputStream();
+      std::shared_ptr<OutputStream> s2 = memoryOutputStream();
       e->init(*s2);
       e->encodeDouble(3.14);
       e->flush();
@@ -1475,7 +1476,7 @@ namespace avro {
   }
 
   static void testLimits(const EncoderPtr& e, const DecoderPtr& d) {
-    std::auto_ptr<OutputStream> s1 = memoryOutputStream();
+    std::shared_ptr<OutputStream> s1 = memoryOutputStream();
     {
       e->init(*s1);
       e->encodeDouble(std::numeric_limits<double>::infinity());
@@ -1492,7 +1493,7 @@ namespace avro {
     }
 
     {
-      std::auto_ptr<InputStream> s2 = memoryInputStream(*s1);
+      std::shared_ptr<InputStream> s2 = memoryInputStream(*s1);
       d->init(*s2);
       REQUIRE(d->decodeDouble() == std::numeric_limits<double>::infinity());
       REQUIRE(d->decodeDouble() == -std::numeric_limits<double>::infinity());

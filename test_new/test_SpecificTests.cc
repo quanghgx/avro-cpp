@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 #include <catch.hpp>
+#include <memory>
 #include "Specific.hh"
 #include "Stream.hh"
 
-using std::auto_ptr;
+using std::shared_ptr;
 using std::string;
 using std::vector;
 using std::map;
@@ -75,7 +76,7 @@ namespace avro {
   namespace specific {
 
     class Test {
-      auto_ptr<OutputStream> os;
+      shared_ptr<OutputStream> os;
       EncoderPtr e;
       DecoderPtr d;
     public:
@@ -90,7 +91,7 @@ namespace avro {
       }
 
       template <typename T> void decode(T& t) {
-        auto_ptr<InputStream> is = memoryInputStream(*os);
+        shared_ptr<InputStream> is = memoryInputStream(*os);
         d->init(*is);
         avro::decode(*d, t);
       }

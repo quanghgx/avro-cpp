@@ -17,17 +17,13 @@
  */
 
 #include <fstream>
+#include <memory>
 #include "Stream.hh"
 #include "unistd.h"
 #include "fcntl.h"
 #include "errno.h"
 
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-
-
-using std::auto_ptr;
+using std::shared_ptr;
 using std::istream;
 using std::ostream;
 
@@ -47,7 +43,7 @@ namespace avro {
       const int fd_;
 
       FileBufferCopyIn(const char* filename) :
-      fd_(open(filename, O_RDONLY | O_BINARY)) {
+      fd_(open(filename, O_RDONLY)) {
         if (fd_ < 0) {
           throw Exception(boost::format("Cannot open file: %1%") %
             ::strerror(errno));
@@ -105,7 +101,7 @@ namespace avro {
   class BufferCopyInInputStream : public InputStream {
     const size_t bufferSize_;
     uint8_t * const buffer_;
-    auto_ptr<BufferCopyIn> in_;
+    shared_ptr<BufferCopyIn> in_;
     size_t byteCount_;
     uint8_t* next_;
     size_t available_;
@@ -160,7 +156,7 @@ namespace avro {
 
   public:
 
-    BufferCopyInInputStream(auto_ptr<BufferCopyIn>& in, size_t bufferSize) :
+    BufferCopyInInputStream(shared_ptr<BufferCopyIn>& in, size_t bufferSize) :
     bufferSize_(bufferSize),
     buffer_(new uint8_t[bufferSize]),
     in_(in),
@@ -187,7 +183,7 @@ namespace avro {
       const int fd_;
 
       FileBufferCopyOut(const char* filename) :
-      fd_(::open(filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0644)) {
+      fd_(::open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644)) {
 
         if (fd_ < 0) {
           throw Exception(boost::format("Cannot open file: %1%") %
@@ -225,7 +221,7 @@ namespace avro {
   class BufferCopyOutputStream : public OutputStream {
     size_t bufferSize_;
     uint8_t * const buffer_;
-    auto_ptr<BufferCopyOut> out_;
+    shared_ptr<BufferCopyOut> out_;
     uint8_t* next_;
     size_t available_;
     size_t byteCount_;
@@ -262,7 +258,7 @@ namespace avro {
 
   public:
 
-    BufferCopyOutputStream(auto_ptr<BufferCopyOut> out, size_t bufferSize) :
+    BufferCopyOutputStream(shared_ptr<BufferCopyOut> out, size_t bufferSize) :
     bufferSize_(bufferSize),
     buffer_(new uint8_t[bufferSize]),
     out_(out),
@@ -275,28 +271,28 @@ namespace avro {
     }
   };
 
-  auto_ptr<InputStream> fileInputStream(const char* filename,
+  shared_ptr<InputStream> fileInputStream(const char* filename,
     size_t bufferSize) {
-    auto_ptr<BufferCopyIn> in(new FileBufferCopyIn(filename));
-    return auto_ptr<InputStream>(new BufferCopyInInputStream(in, bufferSize));
+    shared_ptr<BufferCopyIn> in(new FileBufferCopyIn(filename));
+    return shared_ptr<InputStream>(new BufferCopyInInputStream(in, bufferSize));
   }
 
-  auto_ptr<InputStream> istreamInputStream(istream& is,
+  shared_ptr<InputStream> istreamInputStream(istream& is,
     size_t bufferSize) {
-    auto_ptr<BufferCopyIn> in(new IStreamBufferCopyIn(is));
-    return auto_ptr<InputStream>(new BufferCopyInInputStream(in, bufferSize));
+    shared_ptr<BufferCopyIn> in(new IStreamBufferCopyIn(is));
+    return shared_ptr<InputStream>(new BufferCopyInInputStream(in, bufferSize));
   }
 
-  auto_ptr<OutputStream> fileOutputStream(const char* filename,
+  shared_ptr<OutputStream> fileOutputStream(const char* filename,
     size_t bufferSize) {
-    auto_ptr<BufferCopyOut> out(new FileBufferCopyOut(filename));
-    return auto_ptr<OutputStream>(new BufferCopyOutputStream(out, bufferSize));
+    shared_ptr<BufferCopyOut> out(new FileBufferCopyOut(filename));
+    return shared_ptr<OutputStream>(new BufferCopyOutputStream(out, bufferSize));
   }
 
-  auto_ptr<OutputStream> ostreamOutputStream(ostream& os,
+  shared_ptr<OutputStream> ostreamOutputStream(ostream& os,
     size_t bufferSize) {
-    auto_ptr<BufferCopyOut> out(new OStreamBufferCopyOut(os));
-    return auto_ptr<OutputStream>(new BufferCopyOutputStream(out, bufferSize));
+    shared_ptr<BufferCopyOut> out(new OStreamBufferCopyOut(os));
+    return shared_ptr<OutputStream>(new BufferCopyOutputStream(out, bufferSize));
   }
 
 
