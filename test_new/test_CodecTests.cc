@@ -375,35 +375,35 @@ namespace avro {
                     {
                         bool b1 = d.decodeBool();
                         bool b2 = from_string<bool>(*it++);
-                        REQUIRE(b1 ==  b2);
+                        REQUIRE(b1 == b2);
                     }
                         break;
                     case 'I':
                     {
                         int32_t b1 = d.decodeInt();
                         int32_t b2 = from_string<int32_t>(*it++);
-                        REQUIRE(b1 ==  b2);
+                        REQUIRE(b1 == b2);
                     }
                         break;
                     case 'L':
                     {
                         int64_t b1 = d.decodeLong();
                         int64_t b2 = from_string<int64_t>(*it++);
-                        REQUIRE(b1 ==  b2);
+                        REQUIRE(b1 == b2);
                     }
                         break;
                     case 'F':
                     {
                         float b1 = d.decodeFloat();
                         float b2 = from_string<float>(*it++);
-                        BOOST_CHECK_CLOSE(b1, b2, 0.001f);
+                        REQUIRE(std::abs(b1 - b2) < 0.001f);
                     }
                         break;
                     case 'D':
                     {
                         double b1 = d.decodeDouble();
                         double b2 = from_string<double>(*it++);
-                        BOOST_CHECK_CLOSE(b1, b2, 0.001f);
+                        REQUIRE(std::abs(b1 - b2) < 0.001f);
                     }
                         break;
                     case 'S':
@@ -414,7 +414,7 @@ namespace avro {
                         } else {
                             string b1 = d.decodeString();
                             string b2 = from_string<string>(*it);
-                            REQUIRE(b1 ==  b2);
+                            REQUIRE(b1 == b2);
                         }
                         ++it;
                         break;
@@ -425,8 +425,7 @@ namespace avro {
                         } else {
                             vector<uint8_t> b1 = d.decodeBytes();
                             vector<uint8_t> b2 = from_string<vector<uint8_t> >(*it);
-                            BOOST_CHECK_EQUAL_COLLECTIONS(b1.begin(), b1.end(),
-                              b2.begin(), b2.end());
+                            REQUIRE(b1 == b2);
                         }
                         ++it;
                         break;
@@ -438,8 +437,7 @@ namespace avro {
                         } else {
                             vector<uint8_t> b1 = d.decodeFixed(len);
                             vector<uint8_t> b2 = from_string<vector<uint8_t> >(*it);
-                            BOOST_CHECK_EQUAL_COLLECTIONS(b1.begin(), b1.end(),
-                              b2.begin(), b2.end());
+                            REQUIRE(b1 == b2);
                         }
                     }
                         ++it;
@@ -448,7 +446,7 @@ namespace avro {
                     {
                         size_t b1 = d.decodeEnum();
                         size_t b2 = sc.extractInt();
-                        REQUIRE(b1 ==  b2);
+                        REQUIRE(b1 == b2);
                     }
                         break;
                     case '[':
@@ -478,9 +476,9 @@ namespace avro {
                     case ']':
                     {
                         const StackElement& se = containerStack.top();
-                        REQUIRE(se.size ==  se.count);
+                        REQUIRE(se.size == se.count);
                         if (se.size != 0) {
-                            REQUIRE(zero ==  d.arrayNext());
+                            REQUIRE(zero == d.arrayNext());
                         }
                         containerStack.pop();
                     }
@@ -488,9 +486,9 @@ namespace avro {
                     case '}':
                     {
                         const StackElement& se = containerStack.top();
-                        REQUIRE(se.size ==  se.count);
+                        REQUIRE(se.size == se.count);
                         if (se.size != 0) {
-                            REQUIRE(zero ==  d.mapNext());
+                            REQUIRE(zero == d.mapNext());
                         }
                         containerStack.pop();
                     }
@@ -511,7 +509,7 @@ namespace avro {
                     case 'U':
                     {
                         size_t idx = sc.extractInt();
-                        REQUIRE(idx ==  d.decodeUnionIndex());
+                        REQUIRE(idx == d.decodeUnionIndex());
                     }
                         break;
                     case 'R':
@@ -614,16 +612,10 @@ namespace avro {
 
                 for (unsigned int i = 0; i <= td.depth; ++i) {
                     unsigned int skipLevel = td.depth - i;
-                    /*
                     std::cout << "Test: " << testNo << ' '
-                        << " schema: " << td.schema
-                        << " calls: " << td.calls
-                        << " skip-level: " << skipLevel << std::endl;
-                     */
-                    BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
                       << " schema: " << td.schema
                       << " calls: " << td.calls
-                      << " skip-level: " << skipLevel);
+                      << " skip-level: " << skipLevel << "\n";
                     auto_ptr<InputStream> in = memoryInputStream(*p);
                     testDecoder(CodecFactory::newDecoder(vs), v, *in,
                       td.calls, skipLevel);
@@ -636,11 +628,11 @@ namespace avro {
             static int testNo = 0;
             testNo++;
 
-            BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
+            std::cout << "Test: " << testNo << ' '
               << " writer schema: " << td.writerSchema
               << " writer calls: " << td.writerCalls
               << " reader schema: " << td.readerSchema
-              << " reader calls: " << td.readerCalls);
+              << " reader calls: " << td.readerCalls << "\n";
 
             ValidSchema vs = makeValidSchema(td.writerSchema);
 
@@ -653,12 +645,12 @@ namespace avro {
                 ValidSchema rvs = makeValidSchema(td.readerSchema);
                 for (unsigned int i = 0; i <= td.depth; ++i) {
                     unsigned int skipLevel = td.depth - i;
-                    BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
+                    std::cout << "Test: " << testNo << ' '
                       << " writer schema: " << td.writerSchema
                       << " writer calls: " << td.writerCalls
                       << " reader schema: " << td.readerSchema
                       << " reader calls: " << td.readerCalls
-                      << " skip-level: " << skipLevel);
+                      << " skip-level: " << skipLevel << "\n";
                     auto_ptr<InputStream> in = memoryInputStream(*p);
                     testDecoder(CodecFactory::newDecoder(vs, rvs), v, *in,
                       td.readerCalls, skipLevel);
@@ -679,11 +671,11 @@ namespace avro {
             static int testNo = 0;
             testNo++;
 
-            BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
+            std::cout << "Test: " << testNo << ' '
               << " writer schema: " << td.writerSchema
               << " writer calls: " << td.writerCalls
               << " reader schema: " << td.readerSchema
-              << " reader calls: " << td.readerCalls);
+              << " reader calls: " << td.readerCalls << "\n";
 
             ValidSchema vs = makeValidSchema(td.writerSchema);
 
@@ -696,12 +688,12 @@ namespace avro {
             vector<string> rd = mkValues(td.readerValues);
             for (unsigned int i = 0; i <= td.depth; ++i) {
                 unsigned int skipLevel = td.depth - i;
-                BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
+                std::cout << "Test: " << testNo << ' '
                   << " writer schema: " << td.writerSchema
                   << " writer calls: " << td.writerCalls
                   << " reader schema: " << td.readerSchema
                   << " reader calls: " << td.readerCalls
-                  << " skip-level: " << skipLevel);
+                  << " skip-level: " << skipLevel << "\n";
                 auto_ptr<InputStream> in = memoryInputStream(*p);
                 testDecoder(CodecFactory::newDecoder(vs, rvs), rd, *in,
                   td.readerCalls, skipLevel);
@@ -712,44 +704,41 @@ namespace avro {
         void testReaderFail(const TestData2& td) {
             static int testNo = 0;
             testNo++;
-            BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
+            std::cout << "Test: " << testNo << ' '
               << " schema: " << td.schema
               << " correctCalls: " << td.correctCalls
               << " incorrectCalls: " << td.incorrectCalls
-              << " skip-level: " << td.depth);
+              << " skip-level: " << td.depth << "\n";
             ValidSchema vs = makeValidSchema(td.schema);
 
             vector<string> v;
             auto_ptr<OutputStream> p;
             testEncoder(CodecFactory::newEncoder(vs), td.correctCalls, v, p);
             auto_ptr<InputStream> in = memoryInputStream(*p);
-            BOOST_CHECK_THROW(
-              testDecoder(CodecFactory::newDecoder(vs), v, *in,
-              td.incorrectCalls, td.depth), Exception);
+            REQUIRE_THROWS_AS(testDecoder(CodecFactory::newDecoder(vs), v, *in, td.incorrectCalls, td.depth), Exception);
         }
 
         template<typename CodecFactory>
         void testWriterFail(const TestData2& td) {
             static int testNo = 0;
             testNo++;
-            BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
+            std::cout << "Test: " << testNo << ' '
               << " schema: " << td.schema
-              << " incorrectCalls: " << td.incorrectCalls);
+              << " incorrectCalls: " << td.incorrectCalls << "\n";
             ValidSchema vs = makeValidSchema(td.schema);
 
             vector<string> v;
             auto_ptr<OutputStream> p;
-            BOOST_CHECK_THROW(testEncoder(CodecFactory::newEncoder(vs),
-              td.incorrectCalls, v, p), Exception);
+            REQUIRE_THROWS_AS(testEncoder(CodecFactory::newEncoder(vs), td.incorrectCalls, v, p), Exception);
         }
 
         template<typename CodecFactory>
         void testGeneric(const TestData& td) {
             static int testNo = 0;
             testNo++;
-            BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
+            std::cout << "Test: " << testNo << ' '
               << " schema: " << td.schema
-              << " calls: " << td.calls);
+              << " calls: " << td.calls << "\n";
 
             ValidSchema vs = makeValidSchema(td.schema);
 
@@ -771,9 +760,9 @@ namespace avro {
                 avro::encode(*e2, datum);
                 e2->flush();
 
-                BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
+                std::cout << "Test: " << testNo << ' '
                   << " schema: " << td.schema
-                  << " calls: " << td.calls);
+                  << " calls: " << td.calls << "\n";
                 auto_ptr<InputStream> in2 = memoryInputStream(*ob);
                 testDecoder(CodecFactory::newDecoder(vs), v, *in2,
                   td.calls, td.depth);
@@ -785,11 +774,11 @@ namespace avro {
             static int testNo = 0;
             testNo++;
 
-            BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
+            std::cout << "Test: " << testNo << ' '
               << " writer schema: " << td.writerSchema
               << " writer calls: " << td.writerCalls
               << " reader schema: " << td.readerSchema
-              << " reader calls: " << td.readerCalls);
+              << " reader calls: " << td.readerCalls << "\n";
 
             ValidSchema wvs = makeValidSchema(td.writerSchema);
             ValidSchema rvs = makeValidSchema(td.readerSchema);
@@ -813,11 +802,11 @@ namespace avro {
                 avro::encode(*e2, datum);
                 e2->flush();
 
-                BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
+                std::cout << "Test: " << testNo << ' '
                   << " writer-schemai " << td.writerSchema
                   << " writer-calls: " << td.writerCalls
                   << " reader-schema: " << td.readerSchema
-                  << " calls: " << td.readerCalls);
+                  << " calls: " << td.readerCalls << "\n";
                 auto_ptr<InputStream> in2 = memoryInputStream(*ob);
                 testDecoder(CodecFactory::newDecoder(rvs), v, *in2,
                   td.readerCalls, td.depth);
@@ -828,12 +817,6 @@ namespace avro {
         void testGenericResolving2(const TestData4& td) {
             static int testNo = 0;
             testNo++;
-
-            BOOST_TEST_CHECKPOINT("Test: " << testNo << ' '
-              << " writer schema: " << td.writerSchema
-              << " writer calls: " << td.writerCalls
-              << " reader schema: " << td.readerSchema
-              << " reader calls: " << td.readerCalls);
 
             ValidSchema wvs = makeValidSchema(td.writerSchema);
             ValidSchema rvs = makeValidSchema(td.readerSchema);
@@ -1368,13 +1351,6 @@ namespace avro {
                 { "k1", "100", "k2", "100", NULL}, 2},
         };
 
-#define COUNTOF(x)  sizeof(x) / sizeof(x[0])
-#define ENDOF(x)    (x) + COUNTOF(x)
-
-#define ADD_TESTS(testSuite, Factory, testFunc, data)           \
-testSuite.add(BOOST_PARAM_TEST_CASE(&testFunc<Factory>,         \
-    data, data + COUNTOF(data)))
-
         struct BinaryEncoderFactory {
 
             static EncoderPtr newEncoder(const ValidSchema& schema) {
@@ -1476,33 +1452,6 @@ testSuite.add(BOOST_PARAM_TEST_CASE(&testFunc<Factory>,         \
             }
         };
 
-        void add_tests(boost::unit_test::test_suite& ts) {
-            ADD_TESTS(ts, BinaryCodecFactory, testCodec, data);
-            ADD_TESTS(ts, ValidatingCodecFactory, testCodec, data);
-            ADD_TESTS(ts, JsonCodec, testCodec, data);
-            ADD_TESTS(ts, JsonPrettyCodec, testCodec, data);
-            ADD_TESTS(ts, BinaryEncoderResolvingDecoderFactory, testCodec, data);
-            ADD_TESTS(ts, JsonEncoderResolvingDecoderFactory, testCodec, data);
-            ADD_TESTS(ts, ValidatingCodecFactory, testReaderFail, data2);
-            ADD_TESTS(ts, ValidatingCodecFactory, testWriterFail, data2);
-            ADD_TESTS(ts, BinaryEncoderResolvingDecoderFactory,
-              testCodecResolving, data3);
-            ADD_TESTS(ts, JsonEncoderResolvingDecoderFactory,
-              testCodecResolving, data3);
-            ADD_TESTS(ts, BinaryEncoderResolvingDecoderFactory,
-              testCodecResolving2, data4);
-            ADD_TESTS(ts, JsonEncoderResolvingDecoderFactory,
-              testCodecResolving2, data4);
-            ADD_TESTS(ts, ValidatingEncoderResolvingDecoderFactory,
-              testCodecResolving2, data4);
-            ADD_TESTS(ts, BinaryEncoderResolvingDecoderFactory,
-              testCodecResolving2, data4BinaryOnly);
-
-            ADD_TESTS(ts, ValidatingCodecFactory, testGeneric, data);
-            ADD_TESTS(ts, ValidatingCodecFactory, testGenericResolving, data3);
-            ADD_TESTS(ts, ValidatingCodecFactory, testGenericResolving2, data4);
-        }
-
     } // namespace parsing
 
     TEST_CASE("Avro C++ unit tests for codecs: testStreamLifetimes", "[testStreamLifetimes]") {
@@ -1545,16 +1494,16 @@ testSuite.add(BOOST_PARAM_TEST_CASE(&testFunc<Factory>,         \
         {
             std::auto_ptr<InputStream> s2 = memoryInputStream(*s1);
             d->init(*s2);
-            REQUIRE(d->decodeDouble() ==  std::numeric_limits<double>::infinity());
-            REQUIRE(d->decodeDouble() ==  -std::numeric_limits<double>::infinity());
+            REQUIRE(d->decodeDouble() == std::numeric_limits<double>::infinity());
+            REQUIRE(d->decodeDouble() == -std::numeric_limits<double>::infinity());
             REQUIRE(boost::math::isnan(d->decodeDouble()));
             REQUIRE(d->decodeDouble() == std::numeric_limits<double>::max());
             REQUIRE(d->decodeDouble() == std::numeric_limits<double>::min());
-            REQUIRE(d->decodeFloat() ==  std::numeric_limits<float>::infinity());
-            REQUIRE(d->decodeFloat() ==  -std::numeric_limits<float>::infinity());
+            REQUIRE(d->decodeFloat() == std::numeric_limits<float>::infinity());
+            REQUIRE(d->decodeFloat() == -std::numeric_limits<float>::infinity());
             REQUIRE(boost::math::isnan(d->decodeFloat()));
-            BOOST_CHECK_CLOSE(d->decodeFloat(), std::numeric_limits<float>::max(), 0.00011);
-            BOOST_CHECK_CLOSE(d->decodeFloat(), std::numeric_limits<float>::min(), 0.00011);
+            REQUIRE(std::abs(d->decodeFloat() - std::numeric_limits<float>::max()) < 0.00011);
+            REQUIRE(std::abs(d->decodeFloat() - std::numeric_limits<float>::min()) < 0.00011);
         }
     }
 
