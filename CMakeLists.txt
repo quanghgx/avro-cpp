@@ -18,7 +18,7 @@
 #
 cmake_minimum_required(VERSION 3.8)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -Wall -Wextra -Wno-unused-parameter")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -29,7 +29,7 @@ project (Avro-cpp)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
 
 find_package (Boost 1.38 REQUIRED  COMPONENTS filesystem system program_options iostreams)
-include_directories (3rd api ${CMAKE_CURRENT_BINARY_DIR} ${Boost_INCLUDE_DIRS})
+include_directories (3rd api ${Boost_INCLUDE_DIRS})
 
 file (GLOB_RECURSE AVRO_SOURCE_FILES "impl/*.cc")
 

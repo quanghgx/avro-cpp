@@ -127,8 +127,7 @@ namespace avro {
     return it->second.arrayValue();
   }
 
-  const int64_t getLongField(const Entity& e, const Object& m,
-    const string& fieldName) {
+  int64_t getLongField(const Entity& e, const Object& m, const string& fieldName) {
     Object::const_iterator it = findField(e, m, fieldName);
     ensureType<int64_t>(it->second, fieldName);
     return it->second.longValue();

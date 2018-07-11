@@ -32,13 +32,13 @@ namespace avro {
     NullValidator(const NullValidator&) = delete;
     const NullValidator& operator=(const NullValidator&) = delete;
 
-    explicit NullValidator(const ValidSchema &schema) { }
+    explicit NullValidator(const ValidSchema&) { }
 
     NullValidator() { }
 
-    void setCount(int64_t val) { }
+    void setCount(int64_t) { }
 
-    bool typeIsExpected(Type type) const {
+    bool typeIsExpected(Type) const {
       return true;
     }
 
@@ -50,17 +50,17 @@ namespace avro {
       return 0;
     }
 
-    bool getCurrentRecordName(std::string &name) const {
+    bool getCurrentRecordName(std::string&) const {
       return true;
     }
 
-    bool getNextFieldName(std::string &name) const {
+    bool getNextFieldName(std::string&) const {
       return true;
     }
 
-    void checkTypeExpected(Type type) { }
+    void checkTypeExpected(Type) { }
 
-    void checkFixedSizeExpected(int size) { }
+    void checkFixedSizeExpected(int) { }
 
 
   };
