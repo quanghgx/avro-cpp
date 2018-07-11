@@ -37,8 +37,6 @@ namespace avro {
 
   namespace parsing {
 
-    using std::shared_ptr;
-    using std::make_shared;
     using std::static_pointer_cast;
 
     using std::map;
@@ -84,7 +82,7 @@ namespace avro {
           return ValidatingGrammarGenerator::doGenerate(n, m);
         case Type::AVRO_RECORD:
         {
-          ProductionPtr result = make_shared<Production>();
+          ProductionPtr result = std::make_shared<Production>();
 
           m.erase(n);
 
@@ -111,7 +109,7 @@ namespace avro {
           for (size_t i = 0; i < c; ++i) {
             nn.push_back(n->nameAt(i));
           }
-          ProductionPtr result = make_shared<Production>();
+          ProductionPtr result = std::make_shared<Production>();
           result->push_back(Symbol::nameListSymbol(nn));
           result->push_back(Symbol::enumSymbol());
           m[n] = result;
@@ -131,7 +129,7 @@ namespace avro {
             const NodePtr& nn = n->leafAt(i);
             ProductionPtr v = doGenerate(nn, m);
             if (nn->type() != Type::AVRO_NULL) {
-              ProductionPtr v2 = make_shared<Production>();
+              ProductionPtr v2 = std::make_shared<Production>();
               v2->push_back(Symbol::recordEndSymbol());
               copy(v->begin(), v->end(), back_inserter(*v2));
               v.swap(v2);
@@ -139,7 +137,7 @@ namespace avro {
             vv.push_back(v);
             names.push_back(nameOf(nn));
           }
-          ProductionPtr result = make_shared<Production>();
+          ProductionPtr result = std::make_shared<Production>();
           result->push_back(Symbol::alternative(vv));
           result->push_back(Symbol::nameListSymbol(names));
           result->push_back(Symbol::unionSymbol());

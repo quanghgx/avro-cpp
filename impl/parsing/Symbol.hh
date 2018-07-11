@@ -70,7 +70,7 @@ namespace avro {
         sRepeater, // Array or Map, extra is symbol
         sAlternative, // One of many (union), extra is Union
         sPlaceholder, // To be fixed up later.
-        sIndirect, // extra is shared_ptr<Production>
+        sIndirect, // extra is std::shared_ptr<Production>
         sSymbolic, // extra is weal_ptr<Production>
         sEnumAdjust,
         sUnionAdjust,

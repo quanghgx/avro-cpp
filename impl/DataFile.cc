@@ -29,8 +29,7 @@
 #include <boost/crc.hpp>  // for boost::crc_32_type
 
 namespace avro {
-  using std::shared_ptr;
-  using std::ostringstream;
+    using std::ostringstream;
   using std::istringstream;
   using std::vector;
   using std::copy;
@@ -280,8 +279,8 @@ namespace avro {
     }
   };
 
-  shared_ptr<InputStream> boundedInputStream(InputStream& in, size_t limit) {
-    return shared_ptr<InputStream>(new BoundedInputStream(in, limit));
+  std::shared_ptr<InputStream> boundedInputStream(InputStream& in, size_t limit) {
+    return std::shared_ptr<InputStream>(new BoundedInputStream(in, limit));
   }
 
   bool DataFileReaderBase::readDataBlock() {
@@ -298,7 +297,7 @@ namespace avro {
     avro::decode(*decoder_, byteCount);
     decoder_->init(*stream_);
 
-    shared_ptr<InputStream> st = boundedInputStream(*stream_, static_cast<size_t> (byteCount));
+    std::shared_ptr<InputStream> st = boundedInputStream(*stream_, static_cast<size_t> (byteCount));
     if (codec_ == NULL_CODEC) {
       dataDecoder_->init(*st);
       dataStream_ = st;

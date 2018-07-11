@@ -23,7 +23,6 @@
 #include "fcntl.h"
 #include "errno.h"
 
-using std::shared_ptr;
 using std::istream;
 using std::ostream;
 
@@ -101,7 +100,7 @@ namespace avro {
   class BufferCopyInInputStream : public InputStream {
     const size_t bufferSize_;
     uint8_t * const buffer_;
-    shared_ptr<BufferCopyIn> in_;
+    std::shared_ptr<BufferCopyIn> in_;
     size_t byteCount_;
     uint8_t* next_;
     size_t available_;
@@ -156,7 +155,7 @@ namespace avro {
 
   public:
 
-    BufferCopyInInputStream(shared_ptr<BufferCopyIn>& in, size_t bufferSize) :
+    BufferCopyInInputStream(std::shared_ptr<BufferCopyIn>& in, size_t bufferSize) :
     bufferSize_(bufferSize),
     buffer_(new uint8_t[bufferSize]),
     in_(in),
@@ -221,7 +220,7 @@ namespace avro {
   class BufferCopyOutputStream : public OutputStream {
     size_t bufferSize_;
     uint8_t * const buffer_;
-    shared_ptr<BufferCopyOut> out_;
+    std::shared_ptr<BufferCopyOut> out_;
     uint8_t* next_;
     size_t available_;
     size_t byteCount_;
@@ -258,7 +257,7 @@ namespace avro {
 
   public:
 
-    BufferCopyOutputStream(shared_ptr<BufferCopyOut> out, size_t bufferSize) :
+    BufferCopyOutputStream(std::shared_ptr<BufferCopyOut> out, size_t bufferSize) :
     bufferSize_(bufferSize),
     buffer_(new uint8_t[bufferSize]),
     out_(out),
@@ -271,28 +270,28 @@ namespace avro {
     }
   };
 
-  shared_ptr<InputStream> fileInputStream(const char* filename,
+  std::shared_ptr<InputStream> fileInputStream(const char* filename,
     size_t bufferSize) {
-    shared_ptr<BufferCopyIn> in(new FileBufferCopyIn(filename));
-    return shared_ptr<InputStream>(new BufferCopyInInputStream(in, bufferSize));
+    std::shared_ptr<BufferCopyIn> in(new FileBufferCopyIn(filename));
+    return std::shared_ptr<InputStream>(new BufferCopyInInputStream(in, bufferSize));
   }
 
-  shared_ptr<InputStream> istreamInputStream(istream& is,
+  std::shared_ptr<InputStream> istreamInputStream(istream& is,
     size_t bufferSize) {
-    shared_ptr<BufferCopyIn> in(new IStreamBufferCopyIn(is));
-    return shared_ptr<InputStream>(new BufferCopyInInputStream(in, bufferSize));
+    std::shared_ptr<BufferCopyIn> in(new IStreamBufferCopyIn(is));
+    return std::shared_ptr<InputStream>(new BufferCopyInInputStream(in, bufferSize));
   }
 
-  shared_ptr<OutputStream> fileOutputStream(const char* filename,
+  std::shared_ptr<OutputStream> fileOutputStream(const char* filename,
     size_t bufferSize) {
-    shared_ptr<BufferCopyOut> out(new FileBufferCopyOut(filename));
-    return shared_ptr<OutputStream>(new BufferCopyOutputStream(out, bufferSize));
+    std::shared_ptr<BufferCopyOut> out(new FileBufferCopyOut(filename));
+    return std::shared_ptr<OutputStream>(new BufferCopyOutputStream(out, bufferSize));
   }
 
-  shared_ptr<OutputStream> ostreamOutputStream(ostream& os,
+  std::shared_ptr<OutputStream> ostreamOutputStream(ostream& os,
     size_t bufferSize) {
-    shared_ptr<BufferCopyOut> out(new OStreamBufferCopyOut(os));
-    return shared_ptr<OutputStream>(new BufferCopyOutputStream(out, bufferSize));
+    std::shared_ptr<BufferCopyOut> out(new OStreamBufferCopyOut(os));
+    return std::shared_ptr<OutputStream>(new BufferCopyOutputStream(out, bufferSize));
   }
 
 

@@ -22,11 +22,10 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "ValidSchema.hh"
 #include "Stream.hh"
-
-#include <memory>
 
 /* Low level support for encoding avro values. This class has two types of functions.  One type of functions support the writing of leaf 
    values (for example, encodeLong and encodeString). These functions have analogs in Decoder.

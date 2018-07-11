@@ -20,7 +20,6 @@
 #include "Specific.hh"
 #include "Stream.hh"
 
-using std::shared_ptr;
 using std::string;
 using std::vector;
 using std::map;
@@ -76,7 +75,7 @@ namespace avro {
   namespace specific {
 
     class Test {
-      shared_ptr<OutputStream> os;
+      std::shared_ptr<OutputStream> os;
       EncoderPtr e;
       DecoderPtr d;
     public:
@@ -91,7 +90,7 @@ namespace avro {
       }
 
       template <typename T> void decode(T& t) {
-        shared_ptr<InputStream> is = memoryInputStream(*os);
+        std::shared_ptr<InputStream> is = memoryInputStream(*os);
         d->init(*is);
         avro::decode(*d, t);
       }

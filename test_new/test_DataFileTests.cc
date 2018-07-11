@@ -31,7 +31,6 @@ using std::vector;
 using std::map;
 using std::istringstream;
 using std::ostringstream;
-using std::shared_ptr;
 using avro::ValidSchema;
 using avro::GenericDatum;
 using avro::GenericRecord;
@@ -365,7 +364,7 @@ public:
 
   /*Constructs the DataFileReader in two steps.*/
   void testReadDoubleTwoStep() {
-    shared_ptr<avro::DataFileReaderBase> base(new avro::DataFileReaderBase(filename));
+    std::shared_ptr<avro::DataFileReaderBase> base(new avro::DataFileReaderBase(filename));
     avro::DataFileReader<ComplexDouble> df(base);
     REQUIRE(toString(writerSchema) == toString(df.readerSchema()));
     REQUIRE(toString(writerSchema) == toString(df.dataSchema()));
@@ -388,7 +387,7 @@ public:
    * reader schema.
    */
   void testReadDoubleTwoStepProject() {
-    shared_ptr<avro::DataFileReaderBase>
+    std::shared_ptr<avro::DataFileReaderBase>
       base(new avro::DataFileReaderBase(filename));
     avro::DataFileReader<Double> df(base, readerSchema);
 
@@ -453,7 +452,7 @@ public:
   }
 };
 
-void addReaderTests(const shared_ptr<DataFileTest>& t) {
+void addReaderTests(const std::shared_ptr<DataFileTest>& t) {
   t->testReadFull();
   t->testReadProjection();
   t->testReaderGeneric();
@@ -463,34 +462,34 @@ void addReaderTests(const shared_ptr<DataFileTest>& t) {
 }
 
 TEST_CASE("DataFile tests", "[DataFile tests]") {
-  shared_ptr<DataFileTest> t1(new DataFileTest("test1.df", sch, isch));
+  std::shared_ptr<DataFileTest> t1(new DataFileTest("test1.df", sch, isch));
   t1->testWrite();
   addReaderTests(t1);
 
-  shared_ptr<DataFileTest> t2(new DataFileTest("test2.df", sch, isch));
+  std::shared_ptr<DataFileTest> t2(new DataFileTest("test2.df", sch, isch));
   t2->testWriteGeneric();
   addReaderTests(t2);
 
-  shared_ptr<DataFileTest> t3(new DataFileTest("test3.df", dsch, dblsch));
+  std::shared_ptr<DataFileTest> t3(new DataFileTest("test3.df", dsch, dblsch));
   t3->testWriteDouble();
   t3->testReadDouble();
   t3->testReadDoubleTwoStep();
   t3->testReadDoubleTwoStepProject();
   t3->testCleanup();
 
-  shared_ptr<DataFileTest> t4(new DataFileTest("test4.df", dsch, dblsch));
+  std::shared_ptr<DataFileTest> t4(new DataFileTest("test4.df", dsch, dblsch));
   t4->testTruncate();
   t4->testCleanup();
 
-  shared_ptr<DataFileTest> t5(new DataFileTest("test5.df", sch, isch));
+  std::shared_ptr<DataFileTest> t5(new DataFileTest("test5.df", sch, isch));
   t5->testWriteGenericByName();
   addReaderTests(t5);
 
-  shared_ptr<DataFileTest> t6(new DataFileTest("test6.df", dsch, dblsch));
+  std::shared_ptr<DataFileTest> t6(new DataFileTest("test6.df", dsch, dblsch));
   t6->testZip();
-  shared_ptr<DataFileTest> t8(new DataFileTest("test8.df", dsch, dblsch));
+  std::shared_ptr<DataFileTest> t8(new DataFileTest("test8.df", dsch, dblsch));
 
-  shared_ptr<DataFileTest> t7(new DataFileTest("test7.df", fsch, fsch));
+  std::shared_ptr<DataFileTest> t7(new DataFileTest("test7.df", fsch, fsch));
   t7->testSchemaReadWrite();
   t7->testCleanup();
 }

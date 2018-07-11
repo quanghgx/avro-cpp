@@ -88,7 +88,6 @@ namespace avro {
     using std::ostringstream;
     using std::back_inserter;
     using std::copy;
-    using std::shared_ptr;
 
     template <typename T>
     T from_string(const std::string& s) {
@@ -227,11 +226,11 @@ namespace avro {
       return result;
     }
 
-    static shared_ptr<OutputStream> generate(Encoder& e, const char* calls,
+    static std::shared_ptr<OutputStream> generate(Encoder& e, const char* calls,
       const vector<string>& values) {
       Scanner sc(calls);
       vector<string>::const_iterator it = values.begin();
-      shared_ptr<OutputStream> ob = memoryOutputStream();
+      std::shared_ptr<OutputStream> ob = memoryOutputStream();
       e.init(*ob);
 
       while (!sc.isDone()) {
@@ -531,7 +530,7 @@ namespace avro {
     }
 
     void testEncoder(const EncoderPtr& e, const char* writerCalls,
-      vector<string>& v, shared_ptr<OutputStream>& p) {
+      vector<string>& v, std::shared_ptr<OutputStream>& p) {
       v = randomValues(writerCalls);
       p = generate(*e, writerCalls, v);
     }
@@ -607,7 +606,7 @@ namespace avro {
 
       for (unsigned int i = 0; i < count; ++i) {
         vector<string> v;
-        shared_ptr<OutputStream> p;
+        std::shared_ptr<OutputStream> p;
         testEncoder(CodecFactory::newEncoder(vs), td.calls, v, p);
         // dump(*p);
 
@@ -617,7 +616,7 @@ namespace avro {
             << " schema: " << td.schema
             << " calls: " << td.calls
             << " skip-level: " << skipLevel << "\n";
-          shared_ptr<InputStream> in = memoryInputStream(*p);
+          std::shared_ptr<InputStream> in = memoryInputStream(*p);
           testDecoder(CodecFactory::newDecoder(vs), v, *in,
             td.calls, skipLevel);
         }
@@ -639,7 +638,7 @@ namespace avro {
 
       for (unsigned int i = 0; i < count; ++i) {
         vector<string> v;
-        shared_ptr<OutputStream> p;
+        std::shared_ptr<OutputStream> p;
         testEncoder(CodecFactory::newEncoder(vs), td.writerCalls, v, p);
         // dump(*p);
 
@@ -652,7 +651,7 @@ namespace avro {
             << " reader schema: " << td.readerSchema
             << " reader calls: " << td.readerCalls
             << " skip-level: " << skipLevel << "\n";
-          shared_ptr<InputStream> in = memoryInputStream(*p);
+          std::shared_ptr<InputStream> in = memoryInputStream(*p);
           testDecoder(CodecFactory::newDecoder(vs, rvs), v, *in,
             td.readerCalls, skipLevel);
         }
@@ -681,7 +680,7 @@ namespace avro {
       ValidSchema vs = makeValidSchema(td.writerSchema);
 
       vector<string> wd = mkValues(td.writerValues);
-      shared_ptr<OutputStream> p =
+      std::shared_ptr<OutputStream> p =
         generate(*CodecFactory::newEncoder(vs), td.writerCalls, wd);
       // dump(*p);
 
@@ -695,7 +694,7 @@ namespace avro {
           << " reader schema: " << td.readerSchema
           << " reader calls: " << td.readerCalls
           << " skip-level: " << skipLevel << "\n";
-        shared_ptr<InputStream> in = memoryInputStream(*p);
+        std::shared_ptr<InputStream> in = memoryInputStream(*p);
         testDecoder(CodecFactory::newDecoder(vs, rvs), rd, *in,
           td.readerCalls, skipLevel);
       }
@@ -713,9 +712,9 @@ namespace avro {
       ValidSchema vs = makeValidSchema(td.schema);
 
       vector<string> v;
-      shared_ptr<OutputStream> p;
+      std::shared_ptr<OutputStream> p;
       testEncoder(CodecFactory::newEncoder(vs), td.correctCalls, v, p);
-      shared_ptr<InputStream> in = memoryInputStream(*p);
+      std::shared_ptr<InputStream> in = memoryInputStream(*p);
       REQUIRE_THROWS_AS(testDecoder(CodecFactory::newDecoder(vs), v, *in, td.incorrectCalls, td.depth), Exception);
     }
 
@@ -729,7 +728,7 @@ namespace avro {
       ValidSchema vs = makeValidSchema(td.schema);
 
       vector<string> v;
-      shared_ptr<OutputStream> p;
+      std::shared_ptr<OutputStream> p;
       REQUIRE_THROWS_AS(testEncoder(CodecFactory::newEncoder(vs), td.incorrectCalls, v, p), Exception);
     }
 
@@ -745,17 +744,17 @@ namespace avro {
 
       for (unsigned int i = 0; i < count; ++i) {
         vector<string> v;
-        shared_ptr<OutputStream> p;
+        std::shared_ptr<OutputStream> p;
         testEncoder(CodecFactory::newEncoder(vs), td.calls, v, p);
         // dump(*p);
         DecoderPtr d1 = CodecFactory::newDecoder(vs);
-        shared_ptr<InputStream> in1 = memoryInputStream(*p);
+        std::shared_ptr<InputStream> in1 = memoryInputStream(*p);
         d1->init(*in1);
         GenericDatum datum(vs);
         avro::decode(*d1, datum);
 
         EncoderPtr e2 = CodecFactory::newEncoder(vs);
-        shared_ptr<OutputStream> ob = memoryOutputStream();
+        std::shared_ptr<OutputStream> ob = memoryOutputStream();
         e2->init(*ob);
 
         avro::encode(*e2, datum);
@@ -764,7 +763,7 @@ namespace avro {
         std::cout << "Test: " << testNo << ' '
           << " schema: " << td.schema
           << " calls: " << td.calls << "\n";
-        shared_ptr<InputStream> in2 = memoryInputStream(*ob);
+        std::shared_ptr<InputStream> in2 = memoryInputStream(*ob);
         testDecoder(CodecFactory::newDecoder(vs), v, *in2,
           td.calls, td.depth);
       }
@@ -786,11 +785,11 @@ namespace avro {
 
       for (unsigned int i = 0; i < count; ++i) {
         vector<string> v;
-        shared_ptr<OutputStream> p;
+        std::shared_ptr<OutputStream> p;
         testEncoder(CodecFactory::newEncoder(wvs), td.writerCalls, v, p);
         // dump(*p);
         DecoderPtr d1 = CodecFactory::newDecoder(wvs);
-        shared_ptr<InputStream> in1 = memoryInputStream(*p);
+        std::shared_ptr<InputStream> in1 = memoryInputStream(*p);
         d1->init(*in1);
 
         GenericReader gr(wvs, rvs, d1);
@@ -798,7 +797,7 @@ namespace avro {
         gr.read(datum);
 
         EncoderPtr e2 = CodecFactory::newEncoder(rvs);
-        shared_ptr<OutputStream> ob = memoryOutputStream();
+        std::shared_ptr<OutputStream> ob = memoryOutputStream();
         e2->init(*ob);
         avro::encode(*e2, datum);
         e2->flush();
@@ -808,7 +807,7 @@ namespace avro {
           << " writer-calls: " << td.writerCalls
           << " reader-schema: " << td.readerSchema
           << " calls: " << td.readerCalls << "\n";
-        shared_ptr<InputStream> in2 = memoryInputStream(*ob);
+        std::shared_ptr<InputStream> in2 = memoryInputStream(*ob);
         testDecoder(CodecFactory::newDecoder(rvs), v, *in2,
           td.readerCalls, td.depth);
       }
@@ -824,11 +823,11 @@ namespace avro {
 
       const vector<string> wd = mkValues(td.writerValues);
 
-      shared_ptr<OutputStream> p = generate(*CodecFactory::newEncoder(wvs),
+      std::shared_ptr<OutputStream> p = generate(*CodecFactory::newEncoder(wvs),
         td.writerCalls, wd);
       // dump(*p);
       DecoderPtr d1 = CodecFactory::newDecoder(wvs);
-      shared_ptr<InputStream> in1 = memoryInputStream(*p);
+      std::shared_ptr<InputStream> in1 = memoryInputStream(*p);
       d1->init(*in1);
 
       GenericReader gr(wvs, rvs, d1);
@@ -836,7 +835,7 @@ namespace avro {
       gr.read(datum);
 
       EncoderPtr e2 = CodecFactory::newEncoder(rvs);
-      shared_ptr<OutputStream> ob = memoryOutputStream();
+      std::shared_ptr<OutputStream> ob = memoryOutputStream();
       e2->init(*ob);
       avro::encode(*e2, datum);
       e2->flush();

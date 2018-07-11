@@ -59,7 +59,7 @@ namespace avro {
   };
 
   DecoderPtr binaryDecoder() {
-    return make_shared<BinaryDecoder>();
+    return std::make_shared<BinaryDecoder>();
   }
 
   void BinaryDecoder::init(InputStream& is) {

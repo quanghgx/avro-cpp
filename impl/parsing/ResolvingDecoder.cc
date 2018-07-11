@@ -37,13 +37,9 @@
 
 namespace avro {
 
-  using std::make_shared;
-
   namespace parsing {
-
-    using std::shared_ptr;
+    
     using std::static_pointer_cast;
-    using std::make_shared;
     using std::map;
     using std::pair;
     using std::vector;
@@ -145,10 +141,10 @@ namespace avro {
       return -1;
     }
 
-    static shared_ptr<vector<uint8_t> > getAvroBinary(
+    static std::shared_ptr<vector<uint8_t> > getAvroBinary(
       const GenericDatum& defaultValue) {
       EncoderPtr e = binaryEncoder();
-      shared_ptr<OutputStream> os = memoryOutputStream();
+      std::shared_ptr<OutputStream> os = memoryOutputStream();
       e->init(*os);
       GenericWriter::write(*e, defaultValue);
       e->flush();
@@ -185,7 +181,7 @@ namespace avro {
       const NodePtr& writer, const NodePtr& reader,
       map<NodePair, ProductionPtr>& m,
       map<NodePtr, ProductionPtr>& m2) {
-      ProductionPtr result = make_shared<Production>();
+      ProductionPtr result = std::make_shared<Production>();
 
       vector<pair<string, size_t> > wf = fields(writer);
       vector<pair<string, size_t> > rf = fields(reader);
@@ -234,10 +230,10 @@ namespace avro {
         if (s->type() == Type::AVRO_SYMBOLIC) {
           s = resolveSymbol(s);
         }
-        shared_ptr<vector<uint8_t> > defaultBinary =
+        std::shared_ptr<vector<uint8_t> > defaultBinary =
           getAvroBinary(reader->defaultValueAt(it->second));
         result->push_back(Symbol::defaultStartAction(defaultBinary));
-        map<NodePair, shared_ptr<Production> >::const_iterator it2 =
+        map<NodePair, std::shared_ptr<Production> >::const_iterator it2 =
           m.find(NodePair(s, s));
         ProductionPtr p = (it2 == m.end()) ?
           doGenerate2(s, s, m, m2) : it2->second;
@@ -263,7 +259,7 @@ namespace avro {
         ProductionPtr p = doGenerate2(writer->leafAt(i), reader, m, m2);
         v.push_back(p);
       }
-      ProductionPtr result = make_shared<Production>();
+      ProductionPtr result = std::make_shared<Production>();
       result->push_back(Symbol::alternative(v));
       result->push_back(Symbol::writerUnionAction());
       return result;
@@ -281,25 +277,25 @@ namespace avro {
       if (writerType == readerType) {
         switch (writerType) {
           case Type::AVRO_NULL:
-            return make_shared<Production>(1, Symbol::nullSymbol());
+            return std::make_shared<Production>(1, Symbol::nullSymbol());
           case Type::AVRO_BOOL:
-            return make_shared<Production>(1, Symbol::boolSymbol());
+            return std::make_shared<Production>(1, Symbol::boolSymbol());
           case Type::AVRO_INT:
-            return make_shared<Production>(1, Symbol::intSymbol());
+            return std::make_shared<Production>(1, Symbol::intSymbol());
           case Type::AVRO_LONG:
-            return make_shared<Production>(1, Symbol::longSymbol());
+            return std::make_shared<Production>(1, Symbol::longSymbol());
           case Type::AVRO_FLOAT:
-            return make_shared<Production>(1, Symbol::floatSymbol());
+            return std::make_shared<Production>(1, Symbol::floatSymbol());
           case Type::AVRO_DOUBLE:
-            return make_shared<Production>(1, Symbol::doubleSymbol());
+            return std::make_shared<Production>(1, Symbol::doubleSymbol());
           case Type::AVRO_STRING:
-            return make_shared<Production>(1, Symbol::stringSymbol());
+            return std::make_shared<Production>(1, Symbol::stringSymbol());
           case Type::AVRO_BYTES:
-            return make_shared<Production>(1, Symbol::bytesSymbol());
+            return std::make_shared<Production>(1, Symbol::bytesSymbol());
           case Type::AVRO_FIXED:
             if (writer->name() == reader->name() &&
               writer->fixedSize() == reader->fixedSize()) {
-              ProductionPtr result = make_shared<Production>();
+              ProductionPtr result = std::make_shared<Production>();
               result->push_back(Symbol::sizeCheckSymbol(reader->fixedSize()));
               result->push_back(Symbol::fixedSymbol());
               m[make_pair(writer, reader)] = result;
@@ -312,7 +308,7 @@ namespace avro {
               map<NodePair, ProductionPtr>::const_iterator kp = m.find(key);
               if (kp != m.end()) {
                 return (kp->second) ? kp->second :
-                  make_shared<Production>(1, Symbol::placeholder(key));
+                  std::make_shared<Production>(1, Symbol::placeholder(key));
               }
               m[key] = ProductionPtr();
               ProductionPtr result = resolveRecords(writer, reader, m, m2);
@@ -323,7 +319,7 @@ namespace avro {
 
           case Type::AVRO_ENUM:
             if (writer->name() == reader->name()) {
-              ProductionPtr result = make_shared<Production>();
+              ProductionPtr result = std::make_shared<Production>();
               result->push_back(Symbol::enumAdjustSymbol(writer, reader));
               result->push_back(Symbol::enumSymbol());
               m[make_pair(writer, reader)] = result;
@@ -335,7 +331,7 @@ namespace avro {
           {
             ProductionPtr p = getWriterProduction(writer->leafAt(0), m2);
             ProductionPtr p2 = doGenerate2(writer->leafAt(0), reader->leafAt(0), m, m2);
-            ProductionPtr result = make_shared<Production>();
+            ProductionPtr result = std::make_shared<Production>();
             result->push_back(Symbol::arrayEndSymbol());
             result->push_back(Symbol::repeater(p2, p, true));
             result->push_back(Symbol::arrayStartSymbol());
@@ -353,7 +349,7 @@ namespace avro {
 
             v2->push_back(Symbol::stringSymbol());
 
-            ProductionPtr result = make_shared<Production>();
+            ProductionPtr result = std::make_shared<Production>();
             result->push_back(Symbol::mapEndSymbol());
             result->push_back(Symbol::repeater(v, v2, false));
             result->push_back(Symbol::mapStartSymbol());
@@ -363,9 +359,9 @@ namespace avro {
             return resolveUnion(writer, reader, m, m2);
           case Type::AVRO_SYMBOLIC:
           {
-            shared_ptr<NodeSymbolic> w =
+            std::shared_ptr<NodeSymbolic> w =
               static_pointer_cast<NodeSymbolic>(writer);
-            shared_ptr<NodeSymbolic> r =
+            std::shared_ptr<NodeSymbolic> r =
               static_pointer_cast<NodeSymbolic>(reader);
             NodePair p(w->getNode(), r->getNode());
             map<NodePair, ProductionPtr>::iterator it = m.find(p);
@@ -373,7 +369,7 @@ namespace avro {
               return it->second;
             } else {
               m[p] = ProductionPtr();
-              return make_shared<Production>(1, Symbol::placeholder(p));
+              return std::make_shared<Production>(1, Symbol::placeholder(p));
             }
           }
           default:
@@ -385,13 +381,13 @@ namespace avro {
         switch (readerType) {
           case Type::AVRO_LONG:
             if (writerType == Type::AVRO_INT) {
-              return make_shared<Production>(1,
+              return std::make_shared<Production>(1,
                 Symbol::resolveSymbol(Symbol::sInt, Symbol::sLong));
             }
             break;
           case Type::AVRO_FLOAT:
             if (writerType == Type::AVRO_INT || writerType == Type::AVRO_LONG) {
-              return make_shared<Production>(1,
+              return std::make_shared<Production>(1,
                 Symbol::resolveSymbol(writerType == Type::AVRO_INT ?
                 Symbol::sInt : Symbol::sLong, Symbol::sFloat));
             }
@@ -399,7 +395,7 @@ namespace avro {
           case Type::AVRO_DOUBLE:
             if (writerType == Type::AVRO_INT || writerType == Type::AVRO_LONG
               || writerType == Type::AVRO_FLOAT) {
-              return make_shared<Production>(1,
+              return std::make_shared<Production>(1,
                 Symbol::resolveSymbol(writerType == Type::AVRO_INT ?
                 Symbol::sInt : writerType == Type::AVRO_LONG ?
                 Symbol::sLong : Symbol::sFloat, Symbol::sDouble));
@@ -411,7 +407,7 @@ namespace avro {
             int j = bestBranch(writer, reader);
             if (j >= 0) {
               ProductionPtr p = doGenerate2(writer, reader->leafAt(j), m, m2);
-              ProductionPtr result = make_shared<Production>();
+              ProductionPtr result = std::make_shared<Production>();
               result->push_back(Symbol::unionAdjustSymbol(j, p));
               result->push_back(Symbol::unionSymbol());
               return result;
@@ -432,12 +428,12 @@ namespace avro {
             throw Exception("Unknown node type");
         }
       }
-      return make_shared<Production>(1, Symbol::error(writer, reader));
+      return std::make_shared<Production>(1, Symbol::error(writer, reader));
     }
 
     class ResolvingDecoderHandler {
-      shared_ptr<vector<uint8_t> > defaultData_;
-      shared_ptr<InputStream> inp_;
+      std::shared_ptr<vector<uint8_t> > defaultData_;
+      std::shared_ptr<InputStream> inp_;
       DecoderPtr backup_;
       DecoderPtr& base_;
       const DecoderPtr binDecoder;
@@ -452,7 +448,7 @@ namespace avro {
           case Symbol::sWriterUnion:
             return base_->decodeUnionIndex();
           case Symbol::sDefaultStart:
-            defaultData_ = s.extra<shared_ptr<vector<uint8_t> > >();
+            defaultData_ = s.extra<std::shared_ptr<vector<uint8_t> > >();
             backup_ = base_;
             inp_ = memoryInputStream(&(*defaultData_)[0], defaultData_->size());
             base_ = binDecoder;
@@ -703,7 +699,7 @@ namespace avro {
 
   ResolvingDecoderPtr resolvingDecoder(const ValidSchema& writer,
     const ValidSchema& reader, const DecoderPtr& base) {
-    return make_shared<parsing::ResolvingDecoderImpl
+    return std::make_shared<parsing::ResolvingDecoderImpl
       <parsing::SimpleParser<parsing::ResolvingDecoderHandler> > >(
       writer, reader, base);
   }

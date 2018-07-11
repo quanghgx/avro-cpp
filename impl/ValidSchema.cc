@@ -26,7 +26,6 @@
 using std::string;
 using std::make_pair;
 using boost::format;
-using std::shared_ptr;
 using std::static_pointer_cast;
 
 namespace avro {
@@ -50,7 +49,7 @@ namespace avro {
             node->name());
         }
 
-        shared_ptr<NodeSymbolic> symNode =
+        std::shared_ptr<NodeSymbolic> symNode =
           static_pointer_cast<NodeSymbolic>(node);
 
         // if the symbolic link is already resolved, we return true,

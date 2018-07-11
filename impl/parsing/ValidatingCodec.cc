@@ -32,8 +32,7 @@
 namespace avro {
 
   namespace parsing {
-
-    using std::shared_ptr;
+    
     using std::weak_ptr;
     using std::static_pointer_cast;
     using std::make_shared;
@@ -62,24 +61,24 @@ namespace avro {
       map<NodePtr, ProductionPtr> &m) {
       switch (n->type()) {
         case Type::AVRO_NULL:
-          return make_shared<Production>(1, Symbol::nullSymbol());
+          return std::make_shared<Production>(1, Symbol::nullSymbol());
         case Type::AVRO_BOOL:
-          return make_shared<Production>(1, Symbol::boolSymbol());
+          return std::make_shared<Production>(1, Symbol::boolSymbol());
         case Type::AVRO_INT:
-          return make_shared<Production>(1, Symbol::intSymbol());
+          return std::make_shared<Production>(1, Symbol::intSymbol());
         case Type::AVRO_LONG:
-          return make_shared<Production>(1, Symbol::longSymbol());
+          return std::make_shared<Production>(1, Symbol::longSymbol());
         case Type::AVRO_FLOAT:
-          return make_shared<Production>(1, Symbol::floatSymbol());
+          return std::make_shared<Production>(1, Symbol::floatSymbol());
         case Type::AVRO_DOUBLE:
-          return make_shared<Production>(1, Symbol::doubleSymbol());
+          return std::make_shared<Production>(1, Symbol::doubleSymbol());
         case Type::AVRO_STRING:
-          return make_shared<Production>(1, Symbol::stringSymbol());
+          return std::make_shared<Production>(1, Symbol::stringSymbol());
         case Type::AVRO_BYTES:
-          return make_shared<Production>(1, Symbol::bytesSymbol());
+          return std::make_shared<Production>(1, Symbol::bytesSymbol());
         case Type::AVRO_FIXED:
         {
-          ProductionPtr result = make_shared<Production>();
+          ProductionPtr result = std::make_shared<Production>();
           result->push_back(Symbol::sizeCheckSymbol(n->fixedSize()));
           result->push_back(Symbol::fixedSymbol());
           m[n] = result;
@@ -87,7 +86,7 @@ namespace avro {
         }
         case Type::AVRO_RECORD:
         {
-          ProductionPtr result = make_shared<Production>();
+          ProductionPtr result = std::make_shared<Production>();
 
           m.erase(n);
           size_t c = n->leaves();
@@ -103,7 +102,7 @@ namespace avro {
         }
         case Type::AVRO_ENUM:
         {
-          ProductionPtr result = make_shared<Production>();
+          ProductionPtr result = std::make_shared<Production>();
           result->push_back(Symbol::sizeCheckSymbol(n->names()));
           result->push_back(Symbol::enumSymbol());
           m[n] = result;
@@ -111,7 +110,7 @@ namespace avro {
         }
         case Type::AVRO_ARRAY:
         {
-          ProductionPtr result = make_shared<Production>();
+          ProductionPtr result = std::make_shared<Production>();
           result->push_back(Symbol::arrayEndSymbol());
           result->push_back(Symbol::repeater(doGenerate(n->leafAt(0), m), true));
           result->push_back(Symbol::arrayStartSymbol());
@@ -122,7 +121,7 @@ namespace avro {
           ProductionPtr pp = doGenerate(n->leafAt(1), m);
           ProductionPtr v(new Production(*pp));
           v->push_back(Symbol::stringSymbol());
-          ProductionPtr result = make_shared<Production>();
+          ProductionPtr result = std::make_shared<Production>();
           result->push_back(Symbol::mapEndSymbol());
           result->push_back(Symbol::repeater(v, false));
           result->push_back(Symbol::mapStartSymbol());
@@ -136,14 +135,14 @@ namespace avro {
           for (size_t i = 0; i < c; ++i) {
             vv.push_back(doGenerate(n->leafAt(i), m));
           }
-          ProductionPtr result = make_shared<Production>();
+          ProductionPtr result = std::make_shared<Production>();
           result->push_back(Symbol::alternative(vv));
           result->push_back(Symbol::unionSymbol());
           return result;
         }
         case Type::AVRO_SYMBOLIC:
         {
-          shared_ptr<NodeSymbolic> ns = static_pointer_cast<NodeSymbolic>(n);
+          std::shared_ptr<NodeSymbolic> ns = static_pointer_cast<NodeSymbolic>(n);
           NodePtr nn = ns->getNode();
           map<NodePtr, ProductionPtr>::iterator it =
             m.find(nn);
@@ -151,7 +150,7 @@ namespace avro {
             return it->second;
           } else {
             m[nn] = ProductionPtr();
-            return make_shared<Production>(1, Symbol::placeholder(nn));
+            return std::make_shared<Production>(1, Symbol::placeholder(nn));
           }
         }
         default:
@@ -168,7 +167,7 @@ namespace avro {
 
     template <typename P>
     class ValidatingDecoder : public Decoder {
-      const shared_ptr<Decoder> base;
+      const std::shared_ptr<Decoder> base;
       DummyHandler handler_;
       P parser;
 
@@ -196,7 +195,7 @@ namespace avro {
 
     public:
 
-      ValidatingDecoder(const ValidSchema& s, const shared_ptr<Decoder> b) :
+      ValidatingDecoder(const ValidSchema& s, const std::shared_ptr<Decoder> b) :
       base(b),
       parser(ValidatingGrammarGenerator().generate(s), NULL, handler_) {
       }

@@ -37,7 +37,6 @@
 #include "./gen/recursive.hh"
 #include "./gen/tweet.hh"
 
-using std::shared_ptr;
 using std::map;
 using std::string;
 using std::vector;
@@ -132,7 +131,7 @@ TEST_CASE("Code generator tests: testEncoding", "[testEncoding]") {
   ValidSchema s;
   ifstream ifs("jsonschemas/bigrecord");
   compileJsonSchema(ifs, s);
-  shared_ptr<OutputStream> os = memoryOutputStream();
+  std::shared_ptr<OutputStream> os = memoryOutputStream();
   EncoderPtr e = validatingEncoder(s, binaryEncoder());
   e->init(*os);
   testgen::RootRecord t1;
@@ -141,7 +140,7 @@ TEST_CASE("Code generator tests: testEncoding", "[testEncoding]") {
   e->flush();
 
   DecoderPtr d = validatingDecoder(s, binaryDecoder());
-  shared_ptr<InputStream> is = memoryInputStream(*os);
+  std::shared_ptr<InputStream> is = memoryInputStream(*os);
   d->init(*is);
   testgen::RootRecord t2;
   avro::decode(*d, t2);
@@ -153,7 +152,7 @@ TEST_CASE("Code generator tests: testResolution", "[testResolution]") {
   ValidSchema s_w;
   ifstream ifs_w("jsonschemas/bigrecord");
   compileJsonSchema(ifs_w, s_w);
-  shared_ptr<OutputStream> os = memoryOutputStream();
+  std::shared_ptr<OutputStream> os = memoryOutputStream();
   EncoderPtr e = validatingEncoder(s_w, binaryEncoder());
   e->init(*os);
   testgen::RootRecord t1;
@@ -165,7 +164,7 @@ TEST_CASE("Code generator tests: testResolution", "[testResolution]") {
   ifstream ifs_r("jsonschemas/bigrecord_r");
   compileJsonSchema(ifs_r, s_r);
   DecoderPtr dd = binaryDecoder();
-  shared_ptr<InputStream> is = memoryInputStream(*os);
+  std::shared_ptr<InputStream> is = memoryInputStream(*os);
   dd->init(*is);
   DecoderPtr rd = resolvingDecoder(s_w, s_r, dd);
   testgen_r::RootRecord t2;
@@ -175,7 +174,7 @@ TEST_CASE("Code generator tests: testResolution", "[testResolution]") {
   checkDefaultValues(t2);
 
   //Re-use the resolving decoder to decode again.
-  shared_ptr<InputStream> is1 = memoryInputStream(*os);
+  std::shared_ptr<InputStream> is1 = memoryInputStream(*os);
   rd->init(*is1);
   testgen_r::RootRecord t3;
   avro::decode(*rd, t3);
@@ -231,7 +230,7 @@ void testEncoding2() {
   ifstream ifs(schemaFilename<T>::value);
   compileJsonSchema(ifs, s);
 
-  shared_ptr<OutputStream> os = memoryOutputStream();
+  std::shared_ptr<OutputStream> os = memoryOutputStream();
   EncoderPtr e = validatingEncoder(s, binaryEncoder());
   e->init(*os);
   T t1;
@@ -240,7 +239,7 @@ void testEncoding2() {
   e->flush();
 
   DecoderPtr d = validatingDecoder(s, binaryDecoder());
-  shared_ptr<InputStream> is = memoryInputStream(*os);
+  std::shared_ptr<InputStream> is = memoryInputStream(*os);
   d->init(*is);
   T t2;
   avro::decode(*d, t2);

@@ -22,9 +22,6 @@
 
 namespace avro {
 
-  using std::make_shared;
-  using std::shared_ptr;
-
   class BinaryEncoder : public Encoder {
     StreamWriter out_;
 
@@ -52,7 +49,7 @@ namespace avro {
   };
 
   EncoderPtr binaryEncoder() {
-    return make_shared<BinaryEncoder>();
+    return std::make_shared<BinaryEncoder>();
   }
 
   void BinaryEncoder::init(OutputStream& os) {
