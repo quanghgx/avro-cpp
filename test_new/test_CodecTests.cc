@@ -375,21 +375,21 @@ namespace avro {
                     {
                         bool b1 = d.decodeBool();
                         bool b2 = from_string<bool>(*it++);
-                        BOOST_CHECK_EQUAL(b1, b2);
+                        REQUIRE(b1 ==  b2);
                     }
                         break;
                     case 'I':
                     {
                         int32_t b1 = d.decodeInt();
                         int32_t b2 = from_string<int32_t>(*it++);
-                        BOOST_CHECK_EQUAL(b1, b2);
+                        REQUIRE(b1 ==  b2);
                     }
                         break;
                     case 'L':
                     {
                         int64_t b1 = d.decodeLong();
                         int64_t b2 = from_string<int64_t>(*it++);
-                        BOOST_CHECK_EQUAL(b1, b2);
+                        REQUIRE(b1 ==  b2);
                     }
                         break;
                     case 'F':
@@ -414,7 +414,7 @@ namespace avro {
                         } else {
                             string b1 = d.decodeString();
                             string b2 = from_string<string>(*it);
-                            BOOST_CHECK_EQUAL(b1, b2);
+                            REQUIRE(b1 ==  b2);
                         }
                         ++it;
                         break;
@@ -448,7 +448,7 @@ namespace avro {
                     {
                         size_t b1 = d.decodeEnum();
                         size_t b2 = sc.extractInt();
-                        BOOST_CHECK_EQUAL(b1, b2);
+                        REQUIRE(b1 ==  b2);
                     }
                         break;
                     case '[':
@@ -478,9 +478,9 @@ namespace avro {
                     case ']':
                     {
                         const StackElement& se = containerStack.top();
-                        BOOST_CHECK_EQUAL(se.size, se.count);
+                        REQUIRE(se.size ==  se.count);
                         if (se.size != 0) {
-                            BOOST_CHECK_EQUAL(zero, d.arrayNext());
+                            REQUIRE(zero ==  d.arrayNext());
                         }
                         containerStack.pop();
                     }
@@ -488,9 +488,9 @@ namespace avro {
                     case '}':
                     {
                         const StackElement& se = containerStack.top();
-                        BOOST_CHECK_EQUAL(se.size, se.count);
+                        REQUIRE(se.size ==  se.count);
                         if (se.size != 0) {
-                            BOOST_CHECK_EQUAL(zero, d.mapNext());
+                            REQUIRE(zero ==  d.mapNext());
                         }
                         containerStack.pop();
                     }
@@ -511,7 +511,7 @@ namespace avro {
                     case 'U':
                     {
                         size_t idx = sc.extractInt();
-                        BOOST_CHECK_EQUAL(idx, d.decodeUnionIndex());
+                        REQUIRE(idx ==  d.decodeUnionIndex());
                     }
                         break;
                     case 'R':
@@ -1545,13 +1545,13 @@ testSuite.add(BOOST_PARAM_TEST_CASE(&testFunc<Factory>,         \
         {
             std::auto_ptr<InputStream> s2 = memoryInputStream(*s1);
             d->init(*s2);
-            BOOST_CHECK_EQUAL(d->decodeDouble(), std::numeric_limits<double>::infinity());
-            BOOST_CHECK_EQUAL(d->decodeDouble(), -std::numeric_limits<double>::infinity());
+            REQUIRE(d->decodeDouble() ==  std::numeric_limits<double>::infinity());
+            REQUIRE(d->decodeDouble() ==  -std::numeric_limits<double>::infinity());
             REQUIRE(boost::math::isnan(d->decodeDouble()));
             REQUIRE(d->decodeDouble() == std::numeric_limits<double>::max());
             REQUIRE(d->decodeDouble() == std::numeric_limits<double>::min());
-            BOOST_CHECK_EQUAL(d->decodeFloat(), std::numeric_limits<float>::infinity());
-            BOOST_CHECK_EQUAL(d->decodeFloat(), -std::numeric_limits<float>::infinity());
+            REQUIRE(d->decodeFloat() ==  std::numeric_limits<float>::infinity());
+            REQUIRE(d->decodeFloat() ==  -std::numeric_limits<float>::infinity());
             REQUIRE(boost::math::isnan(d->decodeFloat()));
             BOOST_CHECK_CLOSE(d->decodeFloat(), std::numeric_limits<float>::max(), 0.00011);
             BOOST_CHECK_CLOSE(d->decodeFloat(), std::numeric_limits<float>::min(), 0.00011);
