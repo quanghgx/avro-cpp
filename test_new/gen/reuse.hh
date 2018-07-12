@@ -28,83 +28,89 @@
 #include "Decoder.hh"
 
 namespace ru {
-struct F {
+
+  struct F {
     bool g1;
     int32_t g2;
-    F() :
-        g1(bool()),
-        g2(int32_t())
-        { }
-};
 
-struct outer {
+    F() :
+    g1(bool()),
+    g2(int32_t()) { }
+  };
+
+  struct outer {
     F f1;
     F f2;
+
     outer() :
-        f1(F()),
-        f2(F())
-        { }
-};
+    f1(F()),
+    f2(F()) { }
+  };
 
 }
 namespace avro {
-template<> struct codec_traits<ru::F> {
-    static void encode(Encoder& e, const ru::F& v) {
-        avro::encode(e, v.g1);
-        avro::encode(e, v.g2);
-    }
-    static void decode(Decoder& d, ru::F& v) {
-        if (avro::ResolvingDecoder *rd =
-            dynamic_cast<avro::ResolvingDecoder *>(&d)) {
-            const std::vector<size_t> fo = rd->fieldOrder();
-            for (std::vector<size_t>::const_iterator it = fo.begin();
-                it != fo.end(); ++it) {
-                switch (*it) {
-                case 0:
-                    avro::decode(d, v.g1);
-                    break;
-                case 1:
-                    avro::decode(d, v.g2);
-                    break;
-                default:
-                    break;
-                }
-            }
-        } else {
-            avro::decode(d, v.g1);
-            avro::decode(d, v.g2);
-        }
-    }
-};
 
-template<> struct codec_traits<ru::outer> {
-    static void encode(Encoder& e, const ru::outer& v) {
-        avro::encode(e, v.f1);
-        avro::encode(e, v.f2);
+  template<> struct codec_traits<ru::F> {
+
+    static void encode(Encoder& e, const ru::F& v) {
+      avro::encode(e, v.g1);
+      avro::encode(e, v.g2);
     }
-    static void decode(Decoder& d, ru::outer& v) {
-        if (avro::ResolvingDecoder *rd =
-            dynamic_cast<avro::ResolvingDecoder *>(&d)) {
-            const std::vector<size_t> fo = rd->fieldOrder();
-            for (std::vector<size_t>::const_iterator it = fo.begin();
-                it != fo.end(); ++it) {
-                switch (*it) {
-                case 0:
-                    avro::decode(d, v.f1);
-                    break;
-                case 1:
-                    avro::decode(d, v.f2);
-                    break;
-                default:
-                    break;
-                }
-            }
-        } else {
-            avro::decode(d, v.f1);
-            avro::decode(d, v.f2);
+
+    static void decode(Decoder& d, ru::F& v) {
+      if (avro::ResolvingDecoder * rd =
+        dynamic_cast<avro::ResolvingDecoder *> (&d)) {
+        const std::vector<size_t> fo = rd->fieldOrder();
+        for (std::vector<size_t>::const_iterator it = fo.begin();
+          it != fo.end(); ++it) {
+          switch (*it) {
+            case 0:
+              avro::decode(d, v.g1);
+              break;
+            case 1:
+              avro::decode(d, v.g2);
+              break;
+            default:
+              break;
+          }
         }
+      } else {
+        avro::decode(d, v.g1);
+        avro::decode(d, v.g2);
+      }
     }
-};
+  };
+
+  template<> struct codec_traits<ru::outer> {
+
+    static void encode(Encoder& e, const ru::outer& v) {
+      avro::encode(e, v.f1);
+      avro::encode(e, v.f2);
+    }
+
+    static void decode(Decoder& d, ru::outer& v) {
+      if (avro::ResolvingDecoder * rd =
+        dynamic_cast<avro::ResolvingDecoder *> (&d)) {
+        const std::vector<size_t> fo = rd->fieldOrder();
+        for (std::vector<size_t>::const_iterator it = fo.begin();
+          it != fo.end(); ++it) {
+          switch (*it) {
+            case 0:
+              avro::decode(d, v.f1);
+              break;
+            case 1:
+              avro::decode(d, v.f2);
+              break;
+            default:
+              break;
+          }
+        }
+      } else {
+        avro::decode(d, v.f1);
+        avro::decode(d, v.f2);
+      }
+    }
+  };
 
 }
 #endif

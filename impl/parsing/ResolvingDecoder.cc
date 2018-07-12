@@ -38,7 +38,7 @@
 namespace avro {
 
   namespace parsing {
-    
+
     using std::static_pointer_cast;
     using std::map;
     using std::pair;

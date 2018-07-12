@@ -28,84 +28,90 @@
 #include "Decoder.hh"
 
 namespace tr1 {
-struct Edge;
-struct Node {
+  struct Edge;
+
+  struct Node {
     int32_t payload;
     std::vector<Edge > edges;
-    Node() :
-        payload(int32_t()),
-        edges(std::vector<Edge >())
-        { }
-};
 
-struct Edge {
+    Node() :
+    payload(int32_t()),
+    edges(std::vector<Edge >()) { }
+  };
+
+  struct Edge {
     Node child;
     std::string label;
+
     Edge() :
-        child(Node()),
-        label(std::string())
-        { }
-};
+    child(Node()),
+    label(std::string()) { }
+  };
 
 }
 namespace avro {
-template<> struct codec_traits<tr1::Edge> {
-    static void encode(Encoder& e, const tr1::Edge& v) {
-        avro::encode(e, v.child);
-        avro::encode(e, v.label);
-    }
-    static void decode(Decoder& d, tr1::Edge& v) {
-        if (avro::ResolvingDecoder *rd =
-            dynamic_cast<avro::ResolvingDecoder *>(&d)) {
-            const std::vector<size_t> fo = rd->fieldOrder();
-            for (std::vector<size_t>::const_iterator it = fo.begin();
-                it != fo.end(); ++it) {
-                switch (*it) {
-                case 0:
-                    avro::decode(d, v.child);
-                    break;
-                case 1:
-                    avro::decode(d, v.label);
-                    break;
-                default:
-                    break;
-                }
-            }
-        } else {
-            avro::decode(d, v.child);
-            avro::decode(d, v.label);
-        }
-    }
-};
 
-template<> struct codec_traits<tr1::Node> {
-    static void encode(Encoder& e, const tr1::Node& v) {
-        avro::encode(e, v.payload);
-        avro::encode(e, v.edges);
+  template<> struct codec_traits<tr1::Edge> {
+
+    static void encode(Encoder& e, const tr1::Edge& v) {
+      avro::encode(e, v.child);
+      avro::encode(e, v.label);
     }
-    static void decode(Decoder& d, tr1::Node& v) {
-        if (avro::ResolvingDecoder *rd =
-            dynamic_cast<avro::ResolvingDecoder *>(&d)) {
-            const std::vector<size_t> fo = rd->fieldOrder();
-            for (std::vector<size_t>::const_iterator it = fo.begin();
-                it != fo.end(); ++it) {
-                switch (*it) {
-                case 0:
-                    avro::decode(d, v.payload);
-                    break;
-                case 1:
-                    avro::decode(d, v.edges);
-                    break;
-                default:
-                    break;
-                }
-            }
-        } else {
-            avro::decode(d, v.payload);
-            avro::decode(d, v.edges);
+
+    static void decode(Decoder& d, tr1::Edge& v) {
+      if (avro::ResolvingDecoder * rd =
+        dynamic_cast<avro::ResolvingDecoder *> (&d)) {
+        const std::vector<size_t> fo = rd->fieldOrder();
+        for (std::vector<size_t>::const_iterator it = fo.begin();
+          it != fo.end(); ++it) {
+          switch (*it) {
+            case 0:
+              avro::decode(d, v.child);
+              break;
+            case 1:
+              avro::decode(d, v.label);
+              break;
+            default:
+              break;
+          }
         }
+      } else {
+        avro::decode(d, v.child);
+        avro::decode(d, v.label);
+      }
     }
-};
+  };
+
+  template<> struct codec_traits<tr1::Node> {
+
+    static void encode(Encoder& e, const tr1::Node& v) {
+      avro::encode(e, v.payload);
+      avro::encode(e, v.edges);
+    }
+
+    static void decode(Decoder& d, tr1::Node& v) {
+      if (avro::ResolvingDecoder * rd =
+        dynamic_cast<avro::ResolvingDecoder *> (&d)) {
+        const std::vector<size_t> fo = rd->fieldOrder();
+        for (std::vector<size_t>::const_iterator it = fo.begin();
+          it != fo.end(); ++it) {
+          switch (*it) {
+            case 0:
+              avro::decode(d, v.payload);
+              break;
+            case 1:
+              avro::decode(d, v.edges);
+              break;
+            default:
+              break;
+          }
+        }
+      } else {
+        avro::decode(d, v.payload);
+        avro::decode(d, v.edges);
+      }
+    }
+  };
 
 }
 #endif

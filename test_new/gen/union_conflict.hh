@@ -28,116 +28,129 @@
 #include "Decoder.hh"
 
 namespace uc {
-struct _union_conflict_Union__0__ {
-private:
+
+  struct _union_conflict_Union__0__ {
+  private:
     size_t idx_;
     boost::any value_;
-public:
-    size_t idx() const { return idx_; }
+  public:
+
+    size_t idx() const {
+      return idx_;
+    }
     std::string get_string() const;
     void set_string(const std::string& v);
+
     bool is_null() const {
-        return (idx_ == 1);
+      return (idx_ == 1);
     }
+
     void set_null() {
-        idx_ = 1;
-        value_ = boost::any();
+      idx_ = 1;
+      value_ = boost::any();
     }
     _union_conflict_Union__0__();
-};
+  };
 
-struct uc {
+  struct uc {
     std::string rev_t;
     std::vector<uint8_t> data;
     _union_conflict_Union__0__ rev;
-    uc() :
-        rev_t(std::string()),
-        data(std::vector<uint8_t>()),
-        rev(_union_conflict_Union__0__())
-        { }
-};
 
-inline
-std::string _union_conflict_Union__0__::get_string() const {
+    uc() :
+    rev_t(std::string()),
+    data(std::vector<uint8_t>()),
+    rev(_union_conflict_Union__0__()) { }
+  };
+
+  inline
+  std::string _union_conflict_Union__0__::get_string() const {
     if (idx_ != 0) {
-        throw avro::Exception("Invalid type for union");
+      throw avro::Exception("Invalid type for union");
     }
     return boost::any_cast<std::string >(value_);
-}
+  }
 
-inline
-void _union_conflict_Union__0__::set_string(const std::string& v) {
+  inline
+  void _union_conflict_Union__0__::set_string(const std::string& v) {
     idx_ = 0;
     value_ = v;
-}
+  }
 
-inline _union_conflict_Union__0__::_union_conflict_Union__0__() : idx_(0), value_(std::string()) { }
+  inline _union_conflict_Union__0__::_union_conflict_Union__0__() : idx_(0), value_(std::string()) { }
 }
 namespace avro {
-template<> struct codec_traits<uc::_union_conflict_Union__0__> {
-    static void encode(Encoder& e, uc::_union_conflict_Union__0__ v) {
-        e.encodeUnionIndex(v.idx());
-        switch (v.idx()) {
-        case 0:
-            avro::encode(e, v.get_string());
-            break;
-        case 1:
-            e.encodeNull();
-            break;
-        }
-    }
-    static void decode(Decoder& d, uc::_union_conflict_Union__0__& v) {
-        size_t n = d.decodeUnionIndex();
-        if (n >= 2) { throw avro::Exception("Union index too big"); }
-        switch (n) {
-        case 0:
-            {
-                std::string vv;
-                avro::decode(d, vv);
-                v.set_string(vv);
-            }
-            break;
-        case 1:
-            d.decodeNull();
-            v.set_null();
-            break;
-        }
-    }
-};
 
-template<> struct codec_traits<uc::uc> {
-    static void encode(Encoder& e, const uc::uc& v) {
-        avro::encode(e, v.rev_t);
-        avro::encode(e, v.data);
-        avro::encode(e, v.rev);
+  template<> struct codec_traits<uc::_union_conflict_Union__0__> {
+
+    static void encode(Encoder& e, uc::_union_conflict_Union__0__ v) {
+      e.encodeUnionIndex(v.idx());
+      switch (v.idx()) {
+        case 0:
+          avro::encode(e, v.get_string());
+          break;
+        case 1:
+          e.encodeNull();
+          break;
+      }
     }
-    static void decode(Decoder& d, uc::uc& v) {
-        if (avro::ResolvingDecoder *rd =
-            dynamic_cast<avro::ResolvingDecoder *>(&d)) {
-            const std::vector<size_t> fo = rd->fieldOrder();
-            for (std::vector<size_t>::const_iterator it = fo.begin();
-                it != fo.end(); ++it) {
-                switch (*it) {
-                case 0:
-                    avro::decode(d, v.rev_t);
-                    break;
-                case 1:
-                    avro::decode(d, v.data);
-                    break;
-                case 2:
-                    avro::decode(d, v.rev);
-                    break;
-                default:
-                    break;
-                }
-            }
-        } else {
-            avro::decode(d, v.rev_t);
-            avro::decode(d, v.data);
-            avro::decode(d, v.rev);
+
+    static void decode(Decoder& d, uc::_union_conflict_Union__0__& v) {
+      size_t n = d.decodeUnionIndex();
+      if (n >= 2) {
+        throw avro::Exception("Union index too big");
+      }
+      switch (n) {
+        case 0:
+        {
+          std::string vv;
+          avro::decode(d, vv);
+          v.set_string(vv);
         }
+          break;
+        case 1:
+          d.decodeNull();
+          v.set_null();
+          break;
+      }
     }
-};
+  };
+
+  template<> struct codec_traits<uc::uc> {
+
+    static void encode(Encoder& e, const uc::uc& v) {
+      avro::encode(e, v.rev_t);
+      avro::encode(e, v.data);
+      avro::encode(e, v.rev);
+    }
+
+    static void decode(Decoder& d, uc::uc& v) {
+      if (avro::ResolvingDecoder * rd =
+        dynamic_cast<avro::ResolvingDecoder *> (&d)) {
+        const std::vector<size_t> fo = rd->fieldOrder();
+        for (std::vector<size_t>::const_iterator it = fo.begin();
+          it != fo.end(); ++it) {
+          switch (*it) {
+            case 0:
+              avro::decode(d, v.rev_t);
+              break;
+            case 1:
+              avro::decode(d, v.data);
+              break;
+            case 2:
+              avro::decode(d, v.rev);
+              break;
+            default:
+              break;
+          }
+        }
+      } else {
+        avro::decode(d, v.rev_t);
+        avro::decode(d, v.data);
+        avro::decode(d, v.rev);
+      }
+    }
+  };
 
 }
 #endif

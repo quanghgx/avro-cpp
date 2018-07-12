@@ -28,46 +28,50 @@
 #include "Decoder.hh"
 
 namespace tr2 {
-struct Node;
-struct Node {
+  struct Node;
+
+  struct Node {
     int32_t payload;
     std::map<std::string, Node > edges;
+
     Node() :
-        payload(int32_t()),
-        edges(std::map<std::string, Node >())
-        { }
-};
+    payload(int32_t()),
+    edges(std::map<std::string, Node >()) { }
+  };
 
 }
 namespace avro {
-template<> struct codec_traits<tr2::Node> {
+
+  template<> struct codec_traits<tr2::Node> {
+
     static void encode(Encoder& e, const tr2::Node& v) {
-        avro::encode(e, v.payload);
-        avro::encode(e, v.edges);
+      avro::encode(e, v.payload);
+      avro::encode(e, v.edges);
     }
+
     static void decode(Decoder& d, tr2::Node& v) {
-        if (avro::ResolvingDecoder *rd =
-            dynamic_cast<avro::ResolvingDecoder *>(&d)) {
-            const std::vector<size_t> fo = rd->fieldOrder();
-            for (std::vector<size_t>::const_iterator it = fo.begin();
-                it != fo.end(); ++it) {
-                switch (*it) {
-                case 0:
-                    avro::decode(d, v.payload);
-                    break;
-                case 1:
-                    avro::decode(d, v.edges);
-                    break;
-                default:
-                    break;
-                }
-            }
-        } else {
-            avro::decode(d, v.payload);
-            avro::decode(d, v.edges);
+      if (avro::ResolvingDecoder * rd =
+        dynamic_cast<avro::ResolvingDecoder *> (&d)) {
+        const std::vector<size_t> fo = rd->fieldOrder();
+        for (std::vector<size_t>::const_iterator it = fo.begin();
+          it != fo.end(); ++it) {
+          switch (*it) {
+            case 0:
+              avro::decode(d, v.payload);
+              break;
+            case 1:
+              avro::decode(d, v.edges);
+              break;
+            default:
+              break;
+          }
         }
+      } else {
+        avro::decode(d, v.payload);
+        avro::decode(d, v.edges);
+      }
     }
-};
+  };
 
 }
 #endif

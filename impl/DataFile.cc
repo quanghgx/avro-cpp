@@ -29,7 +29,7 @@
 #include <boost/crc.hpp>  // for boost::crc_32_type
 
 namespace avro {
-    using std::ostringstream;
+  using std::ostringstream;
   using std::istringstream;
   using std::vector;
   using std::copy;

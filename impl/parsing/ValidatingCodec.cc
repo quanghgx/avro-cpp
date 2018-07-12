@@ -32,7 +32,7 @@
 namespace avro {
 
   namespace parsing {
-    
+
     using std::weak_ptr;
     using std::static_pointer_cast;
     using std::make_shared;

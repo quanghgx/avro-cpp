@@ -28,7 +28,8 @@
 #include "Decoder.hh"
 
 namespace pt {
-struct TestPrimitiveTypes {
+
+  struct TestPrimitiveTypes {
     avro::null Null;
     bool Boolean;
     int32_t Int;
@@ -38,84 +39,87 @@ struct TestPrimitiveTypes {
     std::vector<uint8_t> Bytes;
     std::string String;
     avro::null SecondNull;
+
     TestPrimitiveTypes() :
-        Null(avro::null()),
-        Boolean(bool()),
-        Int(int32_t()),
-        Long(int64_t()),
-        Float(float()),
-        Double(double()),
-        Bytes(std::vector<uint8_t>()),
-        String(std::string()),
-        SecondNull(avro::null())
-        { }
-};
+    Null(avro::null()),
+    Boolean(bool()),
+    Int(int32_t()),
+    Long(int64_t()),
+    Float(float()),
+    Double(double()),
+    Bytes(std::vector<uint8_t>()),
+    String(std::string()),
+    SecondNull(avro::null()) { }
+  };
 
 }
 namespace avro {
-template<> struct codec_traits<pt::TestPrimitiveTypes> {
+
+  template<> struct codec_traits<pt::TestPrimitiveTypes> {
+
     static void encode(Encoder& e, const pt::TestPrimitiveTypes& v) {
-        avro::encode(e, v.Null);
-        avro::encode(e, v.Boolean);
-        avro::encode(e, v.Int);
-        avro::encode(e, v.Long);
-        avro::encode(e, v.Float);
-        avro::encode(e, v.Double);
-        avro::encode(e, v.Bytes);
-        avro::encode(e, v.String);
-        avro::encode(e, v.SecondNull);
+      avro::encode(e, v.Null);
+      avro::encode(e, v.Boolean);
+      avro::encode(e, v.Int);
+      avro::encode(e, v.Long);
+      avro::encode(e, v.Float);
+      avro::encode(e, v.Double);
+      avro::encode(e, v.Bytes);
+      avro::encode(e, v.String);
+      avro::encode(e, v.SecondNull);
     }
+
     static void decode(Decoder& d, pt::TestPrimitiveTypes& v) {
-        if (avro::ResolvingDecoder *rd =
-            dynamic_cast<avro::ResolvingDecoder *>(&d)) {
-            const std::vector<size_t> fo = rd->fieldOrder();
-            for (std::vector<size_t>::const_iterator it = fo.begin();
-                it != fo.end(); ++it) {
-                switch (*it) {
-                case 0:
-                    avro::decode(d, v.Null);
-                    break;
-                case 1:
-                    avro::decode(d, v.Boolean);
-                    break;
-                case 2:
-                    avro::decode(d, v.Int);
-                    break;
-                case 3:
-                    avro::decode(d, v.Long);
-                    break;
-                case 4:
-                    avro::decode(d, v.Float);
-                    break;
-                case 5:
-                    avro::decode(d, v.Double);
-                    break;
-                case 6:
-                    avro::decode(d, v.Bytes);
-                    break;
-                case 7:
-                    avro::decode(d, v.String);
-                    break;
-                case 8:
-                    avro::decode(d, v.SecondNull);
-                    break;
-                default:
-                    break;
-                }
-            }
-        } else {
-            avro::decode(d, v.Null);
-            avro::decode(d, v.Boolean);
-            avro::decode(d, v.Int);
-            avro::decode(d, v.Long);
-            avro::decode(d, v.Float);
-            avro::decode(d, v.Double);
-            avro::decode(d, v.Bytes);
-            avro::decode(d, v.String);
-            avro::decode(d, v.SecondNull);
+      if (avro::ResolvingDecoder * rd =
+        dynamic_cast<avro::ResolvingDecoder *> (&d)) {
+        const std::vector<size_t> fo = rd->fieldOrder();
+        for (std::vector<size_t>::const_iterator it = fo.begin();
+          it != fo.end(); ++it) {
+          switch (*it) {
+            case 0:
+              avro::decode(d, v.Null);
+              break;
+            case 1:
+              avro::decode(d, v.Boolean);
+              break;
+            case 2:
+              avro::decode(d, v.Int);
+              break;
+            case 3:
+              avro::decode(d, v.Long);
+              break;
+            case 4:
+              avro::decode(d, v.Float);
+              break;
+            case 5:
+              avro::decode(d, v.Double);
+              break;
+            case 6:
+              avro::decode(d, v.Bytes);
+              break;
+            case 7:
+              avro::decode(d, v.String);
+              break;
+            case 8:
+              avro::decode(d, v.SecondNull);
+              break;
+            default:
+              break;
+          }
         }
+      } else {
+        avro::decode(d, v.Null);
+        avro::decode(d, v.Boolean);
+        avro::decode(d, v.Int);
+        avro::decode(d, v.Long);
+        avro::decode(d, v.Float);
+        avro::decode(d, v.Double);
+        avro::decode(d, v.Bytes);
+        avro::decode(d, v.String);
+        avro::decode(d, v.SecondNull);
+      }
     }
-};
+  };
 
 }
 #endif
