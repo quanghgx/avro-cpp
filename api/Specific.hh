@@ -42,8 +42,11 @@ namespace avro {
 
   typedef boost::blank null;
 
-  template <typename T> void encode(Encoder& e, const T& t);
-  template <typename T> void decode(Decoder& d, T& t);
+  template <typename T>
+  void encode(Encoder& e, const T& t);
+
+  template <typename T>
+  void decode(Decoder& d, T& t);
 
   /* Codec_traits tells avro how to encode and decode an object of given type. The class is expected to have two static methods:
       static void encode(Encoder& e, const T& value);
@@ -53,7 +56,8 @@ namespace avro {
   struct codec_traits;
 
   /* codec_traits for Avro boolean.*/
-  template <> struct codec_traits<bool> {
+  template <>
+  struct codec_traits<bool> {
 
     /* Encodes a given value.*/
     static void encode(Encoder& e, bool b) {
@@ -67,7 +71,8 @@ namespace avro {
   };
 
   /* codec_traits for Avro int.*/
-  template <> struct codec_traits<int32_t> {
+  template <>
+  struct codec_traits<int32_t> {
 
     /* Encodes a given value.*/
     static void encode(Encoder& e, int32_t i) {
@@ -81,7 +86,8 @@ namespace avro {
   };
 
   /* codec_traits for Avro long.*/
-  template <> struct codec_traits<int64_t> {
+  template <>
+  struct codec_traits<int64_t> {
 
     /* Encodes a given value.*/
     static void encode(Encoder& e, int64_t l) {
@@ -95,7 +101,8 @@ namespace avro {
   };
 
   /* codec_traits for Avro float.*/
-  template <> struct codec_traits<float> {
+  template <>
+  struct codec_traits<float> {
 
     /* Encodes a given value.*/
     static void encode(Encoder& e, float f) {
@@ -109,7 +116,8 @@ namespace avro {
   };
 
   /* codec_traits for Avro double.*/
-  template <> struct codec_traits<double> {
+  template <>
+  struct codec_traits<double> {
 
     /* Encodes a given value.*/
     static void encode(Encoder& e, double d) {
@@ -123,7 +131,8 @@ namespace avro {
   };
 
   /* codec_traits for Avro string.*/
-  template <> struct codec_traits<std::string> {
+  template <>
+  struct codec_traits<std::string> {
 
     /* Encodes a given value.*/
     static void encode(Encoder& e, const std::string& s) {
@@ -137,7 +146,8 @@ namespace avro {
   };
 
   /* codec_traits for Avro bytes.*/
-  template <> struct codec_traits<std::vector<uint8_t> > {
+  template <>
+  struct codec_traits<std::vector<uint8_t> > {
 
     /* Encodes a given value.*/
     static void encode(Encoder& e, const std::vector<uint8_t>& b) {
@@ -151,7 +161,8 @@ namespace avro {
   };
 
   /* codec_traits for Avro fixed.*/
-  template <size_t N> struct codec_traits<boost::array<uint8_t, N> > {
+  template <size_t N>
+  struct codec_traits<boost::array<uint8_t, N> > {
 
     /* Encodes a given value.*/
     static void encode(Encoder& e, const boost::array<uint8_t, N>& b) {
@@ -167,7 +178,8 @@ namespace avro {
   };
 
   /* codec_traits for Avro arrays.*/
-  template <typename T> struct codec_traits<std::vector<T> > {
+  template <typename T>
+  struct codec_traits<std::vector<T> > {
 
     /* Encodes a given value.*/
     static void encode(Encoder& e, const std::vector<T>& b) {
@@ -196,19 +208,9 @@ namespace avro {
     }
   };
 
-  typedef codec_traits<std::vector<bool>::const_reference> bool_codec_traits;
-
-  template <> struct codec_traits<boost::conditional<avro::is_not_defined<bool_codec_traits>::value,
-  std::vector<bool>::const_reference, void>::type> {
-
-    /* Encodes a given value.*/
-    static void encode(Encoder& e, std::vector<bool>::const_reference b) {
-      e.encodeBool(b);
-    }
-  };
-
   /* codec_traits for Avro maps.*/
-  template <typename T> struct codec_traits<std::map<std::string, T> > {
+  template <typename T>
+  struct codec_traits<std::map<std::string, T> > {
 
     /* Encodes a given value.*/
     static void encode(Encoder& e, const std::map<std::string, T>& b) {
@@ -242,7 +244,8 @@ namespace avro {
   };
 
   /* codec_traits for Avro null.*/
-  template <> struct codec_traits<avro::null> {
+  template <>
+  struct codec_traits<avro::null> {
 
     /* Encodes a given value.*/
     static void encode(Encoder& e, const avro::null&) {

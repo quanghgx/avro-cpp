@@ -41,88 +41,88 @@ namespace avro {
     static const Type type = Type::AVRO_NUM_TYPES;
   };
 
-  /**
-   * Similar to is_defined, but used to check if T is not defined.
-   *
-   * is_not_defined<T>::value will be true or false depending on whether T is an
-   * incomplete type or not respectively.
-   */
-  template <class T>
-  struct is_not_defined {
-    typedef char yes[1];
-
-    typedef char no[2];
-
-    template <class U> static yes& test(char(*)[sizeof (U)]) { };
-
-    template <class U> static no& test(...) { };
-
-    static const bool value = sizeof (test<T>(0)) == sizeof (no);
-  };
-
   /* Define primitive types*/
-  template <> struct is_promotable< int32_t > : public boost::true_type {
+  template <>
+  struct is_promotable< int32_t > : public boost::true_type {
   };
 
-  template <> struct is_serializable< int32_t > : public boost::true_type {
+  template <>
+  struct is_serializable< int32_t > : public boost::true_type {
   };
 
-  template <> struct type_to_avro< int32_t > {
+  template <>
+  struct type_to_avro< int32_t > {
     static const Type type = Type::AVRO_INT;
   };
 
-  template <> struct is_promotable< int64_t > : public boost::true_type {
+  template <>
+  struct is_promotable< int64_t > : public boost::true_type {
   };
 
-  template <> struct is_serializable< int64_t > : public boost::true_type {
+  template <>
+  struct is_serializable< int64_t > : public boost::true_type {
   };
 
-  template <> struct type_to_avro< int64_t > {
+  template <>
+  struct type_to_avro< int64_t > {
     static const Type type = Type::AVRO_LONG;
   };
 
-  template <> struct is_promotable< float > : public boost::true_type {
+  template <>
+  struct is_promotable< float > : public boost::true_type {
   };
 
-  template <> struct is_serializable< float > : public boost::true_type {
+  template <>
+  struct is_serializable< float > : public boost::true_type {
   };
 
-  template <> struct type_to_avro< float > {
+  template <>
+  struct type_to_avro< float > {
     static const Type type = Type::AVRO_FLOAT;
   };
 
-  template <> struct is_serializable< double > : public boost::true_type {
+  template <>
+  struct is_serializable< double > : public boost::true_type {
   };
 
-  template <> struct type_to_avro< double > {
+  template <>
+  struct type_to_avro< double > {
     static const Type type = Type::AVRO_DOUBLE;
   };
 
-  template <> struct is_serializable< bool > : public boost::true_type {
+  template <>
+  struct is_serializable< bool > : public boost::true_type {
   };
 
-  template <> struct type_to_avro< bool > {
+  template <>
+  struct type_to_avro< bool > {
     static const Type type = Type::AVRO_BOOL;
   };
 
-  template <> struct is_serializable< Null > : public boost::true_type {
+  template <>
+  struct is_serializable< Null > : public boost::true_type {
   };
 
-  template <> struct type_to_avro< Null > {
+  template <>
+  struct type_to_avro< Null > {
     static const Type type = Type::AVRO_NULL;
   };
 
-  template <> struct is_serializable< std::string > : public boost::true_type {
+  template <>
+  struct is_serializable< std::string > : public boost::true_type {
   };
 
-  template <> struct type_to_avro< std::string > {
+  template <>
+  struct type_to_avro< std::string > {
     static const Type type = Type::AVRO_STRING;
   };
 
-  template <> struct is_serializable< std::vector<uint8_t> > : public boost::true_type {
+  template <>
+  struct is_serializable< std::vector<uint8_t> > : public boost::true_type {
   };
 
-  template <> struct type_to_avro< std::vector<uint8_t> > {
+  template <>
+  struct type_to_avro< std::vector<uint8_t> > {
     static const Type type = Type::AVRO_BYTES;
   };
 

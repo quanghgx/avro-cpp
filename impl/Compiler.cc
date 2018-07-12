@@ -38,9 +38,6 @@ namespace avro {
 
   typedef map<Name, NodePtr> SymbolTable;
 
-
-  // #define DEBUG_VERBOSE
-
   static NodePtr makePrimitive(const std::string& t) {
     if (t == "null") {
       return NodePtr(new NodePrimitive(Type::AVRO_NULL));

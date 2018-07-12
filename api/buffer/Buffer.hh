@@ -385,35 +385,7 @@ namespace avro {
     }
 
     return InputBuffer(newImpl);
-  }
-
-  /** 
-   * Create an array of iovec structures from the buffer.  This utility is used
-   * to support writev and readv function calls.  The caller should ensure the
-   * buffer object is not deleted while using the iovec vector.
-   *
-   * If the BufferType is an InputBuffer, the iovec will point to the data that
-   * already exists in the buffer, for reading.
-   *
-   * If the BufferType is an OutputBuffer, the iovec will point to the free
-   * space, which may be written to.  Before writing, the caller should call
-   * OutputBuffer::reserve() to create enough room for the desired write (which
-   * can be verified by calling OutputBuffer::freeSpace()), and after writing,
-   * they MUST call OutputBuffer::wroteTo(), otherwise the buffer will not know
-   * the space is not free anymore.
-   *
-   **/
-  template<class BufferType>
-  inline void toIovec(BufferType &buf, std::vector<struct iovec> &iov) {
-    const int chunks = buf.numChunks();
-    iov.resize(chunks);
-    typename BufferType::const_iterator iter = buf.begin();
-    for (int i = 0; i < chunks; ++i) {
-      iov[i].iov_base = const_cast<typename BufferType::data_type *> (iter->data());
-      iov[i].iov_len = iter->size();
-      ++iter;
-    }
-  }
+  } 
 
 } // namespace
 

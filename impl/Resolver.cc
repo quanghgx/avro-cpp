@@ -31,7 +31,6 @@ namespace avro {
   typedef std::shared_ptr<Resolver> ResolverPtr;
   typedef boost::ptr_vector<Resolver> ResolverPtrVector;
 
-  // #define DEBUG_VERBOSE
 
 #ifdef DEBUG_VERBOSE
 #define DEBUG_OUT(str) std::cout << str << '\n'
