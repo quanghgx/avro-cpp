@@ -47,7 +47,6 @@ namespace avro {
    * \li Avro <tt>fixed</tt> maps to C++ class <tt>GenericFixed</tt>.
    * \li Avro <tt>enum</tt> maps to C++ class <tt>GenericEnum</tt>.
    * \li Avro <tt>array</tt> maps to C++ class <tt>GenericArray</tt>.
-   * \li Avro <tt>map</tt> maps to C++ class <tt>GenericMap</tt>.
    * \li There is no C++ type corresponding to Avro <tt>union</tt>. The
    * object should have the C++ type corresponing to one of the constituent
    * types of the union.
@@ -273,31 +272,6 @@ namespace avro {
     }
 
     /*Returns the reference to the contents of this array.*/
-    Value& value() {
-      return value_;
-    }
-  private:
-    Value value_;
-  };
-
-  /*The generic container for Avro maps.*/
-  class GenericMap : public GenericContainer {
-  public:
-    /*The contents type for the map.*/
-    typedef std::vector<std::pair<std::string, GenericDatum> > Value;
-
-    /**
-     * Constructs a generic map corresponding to the given schema \p schema,
-     * which should be of Avro type map.
-     */
-    GenericMap(const NodePtr& schema) : GenericContainer(Type::AVRO_MAP, schema) { }
-
-    /*Returns the contents of this map.*/
-    const Value& value() const {
-      return value_;
-    }
-
-    /*Returns the reference to the contents of this map.*/
     Value& value() {
       return value_;
     }

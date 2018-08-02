@@ -122,23 +122,6 @@ namespace avro {
         }
       }
         break;
-      case Type::AVRO_MAP:
-      {
-        GenericMap& v = datum.value<GenericMap>();
-        GenericMap::Value& r = v.value();
-        const NodePtr& nn = v.schema()->leafAt(1);
-        r.resize(0);
-        size_t start = 0;
-        for (size_t m = d.mapStart(); m != 0; m = d.mapNext()) {
-          r.resize(r.size() + m);
-          for (; start < r.size(); ++start) {
-            d.decodeString(r[start].first);
-            r[start].second = GenericDatum(nn);
-            read(r[start].second, d, isResolving);
-          }
-        }
-      }
-        break;
       default:
         throw Exception(boost::format("Unknown schema type %1%") %
           toString(datum.type()));
@@ -219,22 +202,6 @@ namespace avro {
           }
         }
         e.arrayEnd();
-      }
-        break;
-      case Type::AVRO_MAP:
-      {
-        const GenericMap::Value& r = datum.value<GenericMap>().value();
-        e.mapStart();
-        if (!r.empty()) {
-          e.setItemCount(r.size());
-          for (GenericMap::Value::const_iterator it = r.begin();
-            it != r.end(); ++it) {
-            e.startItem();
-            e.encodeString(it->first);
-            write(it->second, e);
-          }
-        }
-        e.mapEnd();
       }
         break;
       default:

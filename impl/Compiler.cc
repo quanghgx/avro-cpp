@@ -218,18 +218,6 @@ namespace avro {
         }
         return GenericDatum(n, result);
       }
-      case Type::AVRO_MAP:
-      {
-        assertType(e, json::etObject);
-        GenericMap result(n);
-        const map<string, Entity>& v = e.objectValue();
-        for (map<string, Entity>::const_iterator it = v.begin();
-          it != v.end(); ++it) {
-          result.value().push_back(make_pair(it->first,
-            makeGenericDatum(n->leafAt(1), it->second, st)));
-        }
-        return GenericDatum(n, result);
-      }
       case Type::AVRO_UNION:
       {
         GenericUnion result(n);

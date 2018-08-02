@@ -75,9 +75,6 @@ namespace avro {
       case Type::AVRO_ARRAY:
         value_ = GenericArray(sc);
         break;
-      case Type::AVRO_MAP:
-        value_ = GenericMap(sc);
-        break;
       case Type::AVRO_UNION:
         value_ = GenericUnion(sc);
         break;

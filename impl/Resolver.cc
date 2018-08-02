@@ -191,65 +191,7 @@ namespace avro {
     ResolverPtrVector resolvers_;
 
   };
-
-  class MapSkipper : public Resolver {
-  public:
-
-    MapSkipper(ResolverFactory &factory, const NodePtr &writer);
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      DEBUG_OUT("Skipping map");
-
-      std::string key;
-      int64_t size = 0;
-      do {
-        size = reader.readMapBlockSize();
-        for (int64_t i = 0; i < size; ++i) {
-          reader.readValue(key);
-          resolver_->parse(reader, address);
-        }
-      } while (size != 0);
-    }
-
-  protected:
-
-    ResolverPtr resolver_;
-  };
-
-  class MapParser : public Resolver {
-  public:
-
-    typedef uint8_t *(*GenericMapSetter)(uint8_t *map, const std::string &key);
-
-    MapParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const CompoundLayout &offsets);
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      DEBUG_OUT("Reading map");
-
-      uint8_t *mapAddress = address + offset_;
-
-      std::string key;
-      GenericMapSetter* setter = reinterpret_cast<GenericMapSetter *> (address + setFuncOffset_);
-
-      int64_t size = 0;
-      do {
-        size = reader.readMapBlockSize();
-        for (int64_t i = 0; i < size; ++i) {
-          reader.readValue(key);
-
-          // create a new map entry and get the address
-          uint8_t *location = (*setter)(mapAddress, key);
-          resolver_->parse(reader, location);
-        }
-      } while (size != 0);
-    }
-
-  protected:
-
-    ResolverPtr resolver_;
-    size_t offset_;
-    size_t setFuncOffset_;
-  };
+ 
 
   class ArraySkipper : public Resolver {
   public:
@@ -598,7 +540,6 @@ namespace avro {
         &ResolverFactory::constructCompound<RecordParser, RecordSkipper>,
         &ResolverFactory::constructCompound<EnumParser, EnumSkipper>,
         &ResolverFactory::constructCompound<ArrayParser, ArraySkipper>,
-        &ResolverFactory::constructCompound<MapParser, MapSkipper>,
         &ResolverFactory::constructCompound<UnionParser, UnionSkipper>,
         &ResolverFactory::constructCompound<FixedParser, FixedSkipper>
       };
@@ -631,7 +572,6 @@ namespace avro {
         &ResolverFactory::constructCompoundSkipper<RecordSkipper>,
         &ResolverFactory::constructCompoundSkipper<EnumSkipper>,
         &ResolverFactory::constructCompoundSkipper<ArraySkipper>,
-        &ResolverFactory::constructCompoundSkipper<MapSkipper>,
         &ResolverFactory::constructCompoundSkipper<UnionSkipper>,
         &ResolverFactory::constructCompoundSkipper<FixedSkipper>
       };
@@ -675,18 +615,6 @@ namespace avro {
         resolvers_.push_back(factory.skipper(w));
       }
     }
-  }
-
-  MapSkipper::MapSkipper(ResolverFactory &factory, const NodePtr &writer) :
-  Resolver(),
-  resolver_(factory.skipper(writer->leafAt(1))) {
-  }
-
-  MapParser::MapParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const CompoundLayout &offsets) :
-  Resolver(),
-  resolver_(factory.construct(writer->leafAt(1), reader->leafAt(1), offsets.at(1))),
-  offset_(offsets.offset()),
-  setFuncOffset_(offsets.at(0).offset()) {
   }
 
   ArraySkipper::ArraySkipper(ResolverFactory &factory, const NodePtr &writer) :
