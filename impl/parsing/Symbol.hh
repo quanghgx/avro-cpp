@@ -514,69 +514,8 @@ namespace avro {
               break;
             case Symbol::sBytes:
               d.skipBytes();
-              break;
-            case Symbol::sArrayStart:
-            {
-              parsingStack.pop();
-              size_t n = d.skipArray();
-              assertMatch(Symbol::sRepeater, parsingStack.top().kind());
-              if (n == 0) {
-                break;
-              }
-              Symbol& t = parsingStack.top();
-              RepeaterInfo *p = t.extrap<RepeaterInfo>();
-              boost::tuples::get<0>(*p) = n;
-              continue;
-            }
-            case Symbol::sArrayEnd:
-              break;
-            case Symbol::sMapStart:
-            {
-              parsingStack.pop();
-              size_t n = d.skipMap();
-              if (n == 0) {
-                break;
-              }
-              assertMatch(Symbol::sRepeater, parsingStack.top().kind());
-              Symbol& t = parsingStack.top();
-              RepeaterInfo *p = t.extrap<RepeaterInfo>();
-              boost::tuples::get<0>(*p) = n;
-              continue;
-            }
-            case Symbol::sMapEnd:
-              break;
-            case Symbol::sFixed:
-            {
-              parsingStack.pop();
-              Symbol& t = parsingStack.top();
-              d.decodeFixed(t.extra<size_t>());
-            }
-              break;
-            case Symbol::sEnum:
-              parsingStack.pop();
-              d.decodeEnum();
-              break;
-            case Symbol::sUnion:
-            {
-              parsingStack.pop();
-              size_t n = d.decodeUnionIndex();
-              selectBranch(n);
-              continue;
-            }
-            case Symbol::sRepeater:
-            {
-              RepeaterInfo *p = t.extrap<RepeaterInfo>();
-              if (boost::tuples::get<0>(*p) == 0) {
-                boost::tuples::get<0>(*p) =
-                  boost::tuples::get<1>(*p) ? d.arrayNext() :
-                  d.mapNext();
-              }
-              if (boost::tuples::get<0>(*p) != 0) {
-                --boost::tuples::get<0>(*p);
-                append(boost::tuples::get<3>(*p));
-                continue;
-              }
-            }
+              break;            
+            case Symbol::sRepeater:            
               break;
             case Symbol::sIndirect:
             {

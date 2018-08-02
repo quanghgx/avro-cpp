@@ -60,9 +60,6 @@ namespace avro {
 
     void checkTypeExpected(Type) { }
 
-    void checkFixedSizeExpected(int) { }
-
-
   };
 
   /* This class is used by both the ValidatingSerializer and ValidationParser objects. It advances the parse tree (containing logic how to 
@@ -95,13 +92,6 @@ namespace avro {
         throw Exception(boost::format("Type %1% does not match schema %2%") % type % nextType_);
       }
       advance();
-    }
-
-    void checkFixedSizeExpected(int size) {
-      if (nextSizeExpected() != size) {
-        throw Exception(boost::format("Wrong size for fixed, got %1%, expected %2%") % size % nextSizeExpected());
-      }
-      checkTypeExpected(Type::AVRO_FIXED);
     }
 
   private:

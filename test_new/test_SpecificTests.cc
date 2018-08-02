@@ -149,40 +149,7 @@ namespace avro {
       REQUIRE(b == n);
     }
 
-    TEST_CASE("Specific tests: testFixed", "[testFixed]") {
-      array<uint8_t, 5> n = {
-        { 1, 7, 23, 47, 83}
-      };
-      array<uint8_t, 5> b = encodeAndDecode(n);
-      REQUIRE(b == n);
-    }
-
-    TEST_CASE("Specific tests: testArray", "[testArray]") {
-      int32_t values[] = {101, 709, 409, 34};
-      vector<int32_t> n(values, values + 4);
-      vector<int32_t> b = encodeAndDecode(n);
-
-      REQUIRE(b == n);
-    }
-
-    TEST_CASE("Specific tests: testBoolArray", "[testBoolArray]") {
-      bool values[] = {true, false, true, false};
-      vector<bool> n(values, values + 4);
-      vector<bool> b = encodeAndDecode(n);
-
-      REQUIRE(b == n);
-    }
-
-    TEST_CASE("Specific tests: testMap", "[testMap]") {
-      map<string, int32_t> n;
-      n["a"] = 1;
-      n["b"] = 101;
-
-      map<string, int32_t> b = encodeAndDecode(n);
-
-      REQUIRE(b == n);
-    }
-
+   
     TEST_CASE("Specific tests: testCustom", "[testCustom]") {
       C n(10, 1023);
       C b = encodeAndDecode(n);

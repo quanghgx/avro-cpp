@@ -96,18 +96,6 @@ namespace avro {
       putBytes(val, size);
     }
 
-    template <size_t N>
-    void writeFixed(const uint8_t(&val)[N]) {
-      validator_.checkFixedSizeExpected(N);
-      buffer_.writeTo(reinterpret_cast<const char *> (val), N);
-    }
-
-    template <size_t N>
-    void writeFixed(const boost::array<uint8_t, N> &val) {
-      validator_.checkFixedSizeExpected(val.size());
-      buffer_.writeTo(reinterpret_cast<const char *> (val.data()), val.size());
-    }
-
     void writeRecord() {
       validator_.checkTypeExpected(Type::AVRO_RECORD);
       validator_.checkTypeExpected(Type::AVRO_LONG);
@@ -118,34 +106,6 @@ namespace avro {
       validator_.checkTypeExpected(Type::AVRO_RECORD);
       validator_.checkTypeExpected(Type::AVRO_LONG);
       validator_.setCount(0);
-    }
-
-    void writeArrayBlock(int64_t size) {
-      validator_.checkTypeExpected(Type::AVRO_ARRAY);
-      writeCount(size);
-    }
-
-    void writeArrayEnd() {
-      writeArrayBlock(0);
-    }
-
-    void writeMapBlock(int64_t size) {
-      validator_.checkTypeExpected(Type::AVRO_MAP);
-      writeCount(size);
-    }
-
-    void writeMapEnd() {
-      writeMapBlock(0);
-    }
-
-    void writeUnion(int64_t choice) {
-      validator_.checkTypeExpected(Type::AVRO_UNION);
-      writeCount(choice);
-    }
-
-    void writeEnum(int64_t choice) {
-      validator_.checkTypeExpected(Type::AVRO_ENUM);
-      writeCount(choice);
     }
 
     InputBuffer buffer() const {

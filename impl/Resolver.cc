@@ -191,253 +191,6 @@ namespace avro {
     ResolverPtrVector resolvers_;
 
   };
- 
-
-  class ArraySkipper : public Resolver {
-  public:
-
-    ArraySkipper(ResolverFactory &factory, const NodePtr &writer);
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      DEBUG_OUT("Skipping array");
-
-      int64_t size = 0;
-      do {
-        size = reader.readArrayBlockSize();
-        for (int64_t i = 0; i < size; ++i) {
-          resolver_->parse(reader, address);
-        }
-      } while (size != 0);
-    }
-
-  protected:
-
-    ResolverPtr resolver_;
-  };
-
-  typedef uint8_t *(*GenericArraySetter)(uint8_t *array);
-
-  class ArrayParser : public Resolver {
-  public:
-
-    ArrayParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const CompoundLayout &offsets);
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      DEBUG_OUT("Reading array");
-
-      uint8_t *arrayAddress = address + offset_;
-
-      GenericArraySetter* setter = reinterpret_cast<GenericArraySetter *> (address + setFuncOffset_);
-
-      int64_t size = 0;
-      do {
-        size = reader.readArrayBlockSize();
-        for (int64_t i = 0; i < size; ++i) {
-          // create a new map entry and get the address
-          uint8_t *location = (*setter)(arrayAddress);
-          resolver_->parse(reader, location);
-        }
-      } while (size != 0);
-    }
-
-  protected:
-
-    ArrayParser() :
-    Resolver() {
-    }
-
-    ResolverPtr resolver_;
-    size_t offset_;
-    size_t setFuncOffset_;
-  };
-
-  class EnumSkipper : public Resolver {
-  public:
-
-    EnumSkipper(ResolverFactory &factory, const NodePtr &writer) :
-    Resolver() {
-    }
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      int64_t val = reader.readEnum();
-      DEBUG_OUT("Skipping enum" << val);
-    }
-  };
-
-  class EnumParser : public Resolver {
-  public:
-
-    enum EnumRepresentation {
-      VAL
-    };
-
-    EnumParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const CompoundLayout &offsets) :
-    Resolver(),
-    offset_(offsets.at(0).offset()),
-    readerSize_(reader->names()) {
-      const size_t writerSize = writer->names();
-
-      mapping_.reserve(writerSize);
-
-      for (size_t i = 0; i < writerSize; ++i) {
-        const std::string &name = writer->nameAt(i);
-        size_t readerIndex = readerSize_;
-        reader->nameIndex(name, readerIndex);
-        mapping_.push_back(readerIndex);
-      }
-    }
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      size_t val = static_cast<size_t> (reader.readEnum());
-      assert(static_cast<size_t> (val) < mapping_.size());
-
-      if (mapping_[val] < readerSize_) {
-        EnumRepresentation* location = reinterpret_cast<EnumRepresentation *> (address + offset_);
-        *location = static_cast<EnumRepresentation> (mapping_[val]);
-        DEBUG_OUT("Setting enum" << *location);
-      }
-    }
-
-  protected:
-
-    size_t offset_;
-    size_t readerSize_;
-    std::vector<size_t> mapping_;
-
-  };
-
-  class UnionSkipper : public Resolver {
-  public:
-
-    UnionSkipper(ResolverFactory &factory, const NodePtr &writer);
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      DEBUG_OUT("Skipping union");
-      size_t choice = static_cast<size_t> (reader.readUnion());
-      resolvers_[choice].parse(reader, address);
-    }
-
-  protected:
-
-    ResolverPtrVector resolvers_;
-  };
-
-  class UnionParser : public Resolver {
-  public:
-
-    typedef uint8_t *(*GenericUnionSetter)(uint8_t *, int64_t);
-
-    UnionParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const CompoundLayout &offsets);
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      DEBUG_OUT("Reading union");
-      size_t writerChoice = static_cast<size_t> (reader.readUnion());
-      int64_t *readerChoice = reinterpret_cast<int64_t *> (address + choiceOffset_);
-
-      *readerChoice = choiceMapping_[writerChoice];
-      GenericUnionSetter* setter = reinterpret_cast<GenericUnionSetter *> (address + setFuncOffset_);
-      uint8_t *value = reinterpret_cast<uint8_t *> (address + offset_);
-      uint8_t *location = (*setter)(value, *readerChoice);
-
-      resolvers_[writerChoice].parse(reader, location);
-    }
-
-  protected:
-
-    ResolverPtrVector resolvers_;
-    std::vector<int64_t> choiceMapping_;
-    size_t offset_;
-    size_t choiceOffset_;
-    size_t setFuncOffset_;
-  };
-
-  class UnionToNonUnionParser : public Resolver {
-  public:
-
-    typedef uint8_t *(*GenericUnionSetter)(uint8_t *, int64_t);
-
-    UnionToNonUnionParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const Layout &offsets);
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      DEBUG_OUT("Reading union to non-union");
-      size_t choice = static_cast<size_t> (reader.readUnion());
-      resolvers_[choice].parse(reader, address);
-    }
-
-  protected:
-
-    ResolverPtrVector resolvers_;
-  };
-
-  class NonUnionToUnionParser : public Resolver {
-  public:
-
-    typedef uint8_t *(*GenericUnionSetter)(uint8_t *, int64_t);
-
-    NonUnionToUnionParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const CompoundLayout &offsets);
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      DEBUG_OUT("Reading non-union to union");
-
-      int64_t *choice = reinterpret_cast<int64_t *> (address + choiceOffset_);
-      *choice = choice_;
-      GenericUnionSetter* setter = reinterpret_cast<GenericUnionSetter *> (address + setFuncOffset_);
-      uint8_t *value = reinterpret_cast<uint8_t *> (address + offset_);
-      uint8_t *location = (*setter)(value, choice_);
-
-      resolver_->parse(reader, location);
-    }
-
-  protected:
-
-    ResolverPtr resolver_;
-    size_t choice_;
-    size_t offset_;
-    size_t choiceOffset_;
-    size_t setFuncOffset_;
-  };
-
-  class FixedSkipper : public Resolver {
-  public:
-
-    FixedSkipper(ResolverFactory &factory, const NodePtr &writer) :
-    Resolver() {
-      size_ = writer->fixedSize();
-    }
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      DEBUG_OUT("Skipping fixed");
-      boost::scoped_array<uint8_t> val(new uint8_t[size_]);
-      reader.readFixed(&val[0], size_);
-    }
-
-  protected:
-
-    int size_;
-
-  };
-
-  class FixedParser : public Resolver {
-  public:
-
-    FixedParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const CompoundLayout &offsets) :
-    Resolver() {
-      size_ = writer->fixedSize();
-      offset_ = offsets.at(0).offset();
-    }
-
-    virtual void parse(Reader &reader, uint8_t *address) const {
-      DEBUG_OUT("Reading fixed");
-      uint8_t *location = reinterpret_cast<uint8_t *> (address + offset_);
-      reader.readFixed(location, size_);
-    }
-
-  protected:
-
-    int size_;
-    size_t offset_;
-
-  };
 
   class ResolverFactory {
 
@@ -456,9 +209,6 @@ namespace avro {
 
       if (match == SchemaResolution::NO_MATCH) {
         instruction = new PrimitiveSkipper<T>();
-      } else if (reader->type() == Type::AVRO_UNION) {
-        const CompoundLayout &compoundLayout = static_cast<const CompoundLayout &> (offset);
-        instruction = new NonUnionToUnionParser(*this, writer, reader, compoundLayout);
       } else if (match == SchemaResolution::MATCH) {
         const PrimitiveLayout &primitiveLayout = static_cast<const PrimitiveLayout &> (offset);
         instruction = new PrimitiveParser<T>(primitiveLayout);
@@ -494,11 +244,6 @@ namespace avro {
 
       if (match == SchemaResolution::NO_MATCH) {
         instruction = new Skipper(*this, writer);
-      } else if (writer->type() != Type::AVRO_UNION && reader->type() == Type::AVRO_UNION) {
-        const CompoundLayout &compoundLayout = dynamic_cast<const CompoundLayout &> (offset);
-        instruction = new NonUnionToUnionParser(*this, writer, reader, compoundLayout);
-      } else if (writer->type() == Type::AVRO_UNION && reader->type() != Type::AVRO_UNION) {
-        instruction = new UnionToNonUnionParser(*this, writer, reader, offset);
       } else {
         const CompoundLayout &compoundLayout = dynamic_cast<const CompoundLayout &> (offset);
         instruction = new Parser(*this, writer, reader, compoundLayout);
@@ -537,11 +282,7 @@ namespace avro {
         &ResolverFactory::constructPrimitive<double>,
         &ResolverFactory::constructPrimitive<bool>,
         &ResolverFactory::constructPrimitive<Null>,
-        &ResolverFactory::constructCompound<RecordParser, RecordSkipper>,
-        &ResolverFactory::constructCompound<EnumParser, EnumSkipper>,
-        &ResolverFactory::constructCompound<ArrayParser, ArraySkipper>,
-        &ResolverFactory::constructCompound<UnionParser, UnionSkipper>,
-        &ResolverFactory::constructCompound<FixedParser, FixedSkipper>
+        &ResolverFactory::constructCompound<RecordParser, RecordSkipper>
       };
 
       //static_assert((sizeof (funcs) / sizeof (BuilderFunc)) == type_as_integer(Type::AVRO_NUM_TYPES));
@@ -569,11 +310,7 @@ namespace avro {
         &ResolverFactory::constructPrimitiveSkipper<double>,
         &ResolverFactory::constructPrimitiveSkipper<bool>,
         &ResolverFactory::constructPrimitiveSkipper<Null>,
-        &ResolverFactory::constructCompoundSkipper<RecordSkipper>,
-        &ResolverFactory::constructCompoundSkipper<EnumSkipper>,
-        &ResolverFactory::constructCompoundSkipper<ArraySkipper>,
-        &ResolverFactory::constructCompoundSkipper<UnionSkipper>,
-        &ResolverFactory::constructCompoundSkipper<FixedSkipper>
+        &ResolverFactory::constructCompoundSkipper<RecordSkipper>
       };
 
       //static_assert((sizeof (funcs) / sizeof (BuilderFunc)) == type_as_integer(Type::AVRO_NUM_TYPES));
@@ -616,112 +353,7 @@ namespace avro {
       }
     }
   }
-
-  ArraySkipper::ArraySkipper(ResolverFactory &factory, const NodePtr &writer) :
-  Resolver(),
-  resolver_(factory.skipper(writer->leafAt(0))) {
-  }
-
-  ArrayParser::ArrayParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const CompoundLayout &offsets) :
-  Resolver(),
-  resolver_(factory.construct(writer->leafAt(0), reader->leafAt(0), offsets.at(1))),
-  offset_(offsets.offset()),
-  setFuncOffset_(offsets.at(0).offset()) {
-  }
-
-  UnionSkipper::UnionSkipper(ResolverFactory &factory, const NodePtr &writer) :
-  Resolver() {
-    size_t leaves = writer->leaves();
-    resolvers_.reserve(leaves);
-    for (size_t i = 0; i < leaves; ++i) {
-      const NodePtr &w = writer->leafAt(i);
-      resolvers_.push_back(factory.skipper(w));
-    }
-  }
-
-  namespace {
-
-    // asumes the writer is NOT a union, and the reader IS a union
-
-    SchemaResolution
-    checkUnionMatch(const NodePtr &writer, const NodePtr &reader, size_t &index) {
-      SchemaResolution bestMatch = SchemaResolution::NO_MATCH;
-
-      index = 0;
-      size_t leaves = reader->leaves();
-
-      for (size_t i = 0; i < leaves; ++i) {
-
-        const NodePtr &leaf = reader->leafAt(i);
-        SchemaResolution newMatch = writer->resolve(*leaf);
-
-        if (newMatch == SchemaResolution::MATCH) {
-          bestMatch = newMatch;
-          index = i;
-          break;
-        }
-        if (bestMatch == SchemaResolution::NO_MATCH) {
-          bestMatch = newMatch;
-          index = i;
-        }
-      }
-
-      return bestMatch;
-    }
-
-  };
-
-  UnionParser::UnionParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const CompoundLayout &offsets) :
-  Resolver(),
-  offset_(offsets.offset()),
-  choiceOffset_(offsets.at(0).offset()),
-  setFuncOffset_(offsets.at(1).offset()) {
-
-    size_t leaves = writer->leaves();
-    resolvers_.reserve(leaves);
-    choiceMapping_.reserve(leaves);
-    for (size_t i = 0; i < leaves; ++i) {
-
-      // for each writer, we need a schema match for the reader
-      const NodePtr &w = writer->leafAt(i);
-      size_t index = 0;
-
-      SchemaResolution match = checkUnionMatch(w, reader, index);
-
-      if (match == SchemaResolution::NO_MATCH) {
-        resolvers_.push_back(factory.skipper(w));
-        // push back a non-sensical number
-        choiceMapping_.push_back(reader->leaves());
-      } else {
-        const NodePtr &r = reader->leafAt(index);
-        resolvers_.push_back(factory.construct(w, r, offsets.at(index + 2)));
-        choiceMapping_.push_back(index);
-      }
-    }
-  }
-
-  NonUnionToUnionParser::NonUnionToUnionParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const CompoundLayout &offsets) :
-  Resolver(),
-  offset_(offsets.offset()),
-  choiceOffset_(offsets.at(0).offset()),
-  setFuncOffset_(offsets.at(1).offset()) {
-#ifndef NDEBUG
-    SchemaResolution bestMatch =
-#endif
-      checkUnionMatch(writer, reader, choice_);
-    assert(bestMatch != SchemaResolution::NO_MATCH);
-    resolver_.reset(factory.construct(writer, reader->leafAt(choice_), offsets.at(choice_ + 2)));
-  }
-
-  UnionToNonUnionParser::UnionToNonUnionParser(ResolverFactory &factory, const NodePtr &writer, const NodePtr &reader, const Layout &offsets) :
-  Resolver() {
-    size_t leaves = writer->leaves();
-    resolvers_.reserve(leaves);
-    for (size_t i = 0; i < leaves; ++i) {
-      const NodePtr &w = writer->leafAt(i);
-      resolvers_.push_back(factory.construct(w, reader, offsets));
-    }
-  }
+ 
 
   Resolver *constructResolver(const ValidSchema &writerSchema,
     const ValidSchema &readerSchema,

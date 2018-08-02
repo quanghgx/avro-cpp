@@ -108,33 +108,6 @@ namespace avro {
     void addField(const std::string &name, const Schema &fieldSchema);
   };
 
-  class EnumSchema : public Schema {
-  public:
-    EnumSchema(const std::string &name);
-    void addSymbol(const std::string &symbol);
-  };
-
-  class ArraySchema : public Schema {
-  public:
-    ArraySchema(const Schema &itemsSchema);
-  };
-
-  class MapSchema : public Schema {
-  public:
-    MapSchema(const Schema &valuesSchema);
-  };
-
-  class UnionSchema : public Schema {
-  public:
-    UnionSchema();
-    void addType(const Schema &typeSchema);
-  };
-
-  class FixedSchema : public Schema {
-  public:
-    FixedSchema(int size, const std::string &name);
-  };
-
   class SymbolicSchema : public Schema {
   public:
     SymbolicSchema(const Name& name, const NodePtr& link);

@@ -104,21 +104,6 @@ namespace avro {
       reader_.read(reinterpret_cast<char *> (&val[0]), size);
     }
 
-    void readFixed(uint8_t *val, size_t size) {
-      validator_.checkFixedSizeExpected(size);
-      reader_.read(reinterpret_cast<char *> (val), size);
-    }
-
-    template <size_t N>
-    void readFixed(uint8_t(&val)[N]) {
-      this->readFixed(val, N);
-    }
-
-    template <size_t N>
-    void readFixed(boost::array<uint8_t, N> &val) {
-      this->readFixed(val.c_array(), N);
-    }
-
     void readRecord() {
       validator_.checkTypeExpected(Type::AVRO_RECORD);
       validator_.checkTypeExpected(Type::AVRO_LONG);
@@ -130,27 +115,7 @@ namespace avro {
       validator_.checkTypeExpected(Type::AVRO_LONG);
       validator_.setCount(0);
     }
-
-    int64_t readArrayBlockSize() {
-      validator_.checkTypeExpected(Type::AVRO_ARRAY);
-      return readCount();
-    }
-
-    int64_t readUnion() {
-      validator_.checkTypeExpected(Type::AVRO_UNION);
-      return readCount();
-    }
-
-    int64_t readEnum() {
-      validator_.checkTypeExpected(Type::AVRO_ENUM);
-      return readCount();
-    }
-
-    int64_t readMapBlockSize() {
-      validator_.checkTypeExpected(Type::AVRO_MAP);
-      return readCount();
-    }
-
+   
     Type nextType() const {
       return validator_.nextTypeExpected();
     }

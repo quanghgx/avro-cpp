@@ -292,16 +292,6 @@ namespace avro {
             return std::make_shared<Production>(1, Symbol::stringSymbol());
           case Type::AVRO_BYTES:
             return std::make_shared<Production>(1, Symbol::bytesSymbol());
-          case Type::AVRO_FIXED:
-            if (writer->name() == reader->name() &&
-              writer->fixedSize() == reader->fixedSize()) {
-              ProductionPtr result = std::make_shared<Production>();
-              result->push_back(Symbol::sizeCheckSymbol(reader->fixedSize()));
-              result->push_back(Symbol::fixedSymbol());
-              m[make_pair(writer, reader)] = result;
-              return result;
-            }
-            break;
           case Type::AVRO_RECORD:
             if (writer->name() == reader->name()) {
               const pair<NodePtr, NodePtr> key(writer, reader);
@@ -316,67 +306,9 @@ namespace avro {
               return result;
             }
             break;
-
-          case Type::AVRO_ENUM:
-            if (writer->name() == reader->name()) {
-              ProductionPtr result = std::make_shared<Production>();
-              result->push_back(Symbol::enumAdjustSymbol(writer, reader));
-              result->push_back(Symbol::enumSymbol());
-              m[make_pair(writer, reader)] = result;
-              return result;
-            }
-            break;
-
-          case Type::AVRO_ARRAY:
-          {
-            ProductionPtr p = getWriterProduction(writer->leafAt(0), m2);
-            ProductionPtr p2 = doGenerate2(writer->leafAt(0), reader->leafAt(0), m, m2);
-            ProductionPtr result = std::make_shared<Production>();
-            result->push_back(Symbol::arrayEndSymbol());
-            result->push_back(Symbol::repeater(p2, p, true));
-            result->push_back(Symbol::arrayStartSymbol());
-            return result;
-          }
-          case Type::AVRO_MAP:
-          {
-            ProductionPtr pp =
-              doGenerate2(writer->leafAt(1), reader->leafAt(1), m, m2);
-            ProductionPtr v(new Production(*pp));
-            v->push_back(Symbol::stringSymbol());
-
-            ProductionPtr pp2 = getWriterProduction(writer->leafAt(1), m2);
-            ProductionPtr v2(new Production(*pp2));
-
-            v2->push_back(Symbol::stringSymbol());
-
-            ProductionPtr result = std::make_shared<Production>();
-            result->push_back(Symbol::mapEndSymbol());
-            result->push_back(Symbol::repeater(v, v2, false));
-            result->push_back(Symbol::mapStartSymbol());
-            return result;
-          }
-          case Type::AVRO_UNION:
-            return resolveUnion(writer, reader, m, m2);
-          case Type::AVRO_SYMBOLIC:
-          {
-            std::shared_ptr<NodeSymbolic> w =
-              static_pointer_cast<NodeSymbolic>(writer);
-            std::shared_ptr<NodeSymbolic> r =
-              static_pointer_cast<NodeSymbolic>(reader);
-            NodePair p(w->getNode(), r->getNode());
-            map<NodePair, ProductionPtr>::iterator it = m.find(p);
-            if (it != m.end() && it->second) {
-              return it->second;
-            } else {
-              m[p] = ProductionPtr();
-              return std::make_shared<Production>(1, Symbol::placeholder(p));
-            }
-          }
           default:
             throw Exception("Unknown node type");
         }
-      } else if (writerType == Type::AVRO_UNION) {
-        return resolveUnion(writer, reader, m, m2);
       } else {
         switch (readerType) {
           case Type::AVRO_LONG:
@@ -402,26 +334,11 @@ namespace avro {
             }
             break;
 
-          case Type::AVRO_UNION:
-          {
-            int j = bestBranch(writer, reader);
-            if (j >= 0) {
-              ProductionPtr p = doGenerate2(writer, reader->leafAt(j), m, m2);
-              ProductionPtr result = std::make_shared<Production>();
-              result->push_back(Symbol::unionAdjustSymbol(j, p));
-              result->push_back(Symbol::unionSymbol());
-              return result;
-            }
-          }
-            break;
           case Type::AVRO_NULL:
           case Type::AVRO_BOOL:
           case Type::AVRO_INT:
           case Type::AVRO_STRING:
           case Type::AVRO_BYTES:
-          case Type::AVRO_ENUM:
-          case Type::AVRO_ARRAY:
-          case Type::AVRO_MAP:
           case Type::AVRO_RECORD:
             break;
           default:
@@ -445,8 +362,6 @@ namespace avro {
 
       size_t handle(const Symbol& s) {
         switch (s.kind()) {
-          case Symbol::sWriterUnion:
-            return base_->decodeUnionIndex();
           case Symbol::sDefaultStart:
             defaultData_ = s.extra<std::shared_ptr<vector<uint8_t> > >();
             backup_ = base_;
@@ -488,16 +403,6 @@ namespace avro {
       void skipString();
       void decodeBytes(vector<uint8_t>& value);
       void skipBytes();
-      void decodeFixed(size_t n, vector<uint8_t>& value);
-      void skipFixed(size_t n);
-      size_t decodeEnum();
-      size_t arrayStart();
-      size_t arrayNext();
-      size_t skipArray();
-      size_t mapStart();
-      size_t mapNext();
-      size_t skipMap();
-      size_t decodeUnionIndex();
       const vector<size_t>& fieldOrder();
     public:
 
@@ -581,114 +486,7 @@ namespace avro {
       parser_.advance(Symbol::sBytes);
       base_->skipBytes();
     }
-
-    template <typename P>
-    void ResolvingDecoderImpl<P>::decodeFixed(size_t n, vector<uint8_t>& value) {
-      parser_.advance(Symbol::sFixed);
-      parser_.assertSize(n);
-      return base_->decodeFixed(n, value);
-    }
-
-    template <typename P>
-    void ResolvingDecoderImpl<P>::skipFixed(size_t n) {
-      parser_.advance(Symbol::sFixed);
-      parser_.assertSize(n);
-      base_->skipFixed(n);
-    }
-
-    template <typename P>
-    size_t ResolvingDecoderImpl<P>::decodeEnum() {
-      parser_.advance(Symbol::sEnum);
-      size_t n = base_->decodeEnum();
-      return parser_.enumAdjust(n);
-    }
-
-    template <typename P>
-    size_t ResolvingDecoderImpl<P>::arrayStart() {
-      parser_.advance(Symbol::sArrayStart);
-      size_t result = base_->arrayStart();
-      if (result == 0) {
-        parser_.popRepeater();
-        parser_.advance(Symbol::sArrayEnd);
-      } else {
-        parser_.setRepeatCount(result);
-      }
-      return result;
-    }
-
-    template <typename P>
-    size_t ResolvingDecoderImpl<P>::arrayNext() {
-      parser_.processImplicitActions();
-      size_t result = base_->arrayNext();
-      if (result == 0) {
-        parser_.popRepeater();
-        parser_.advance(Symbol::sArrayEnd);
-      } else {
-        parser_.setRepeatCount(result);
-      }
-      return result;
-    }
-
-    template <typename P>
-    size_t ResolvingDecoderImpl<P>::skipArray() {
-      parser_.advance(Symbol::sArrayStart);
-      size_t n = base_->skipArray();
-      if (n == 0) {
-        parser_.pop();
-      } else {
-        parser_.setRepeatCount(n);
-        parser_.skip(*base_);
-      }
-      parser_.advance(Symbol::sArrayEnd);
-      return 0;
-    }
-
-    template <typename P>
-    size_t ResolvingDecoderImpl<P>::mapStart() {
-      parser_.advance(Symbol::sMapStart);
-      size_t result = base_->mapStart();
-      if (result == 0) {
-        parser_.popRepeater();
-        parser_.advance(Symbol::sMapEnd);
-      } else {
-        parser_.setRepeatCount(result);
-      }
-      return result;
-    }
-
-    template <typename P>
-    size_t ResolvingDecoderImpl<P>::mapNext() {
-      parser_.processImplicitActions();
-      size_t result = base_->mapNext();
-      if (result == 0) {
-        parser_.popRepeater();
-        parser_.advance(Symbol::sMapEnd);
-      } else {
-        parser_.setRepeatCount(result);
-      }
-      return result;
-    }
-
-    template <typename P>
-    size_t ResolvingDecoderImpl<P>::skipMap() {
-      parser_.advance(Symbol::sMapStart);
-      size_t n = base_->skipMap();
-      if (n == 0) {
-        parser_.pop();
-      } else {
-        parser_.setRepeatCount(n);
-        parser_.skip(*base_);
-      }
-      parser_.advance(Symbol::sMapEnd);
-      return 0;
-    }
-
-    template <typename P>
-    size_t ResolvingDecoderImpl<P>::decodeUnionIndex() {
-      parser_.advance(Symbol::sUnion);
-      return parser_.unionAdjust();
-    }
-
+   
     template <typename P>
     const vector<size_t>& ResolvingDecoderImpl<P>::fieldOrder() {
       parser_.advance(Symbol::sRecord);

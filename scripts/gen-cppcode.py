@@ -498,11 +498,6 @@ fixedTemplate = '''struct $name$ {
     uint8_t value[fixedSize];
 };
 
-template <typename Serializer>
-inline void serialize(Serializer &s, const $name$ &val, const boost::true_type &) {
-    s.writeFixed(val.value);
-}
-
 template <typename Parser>
 inline void parse(Parser &p, $name$ &val, const boost::true_type &) {
     p.readFixed(val.value);

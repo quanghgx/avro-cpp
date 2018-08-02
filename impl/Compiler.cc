@@ -203,31 +203,7 @@ namespace avro {
             makeGenericDatum(n->leafAt(i), it->second, st));
         }
         return GenericDatum(n, result);
-      }
-      case Type::AVRO_ENUM:
-        assertType(e, json::etString);
-        return GenericDatum(n, GenericEnum(n, e.stringValue()));
-      case Type::AVRO_ARRAY:
-      {
-        assertType(e, json::etArray);
-        GenericArray result(n);
-        const vector<Entity>& elements = e.arrayValue();
-        for (vector<Entity>::const_iterator it = elements.begin();
-          it != elements.end(); ++it) {
-          result.value().push_back(makeGenericDatum(n->leafAt(0), *it, st));
-        }
-        return GenericDatum(n, result);
-      }
-      case Type::AVRO_UNION:
-      {
-        GenericUnion result(n);
-        result.selectBranch(0);
-        result.datum() = makeGenericDatum(n->leafAt(0), e, st);
-        return GenericDatum(n, result);
-      }
-      case Type::AVRO_FIXED:
-        assertType(e, json::etString);
-        return GenericDatum(n, GenericFixed(n, toBin(e.stringValue())));
+      }      
       default:
         throw Exception(boost::format("Unknown type: %1%") % t);
     }
@@ -261,47 +237,7 @@ namespace avro {
     return NodePtr(new NodeRecord(asSingleAttribute(name),
       fieldValues, fieldNames, defaultValues));
   }
-
-  static NodePtr makeEnumNode(const Entity& e,
-    const Name& name, const Object& m) {
-    const Array& v = getArrayField(e, m, "symbols");
-    concepts::MultiAttribute<string> symbols;
-    for (Array::const_iterator it = v.begin(); it != v.end(); ++it) {
-      if (it->type() != json::etString) {
-        throw Exception(boost::format("Enum symbol not a string: %1%") %
-          it->toString());
-      }
-      symbols.add(it->stringValue());
-    }
-    return NodePtr(new NodeEnum(asSingleAttribute(name), symbols));
-  }
-
-  static NodePtr makeFixedNode(const Entity& e,
-    const Name& name, const Object& m) {
-    int v = static_cast<int> (getLongField(e, m, "size"));
-    if (v <= 0) {
-      throw Exception(boost::format("Size for fixed is not positive: ") %
-        e.toString());
-    }
-    return NodePtr(new NodeFixed(asSingleAttribute(name),
-      asSingleAttribute(v)));
-  }
-
-  static NodePtr makeArrayNode(const Entity& e, const Object& m,
-    SymbolTable& st, const string& ns) {
-    Object::const_iterator it = findField(e, m, "items");
-    return NodePtr(new NodeArray(asSingleAttribute(
-      makeNode(it->second, st, ns))));
-  }
-
-  static NodePtr makeMapNode(const Entity& e, const Object& m,
-    SymbolTable& st, const string& ns) {
-    Object::const_iterator it = findField(e, m, "values");
-
-    return NodePtr(new NodeMap(asSingleAttribute(
-      makeNode(it->second, st, ns))));
-  }
-
+  
   static Name getName(const Entity& e, const Object& m, const string& ns) {
     const string& name = getStringField(e, m, "name");
 
@@ -338,28 +274,11 @@ namespace avro {
         NodePtr r = makeRecordNode(e, nm, m, st, nm.ns());
         (std::dynamic_pointer_cast<NodeRecord>(r))->swap(
           *std::dynamic_pointer_cast<NodeRecord>(result));
-      } else {
-        result = (type == "enum") ? makeEnumNode(e, nm, m) :
-          makeFixedNode(e, nm, m);
-        st[nm] = result;
       }
       return result;
-    } else if (type == "array") {
-      return makeArrayNode(e, m, st, ns);
-    } else if (type == "map") {
-      return makeMapNode(e, m, st, ns);
     }
     throw Exception(boost::format("Unknown type definition: %1%")
       % e.toString());
-  }
-
-  static NodePtr makeNode(const Entity& e, const Array& m,
-    SymbolTable& st, const string& ns) {
-    concepts::MultiAttribute<NodePtr> mm;
-    for (Array::const_iterator it = m.begin(); it != m.end(); ++it) {
-      mm.add(makeNode(*it, st, ns));
-    }
-    return NodePtr(new NodeUnion(mm));
   }
 
   static NodePtr makeNode(const json::Entity& e, SymbolTable& st, const string& ns) {
@@ -368,8 +287,6 @@ namespace avro {
         return makeNode(e.stringValue(), st, ns);
       case json::etObject:
         return makeNode(e, e.objectValue(), st, ns);
-      case json::etArray:
-        return makeNode(e, e.arrayValue(), st, ns);
       default:
         throw Exception(boost::format("Invalid Avro type: %1%") % e.toString());
     }

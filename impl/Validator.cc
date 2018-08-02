@@ -193,12 +193,7 @@ namespace avro {
       typeToFlag(Type::AVRO_DOUBLE),
       typeToFlag(Type::AVRO_BOOL),
       typeToFlag(Type::AVRO_NULL),
-      typeToFlag(Type::AVRO_RECORD),
-      typeToFlag(Type::AVRO_ENUM),
-      typeToFlag(Type::AVRO_ARRAY),
-      typeToFlag(Type::AVRO_MAP),
-      typeToFlag(Type::AVRO_UNION),
-      typeToFlag(Type::AVRO_FIXED)
+      typeToFlag(Type::AVRO_RECORD)
     };
     //static_assert((sizeof (flags) / sizeof (flag_t)) == (Type::AVRO_NUM_TYPES));
 

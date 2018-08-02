@@ -75,9 +75,6 @@ namespace avro {
         case Type::AVRO_DOUBLE:
         case Type::AVRO_STRING:
         case Type::AVRO_BYTES:
-        case Type::AVRO_FIXED:
-        case Type::AVRO_ARRAY:
-        case Type::AVRO_MAP:
         case Type::AVRO_SYMBOLIC:
           return ValidatingGrammarGenerator::doGenerate(n, m);
         case Type::AVRO_RECORD:
@@ -99,48 +96,6 @@ namespace avro {
           reverse(result->begin(), result->end());
 
           m[n] = result;
-          return result;
-        }
-        case Type::AVRO_ENUM:
-        {
-          vector<string> nn;
-          size_t c = n->names();
-          nn.reserve(c);
-          for (size_t i = 0; i < c; ++i) {
-            nn.push_back(n->nameAt(i));
-          }
-          ProductionPtr result = std::make_shared<Production>();
-          result->push_back(Symbol::nameListSymbol(nn));
-          result->push_back(Symbol::enumSymbol());
-          m[n] = result;
-          return result;
-        }
-        case Type::AVRO_UNION:
-        {
-          size_t c = n->leaves();
-
-          vector<ProductionPtr> vv;
-          vv.reserve(c);
-
-          vector<string> names;
-          names.reserve(c);
-
-          for (size_t i = 0; i < c; ++i) {
-            const NodePtr& nn = n->leafAt(i);
-            ProductionPtr v = doGenerate(nn, m);
-            if (nn->type() != Type::AVRO_NULL) {
-              ProductionPtr v2 = std::make_shared<Production>();
-              v2->push_back(Symbol::recordEndSymbol());
-              copy(v->begin(), v->end(), back_inserter(*v2));
-              v.swap(v2);
-            }
-            vv.push_back(v);
-            names.push_back(nameOf(nn));
-          }
-          ProductionPtr result = std::make_shared<Production>();
-          result->push_back(Symbol::alternative(vv));
-          result->push_back(Symbol::nameListSymbol(names));
-          result->push_back(Symbol::unionSymbol());
           return result;
         }
         default:
@@ -197,16 +152,6 @@ namespace avro {
       void skipString();
       void decodeBytes(vector<uint8_t>& value);
       void skipBytes();
-      void decodeFixed(size_t n, vector<uint8_t>& value);
-      void skipFixed(size_t n);
-      size_t decodeEnum();
-      size_t arrayStart();
-      size_t arrayNext();
-      size_t skipArray();
-      size_t mapStart();
-      size_t mapNext();
-      size_t skipMap();
-      size_t decodeUnionIndex();
 
       void expect(JsonParser::Token tk);
       void skipComposite();
@@ -307,57 +252,7 @@ namespace avro {
     void JsonDecoder<P>::skipBytes() {
       parser_.advance(Symbol::sBytes);
       expect(JsonParser::tkString);
-    }
-
-    template <typename P>
-    void JsonDecoder<P>::decodeFixed(size_t n, vector<uint8_t>& value) {
-      parser_.advance(Symbol::sFixed);
-      parser_.assertSize(n);
-      expect(JsonParser::tkString);
-      value = toBytes(in_.stringValue());
-      if (value.size() != n) {
-        throw Exception("Incorrect value for fixed");
-      }
-    }
-
-    template <typename P>
-    void JsonDecoder<P>::skipFixed(size_t n) {
-      parser_.advance(Symbol::sFixed);
-      parser_.assertSize(n);
-      expect(JsonParser::tkString);
-      vector<uint8_t> result = toBytes(in_.stringValue());
-      if (result.size() != n) {
-        throw Exception("Incorrect value for fixed");
-      }
-    }
-
-    template <typename P>
-    size_t JsonDecoder<P>::decodeEnum() {
-      parser_.advance(Symbol::sEnum);
-      expect(JsonParser::tkString);
-      size_t result = parser_.indexForName(in_.stringValue());
-      return result;
-    }
-
-    template <typename P>
-    size_t JsonDecoder<P>::arrayStart() {
-      parser_.advance(Symbol::sArrayStart);
-      expect(JsonParser::tkArrayStart);
-      return arrayNext();
-    }
-
-    template <typename P>
-    size_t JsonDecoder<P>::arrayNext() {
-      parser_.processImplicitActions();
-      if (in_.peek() == JsonParser::tkArrayEnd) {
-        in_.advance();
-        parser_.popRepeater();
-        parser_.advance(Symbol::sArrayEnd);
-        return 0;
-      }
-      parser_.setRepeatCount(1);
-      return 1;
-    }
+    }   
 
     template<typename P>
     void JsonDecoder<P>::skipComposite() {
@@ -380,63 +275,7 @@ namespace avro {
         }
       }
     }
-
-    template <typename P>
-    size_t JsonDecoder<P>::skipArray() {
-      parser_.advance(Symbol::sArrayStart);
-      parser_.pop();
-      parser_.advance(Symbol::sArrayEnd);
-      expect(JsonParser::tkArrayStart);
-      skipComposite();
-      return 0;
-    }
-
-    template <typename P>
-    size_t JsonDecoder<P>::mapStart() {
-      parser_.advance(Symbol::sMapStart);
-      expect(JsonParser::tkObjectStart);
-      return mapNext();
-    }
-
-    template <typename P>
-    size_t JsonDecoder<P>::mapNext() {
-      parser_.processImplicitActions();
-      if (in_.peek() == JsonParser::tkObjectEnd) {
-        in_.advance();
-        parser_.popRepeater();
-        parser_.advance(Symbol::sMapEnd);
-        return 0;
-      }
-      parser_.setRepeatCount(1);
-      return 1;
-    }
-
-    template <typename P>
-    size_t JsonDecoder<P>::skipMap() {
-      parser_.advance(Symbol::sMapStart);
-      parser_.pop();
-      parser_.advance(Symbol::sMapEnd);
-      expect(JsonParser::tkObjectStart);
-      skipComposite();
-      return 0;
-    }
-
-    template <typename P>
-    size_t JsonDecoder<P>::decodeUnionIndex() {
-      parser_.advance(Symbol::sUnion);
-
-      size_t result;
-      if (in_.peek() == JsonParser::tkNull) {
-        result = parser_.indexForName("null");
-      } else {
-        expect(JsonParser::tkObjectStart);
-        expect(JsonParser::tkString);
-        result = parser_.indexForName(in_.stringValue());
-      }
-      parser_.selectBranch(result);
-      return result;
-    }
-
+   
     template<typename F = JsonNullFormatter>
     class JsonHandler {
       JsonGenerator<F>& generator_;
@@ -478,16 +317,9 @@ namespace avro {
       void encodeFloat(float f);
       void encodeDouble(double d);
       void encodeString(const std::string& s);
-      void encodeBytes(const uint8_t *bytes, size_t len);
-      void encodeFixed(const uint8_t *bytes, size_t len);
-      void encodeEnum(size_t e);
-      void arrayStart();
-      void arrayEnd();
-      void mapStart();
-      void mapEnd();
+      void encodeBytes(const uint8_t *bytes, size_t len);      
       void setItemCount(size_t count);
       void startItem();
-      void encodeUnionIndex(size_t e);
     public:
 
       JsonEncoder(const ValidSchema& schema) :
@@ -569,47 +401,7 @@ namespace avro {
     void JsonEncoder<P, F>::encodeBytes(const uint8_t *bytes, size_t len) {
       parser_.advance(Symbol::sBytes);
       out_.encodeBinary(bytes, len);
-    }
-
-    template<typename P, typename F>
-    void JsonEncoder<P, F>::encodeFixed(const uint8_t *bytes, size_t len) {
-      parser_.advance(Symbol::sFixed);
-      parser_.assertSize(len);
-      out_.encodeBinary(bytes, len);
-    }
-
-    template<typename P, typename F>
-    void JsonEncoder<P, F>::encodeEnum(size_t e) {
-      parser_.advance(Symbol::sEnum);
-      const string& s = parser_.nameForIndex(e);
-      out_.encodeString(s);
-    }
-
-    template<typename P, typename F>
-    void JsonEncoder<P, F>::arrayStart() {
-      parser_.advance(Symbol::sArrayStart);
-      out_.arrayStart();
-    }
-
-    template<typename P, typename F>
-    void JsonEncoder<P, F>::arrayEnd() {
-      parser_.popRepeater();
-      parser_.advance(Symbol::sArrayEnd);
-      out_.arrayEnd();
-    }
-
-    template<typename P, typename F>
-    void JsonEncoder<P, F>::mapStart() {
-      parser_.advance(Symbol::sMapStart);
-      out_.objectStart();
-    }
-
-    template<typename P, typename F>
-    void JsonEncoder<P, F>::mapEnd() {
-      parser_.popRepeater();
-      parser_.advance(Symbol::sMapEnd);
-      out_.objectEnd();
-    }
+    }    
 
     template<typename P, typename F>
     void JsonEncoder<P, F>::setItemCount(size_t count) {
@@ -622,20 +414,7 @@ namespace avro {
       if (parser_.top() != Symbol::sRepeater) {
         throw Exception("startItem at not an item boundary");
       }
-    }
-
-    template<typename P, typename F>
-    void JsonEncoder<P, F>::encodeUnionIndex(size_t e) {
-      parser_.advance(Symbol::sUnion);
-
-      const std::string name = parser_.nameForIndex(e);
-
-      if (name != "null") {
-        out_.objectStart();
-        out_.encodeString(name);
-      }
-      parser_.selectBranch(e);
-    }
+    }    
 
   } // namespace parsing
 

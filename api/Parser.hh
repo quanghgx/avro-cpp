@@ -87,16 +87,6 @@ namespace avro {
       reader_.readBytes(val);
     }
 
-    template <size_t N>
-    void readFixed(uint8_t(&val)[N]) {
-      reader_.readFixed(val);
-    }
-
-    template<size_t N>
-    void readFixed(boost::array<uint8_t, N> &val) {
-      reader_.readFixed(val);
-    }
-
     void readRecord() {
       reader_.readRecord();
     }
@@ -115,10 +105,6 @@ namespace avro {
 
     int64_t readEnum() {
       return reader_.readEnum();
-    }
-
-    int64_t readMapBlockSize() {
-      return reader_.readMapBlockSize();
     }
 
   private:

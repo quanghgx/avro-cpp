@@ -35,7 +35,6 @@ namespace avro {
     void encodeDouble(double d);
     void encodeString(const std::string& s);
     void encodeBytes(const uint8_t *bytes, size_t len);
-    void encodeFixed(const uint8_t *bytes, size_t len);
     void encodeEnum(size_t e);
     void arrayStart();
     void arrayEnd();
@@ -92,10 +91,6 @@ namespace avro {
 
   void BinaryEncoder::encodeBytes(const uint8_t *bytes, size_t len) {
     doEncodeLong(len);
-    out_.writeBytes(bytes, len);
-  }
-
-  void BinaryEncoder::encodeFixed(const uint8_t *bytes, size_t len) {
     out_.writeBytes(bytes, len);
   }
 

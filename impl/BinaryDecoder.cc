@@ -42,16 +42,6 @@ namespace avro {
     void skipString();
     void decodeBytes(std::vector<uint8_t>& value);
     void skipBytes();
-    void decodeFixed(size_t n, std::vector<uint8_t>& value);
-    void skipFixed(size_t n);
-    size_t decodeEnum();
-    size_t arrayStart();
-    size_t arrayNext();
-    size_t skipArray();
-    size_t mapStart();
-    size_t mapNext();
-    size_t skipMap();
-    size_t decodeUnionIndex();
 
     int64_t doDecodeLong();
     size_t doDecodeItemCount();
@@ -128,26 +118,7 @@ namespace avro {
   void BinaryDecoder::skipBytes() {
     size_t len = decodeInt();
     in_.skipBytes(len);
-  }
-
-  void BinaryDecoder::decodeFixed(size_t n, std::vector<uint8_t>& value) {
-    value.resize(n);
-    if (n > 0) {
-      in_.readBytes(&value[0], n);
-    }
-  }
-
-  void BinaryDecoder::skipFixed(size_t n) {
-    in_.skipBytes(n);
-  }
-
-  size_t BinaryDecoder::decodeEnum() {
-    return static_cast<size_t> (doDecodeLong());
-  }
-
-  size_t BinaryDecoder::arrayStart() {
-    return doDecodeItemCount();
-  }
+  }  
 
   size_t BinaryDecoder::doDecodeItemCount() {
     int64_t result = doDecodeLong();
@@ -157,38 +128,7 @@ namespace avro {
     }
     return static_cast<size_t> (result);
   }
-
-  size_t BinaryDecoder::arrayNext() {
-    return static_cast<size_t> (doDecodeLong());
-  }
-
-  size_t BinaryDecoder::skipArray() {
-    for (;;) {
-      int64_t r = doDecodeLong();
-      if (r < 0) {
-        size_t n = static_cast<size_t> (doDecodeLong());
-        in_.skipBytes(n);
-      } else {
-        return static_cast<size_t> (r);
-      }
-    }
-  }
-
-  size_t BinaryDecoder::mapStart() {
-    return doDecodeItemCount();
-  }
-
-  size_t BinaryDecoder::mapNext() {
-    return doDecodeItemCount();
-  }
-
-  size_t BinaryDecoder::skipMap() {
-    return skipArray();
-  }
-
-  size_t BinaryDecoder::decodeUnionIndex() {
-    return static_cast<size_t> (doDecodeLong());
-  }
+  
 
   int64_t BinaryDecoder::doDecodeLong() {
     uint64_t encoded = 0;

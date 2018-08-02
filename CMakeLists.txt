@@ -59,9 +59,6 @@ target_link_libraries (avrogencpp avrocpp_s ${Boost_LIBRARIES})
 add_executable (example_custom examples/custom.cc)
 target_link_libraries (example_custom avrocpp_s ${Boost_LIBRARIES})
 
-add_executable (example_datafile examples/datafile.cc)
-target_link_libraries (example_datafile avrocpp_s ${Boost_LIBRARIES})
-
 add_executable (example_generated examples/generated.cc)
 target_link_libraries (example_generated avrocpp_s ${Boost_LIBRARIES})
 

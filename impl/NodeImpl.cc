@@ -50,63 +50,6 @@ namespace avro {
     return furtherResolution(reader);
   }
 
-  SchemaResolution NodeEnum::resolve(const Node &reader) const {
-    if (reader.type() == Type::AVRO_ENUM) {
-      return (name() == reader.name()) ? SchemaResolution::MATCH : SchemaResolution::NO_MATCH;
-    }
-    return furtherResolution(reader);
-  }
-
-  SchemaResolution NodeArray::resolve(const Node &reader) const {
-    if (reader.type() == Type::AVRO_ARRAY) {
-      const NodePtr &arrayType = leafAt(0);
-      return arrayType->resolve(*reader.leafAt(0));
-    }
-    return furtherResolution(reader);
-  }
-
-  SchemaResolution NodeMap::resolve(const Node &reader) const {
-    if (reader.type() == Type::AVRO_MAP) {
-      const NodePtr &mapType = leafAt(1);
-      return mapType->resolve(*reader.leafAt(1));
-    }
-    return furtherResolution(reader);
-  }
-
-  SchemaResolution NodeUnion::resolve(const Node &reader) const {
-
-    // If the writer is union, resolution only needs to occur when the selected
-    // type of the writer is known, so this function is not very helpful.
-    //
-    // In this case, this function returns if there is a possible match given
-    // any writer type, so just search type by type returning the best match
-    // found.
-
-    SchemaResolution match = SchemaResolution::NO_MATCH;
-    for (size_t i = 0; i < leaves(); ++i) {
-      const NodePtr &node = leafAt(i);
-      SchemaResolution thisMatch = node->resolve(reader);
-      if (thisMatch == SchemaResolution::MATCH) {
-        match = thisMatch;
-        break;
-      }
-      if (match == SchemaResolution::NO_MATCH) {
-        match = thisMatch;
-      }
-    }
-    return match;
-  }
-
-  SchemaResolution NodeFixed::resolve(const Node &reader) const {
-    if (reader.type() == Type::AVRO_FIXED) {
-      return (
-        (reader.fixedSize() == fixedSize()) &&
-        (reader.name() == name())
-        ) ?
-        SchemaResolution::MATCH : SchemaResolution::NO_MATCH;
-    }
-    return furtherResolution(reader);
-  }
 
   SchemaResolution NodeSymbolic::resolve(const Node &reader) const {
     const NodePtr &node = leafAt(0);
@@ -166,66 +109,6 @@ namespace avro {
       os << indent(--depth) << '}';
     }
     os << '\n' << indent(--depth) << "]\n";
-    os << indent(--depth) << '}';
-  }
-
-  void NodeEnum::printJson(std::ostream &os, int depth) const {
-    os << "{\n";
-    os << indent(++depth) << "\"type\": \"enum\",\n";
-    printName(os, nameAttribute_.get(), depth);
-    os << indent(depth) << "\"symbols\": [\n";
-
-    int names = leafNameAttributes_.size();
-    ++depth;
-    for (int i = 0; i < names; ++i) {
-      if (i > 0) {
-        os << ",\n";
-      }
-      os << indent(depth) << '\"' << leafNameAttributes_.get(i) << '\"';
-    }
-    os << '\n';
-    os << indent(--depth) << "]\n";
-    os << indent(--depth) << '}';
-  }
-
-  void NodeArray::printJson(std::ostream &os, int depth) const {
-    os << "{\n";
-    os << indent(depth + 1) << "\"type\": \"array\",\n";
-    os << indent(depth + 1) << "\"items\": ";
-    leafAttributes_.get()->printJson(os, depth + 1);
-    os << '\n';
-    os << indent(depth) << '}';
-  }
-
-  void NodeMap::printJson(std::ostream &os, int depth) const {
-    os << "{\n";
-    os << indent(depth + 1) << "\"type\": \"map\",\n";
-    os << indent(depth + 1) << "\"values\": ";
-    leafAttributes_.get(1)->printJson(os, depth + 1);
-    os << '\n';
-    os << indent(depth) << '}';
-  }
-
-  void NodeUnion::printJson(std::ostream &os, int depth) const {
-    os << "[\n";
-    int fields = leafAttributes_.size();
-    ++depth;
-    for (int i = 0; i < fields; ++i) {
-      if (i > 0) {
-        os << ",\n";
-      }
-      os << indent(depth);
-      leafAttributes_.get(i)->printJson(os, depth);
-    }
-    os << '\n';
-    os << indent(--depth) << ']';
-  }
-
-  void NodeFixed::printJson(std::ostream &os, int depth) const {
-    os << "{\n";
-    os << indent(++depth) << "\"type\": \"fixed\",\n";
-    printName(os, nameAttribute_.get(), depth);
-    os << indent(depth) << "\"size\": " << sizeAttribute_.get() << "\n";
     os << indent(--depth) << '}';
   }
 

@@ -67,16 +67,6 @@ namespace avro {
       writer_.writeBytes(val);
     }
 
-    template <size_t N>
-    void writeFixed(const uint8_t(&val)[N]) {
-      writer_.writeFixed(val);
-    }
-
-    template <size_t N>
-    void writeFixed(const boost::array<uint8_t, N> &val) {
-      writer_.writeFixed(val);
-    }
-
     void writeString(const std::string &val) {
       writer_.writeValue(val);
     }
@@ -88,31 +78,7 @@ namespace avro {
     void writeRecordEnd() {
       writer_.writeRecordEnd();
     }
-
-    void writeArrayBlock(int64_t size) {
-      writer_.writeArrayBlock(size);
-    }
-
-    void writeArrayEnd() {
-      writer_.writeArrayEnd();
-    }
-
-    void writeMapBlock(int64_t size) {
-      writer_.writeMapBlock(size);
-    }
-
-    void writeMapEnd() {
-      writer_.writeMapEnd();
-    }
-
-    void writeUnion(int64_t choice) {
-      writer_.writeUnion(choice);
-    }
-
-    void writeEnum(int64_t choice) {
-      writer_.writeEnum(choice);
-    }
-
+    
     InputBuffer buffer() const {
       return writer_.buffer();
     }

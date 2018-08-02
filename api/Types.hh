@@ -36,11 +36,6 @@ namespace avro {
     AVRO_NULL, /* Null */
 
     AVRO_RECORD, /* Record, a sequence of fields */
-    AVRO_ENUM, /* Enumeration */
-    AVRO_ARRAY, /* Homogeneous array of some specific type */
-    AVRO_MAP, /* Homogeneous map from string to some specific type */
-    AVRO_UNION, /* Union of one or more types */
-    AVRO_FIXED, /* Fixed number of bytes */
 
     AVRO_NUM_TYPES, /* Marker */
 

@@ -99,34 +99,12 @@ primitive_t:
         AVRO_LEX_TYPE primitive
         ;
 
-array_t:
-        AVRO_LEX_TYPE AVRO_LEX_ARRAY { context(ctx).addType(avro::AVRO_ARRAY); }
-        ;
-
-enum_t: 
-        AVRO_LEX_TYPE AVRO_LEX_ENUM { context(ctx).addType(avro::AVRO_ENUM); }
-        ;
-
-fixed_t:
-        AVRO_LEX_TYPE AVRO_LEX_FIXED { context(ctx).addType(avro::AVRO_FIXED); }
-        ;
-
-map_t: 
-        AVRO_LEX_TYPE AVRO_LEX_MAP { context(ctx).addType(avro::AVRO_MAP); }
-        ;
-
 record_t: 
         AVRO_LEX_TYPE AVRO_LEX_RECORD { context(ctx).addType(avro::AVRO_RECORD); }
         ;
 
 type_attribute:
         array_t | enum_t | fixed_t | map_t | record_t | primitive_t
-        ;
-
-union_t:
-        '[' { context(ctx).startType(); context(ctx).addType(avro::AVRO_UNION); context(ctx).setTypesAttribute(); } 
-        unionlist
-        ']' { context(ctx).stopType(); }
         ;
 
 object: 

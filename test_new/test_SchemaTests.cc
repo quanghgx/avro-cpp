@@ -209,10 +209,3 @@ namespace avro {
 
   }
 }
-
-TEST_CASE("Avro C++ unit tests for schemas", "[testSchema]") {
-  for (auto& item : avro::schema::basicSchemas) avro::schema::testBasic(item);
-  for (auto& item : avro::schema::basicSchemaErrors) avro::schema::testBasic_fail(item);
-  for (auto& item : avro::schema::basicSchemas) avro::schema::testCompile(item);
-  for (auto& item : avro::schema::roundTripSchemas) avro::schema::testRoundTrip(item);
-}

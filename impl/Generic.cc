@@ -52,9 +52,6 @@ namespace avro {
   }
 
   void GenericReader::read(GenericDatum& datum, Decoder& d, bool isResolving) {
-    if (datum.isUnion()) {
-      datum.selectBranch(d.decodeUnionIndex());
-    }
     switch (datum.type()) {
       case Type::AVRO_NULL:
         d.decodeNull();
@@ -80,12 +77,6 @@ namespace avro {
       case Type::AVRO_BYTES:
         d.decodeBytes(datum.value<bytes>());
         break;
-      case Type::AVRO_FIXED:
-      {
-        GenericFixed& f = datum.value<GenericFixed>();
-        d.decodeFixed(f.schema()->fixedSize(), f.value());
-      }
-        break;
       case Type::AVRO_RECORD:
       {
         GenericRecord& r = datum.value<GenericRecord>();
@@ -99,25 +90,6 @@ namespace avro {
         } else {
           for (size_t i = 0; i < c; ++i) {
             read(r.fieldAt(i), d, isResolving);
-          }
-        }
-      }
-        break;
-      case Type::AVRO_ENUM:
-        datum.value<GenericEnum>().set(d.decodeEnum());
-        break;
-      case Type::AVRO_ARRAY:
-      {
-        GenericArray& v = datum.value<GenericArray>();
-        vector<GenericDatum>& r = v.value();
-        const NodePtr& nn = v.schema()->leafAt(0);
-        r.resize(0);
-        size_t start = 0;
-        for (size_t m = d.arrayStart(); m != 0; m = d.arrayNext()) {
-          r.resize(r.size() + m);
-          for (; start < r.size(); ++start) {
-            r[start] = GenericDatum(nn);
-            read(r[start], d, isResolving);
           }
         }
       }
@@ -146,9 +118,6 @@ namespace avro {
   }
 
   void GenericWriter::write(const GenericDatum& datum, Encoder& e) {
-    if (datum.isUnion()) {
-      e.encodeUnionIndex(datum.unionBranch());
-    }
     switch (datum.type()) {
       case Type::AVRO_NULL:
         e.encodeNull();
@@ -174,9 +143,6 @@ namespace avro {
       case Type::AVRO_BYTES:
         e.encodeBytes(datum.value<bytes>());
         break;
-      case Type::AVRO_FIXED:
-        e.encodeFixed(datum.value<GenericFixed>().value());
-        break;
       case Type::AVRO_RECORD:
       {
         const GenericRecord& r = datum.value<GenericRecord>();
@@ -184,24 +150,6 @@ namespace avro {
         for (size_t i = 0; i < c; ++i) {
           write(r.fieldAt(i), e);
         }
-      }
-        break;
-      case Type::AVRO_ENUM:
-        e.encodeEnum(datum.value<GenericEnum>().value());
-        break;
-      case Type::AVRO_ARRAY:
-      {
-        const GenericArray::Value& r = datum.value<GenericArray>().value();
-        e.arrayStart();
-        if (!r.empty()) {
-          e.setItemCount(r.size());
-          for (GenericArray::Value::const_iterator it = r.begin();
-            it != r.end(); ++it) {
-            e.startItem();
-            write(*it, e);
-          }
-        }
-        e.arrayEnd();
       }
         break;
       default:

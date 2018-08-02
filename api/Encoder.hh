@@ -79,31 +79,7 @@ namespace avro {
     void encodeBytes(const std::vector<uint8_t>& bytes) {
       uint8_t b = 0;
       encodeBytes(bytes.empty() ? &b : &bytes[0], bytes.size());
-    }
-
-    /* Encodes fixed length binary to the current stream*/
-    virtual void encodeFixed(const uint8_t *bytes, size_t len) = 0;
-
-    /* Encodes an Avro data type Fixed.
-        @param bytes The fixed, the length of which is taken as the size of fixed*/
-    void encodeFixed(const std::vector<uint8_t>& bytes) {
-      encodeFixed(&bytes[0], bytes.size());
-    }
-
-    /* Encodes enum to the current stream*/
-    virtual void encodeEnum(size_t e) = 0;
-
-    /* Indicates that an array of items is being encoded*/
-    virtual void arrayStart() = 0;
-
-    /* Indicates that the current array of items have ended*/
-    virtual void arrayEnd() = 0;
-
-    /* Indicates that a map of items is being encoded*/
-    virtual void mapStart() = 0;
-
-    /* Indicates that the current map of items have ended*/
-    virtual void mapEnd() = 0;
+    }  
 
     /* Indicates that count number of items are to follow in the current array or map*/
     virtual void setItemCount(size_t count) = 0;
@@ -111,8 +87,6 @@ namespace avro {
     /* Marks a beginning of an item in the current array or map*/
     virtual void startItem() = 0;
 
-    /* Encodes a branch of a union. The actual value is to follow*/
-    virtual void encodeUnionIndex(size_t e) = 0;
   };
 
   /* Shared pointer to Encoder*/

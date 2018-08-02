@@ -63,20 +63,8 @@ namespace avro {
       case Type::AVRO_BYTES:
         value_ = vector<uint8_t>();
         break;
-      case Type::AVRO_FIXED:
-        value_ = GenericFixed(sc);
-        break;
       case Type::AVRO_RECORD:
         value_ = GenericRecord(sc);
-        break;
-      case Type::AVRO_ENUM:
-        value_ = GenericEnum(sc);
-        break;
-      case Type::AVRO_ARRAY:
-        value_ = GenericArray(sc);
-        break;
-      case Type::AVRO_UNION:
-        value_ = GenericUnion(sc);
         break;
       default:
         throw Exception(boost::format("Unknown schema type %1%") %

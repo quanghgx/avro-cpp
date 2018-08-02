@@ -43,11 +43,7 @@ namespace avro {
    * \li Avro <tt>float</tt> maps to C++ <tt>float</tt>.
    * \li Avro <tt>double</tt> maps to C++ <tt>double</tt>.
    * \li Avro <tt>string</tt> maps to C++ <tt>std::string</tt>.
-   * \li Avro <tt>bytes</tt> maps to C++ <tt>std::vector&lt;uint_t&gt;</tt>.
-   * \li Avro <tt>fixed</tt> maps to C++ class <tt>GenericFixed</tt>.
-   * \li Avro <tt>enum</tt> maps to C++ class <tt>GenericEnum</tt>.
-   * \li Avro <tt>array</tt> maps to C++ class <tt>GenericArray</tt>.
-   * \li There is no C++ type corresponding to Avro <tt>union</tt>. The
+   * \li Avro <tt>bytes</tt> maps to C++ <tt>std::vector&lt;uint_t&gt;</tt>.   
    * object should have the C++ type corresponing to one of the constituent
    * types of the union.
    *
@@ -74,17 +70,6 @@ namespace avro {
        changed, the data type of the value held cannot be changed. T The type for the value. This must correspond to the avro type returned 
        by type().*/
     template<typename T> T& value();
-
-    /* Returns true if and only if this datum is a union.*/
-    bool isUnion() const {
-      return type_ == Type::AVRO_UNION;
-    }
-
-    /* Returns the index of the current branch, if this is a union. isUnion().*/
-    size_t unionBranch() const;
-
-    /* Selects a new branch in the union if this is a union. isUnion().*/
-    void selectBranch(size_t branch);
 
     /* Makes a new AVRO_NULL datum.*/
     GenericDatum() : type_(Type::AVRO_NULL) { }
@@ -147,45 +132,6 @@ namespace avro {
     /* Returns the schema for this object*/
     const NodePtr& schema() const {
       return schema_;
-    }
-  };
-
-  /* Generic container for unions.*/
-  class GenericUnion : public GenericContainer {
-    size_t curBranch_;
-    GenericDatum datum_;
-
-  public:
-
-    /* Constructs a generic union corresponding to the given schema \p schema, and the given value. The schema should be of Avro type union
-       and the value should correspond to one of the branches of the union.*/
-    GenericUnion(const NodePtr& schema) :
-    GenericContainer(Type::AVRO_UNION, schema), curBranch_(schema->leaves()) {
-      selectBranch(0);
-    }
-
-    /* Returns the index of the current branch.*/
-    size_t currentBranch() const {
-      return curBranch_;
-    }
-
-    /* Selects a new branch. The type for the value is changed accordingly.
-        @param branch The index for the selected branch.*/
-    void selectBranch(size_t branch) {
-      if (curBranch_ != branch) {
-        datum_ = GenericDatum(schema()->leafAt(branch));
-        curBranch_ = branch;
-      }
-    }
-
-    /* Returns the datum corresponding to the currently selected branch in this union.*/
-    GenericDatum& datum() {
-      return datum_;
-    }
-
-    /* Returns the datum corresponding to the currently selected branch in this union.*/
-    const GenericDatum& datum() const {
-      return datum_;
     }
   };
 
@@ -254,154 +200,16 @@ namespace avro {
     }
   };
 
-  /*The generic container for Avro arrays.*/
-  class GenericArray : public GenericContainer {
-  public:
-    /*The contents type for the array.*/
-    typedef std::vector<GenericDatum> Value;
-
-    /**
-     * Constructs a generic array corresponding to the given schema \p schema,
-     * which should be of Avro type array.
-     */
-    GenericArray(const NodePtr& schema) : GenericContainer(Type::AVRO_ARRAY, schema) { }
-
-    /*Returns the contents of this array.*/
-    const Value& value() const {
-      return value_;
-    }
-
-    /*Returns the reference to the contents of this array.*/
-    Value& value() {
-      return value_;
-    }
-  private:
-    Value value_;
-  };
-
-  /*Generic container for Avro enum.*/
-  class GenericEnum : public GenericContainer {
-    size_t value_;
-
-    static size_t index(const NodePtr& schema, const std::string& symbol) {
-      size_t result;
-      if (schema->nameIndex(symbol, result)) {
-        return result;
-      }
-      throw Exception("No such symbol");
-    }
-
-  public:
-
-    /**
-     * Constructs a generic enum corresponding to the given schema \p schema,
-     * which should be of Avro type enum.
-     */
-    GenericEnum(const NodePtr& schema) :
-    GenericContainer(Type::AVRO_ENUM, schema), value_(0) { }
-
-    GenericEnum(const NodePtr& schema, const std::string& symbol) :
-    GenericContainer(Type::AVRO_ENUM, schema), value_(index(schema, symbol)) { }
-
-    /**
-     * Returns the symbol corresponding to the cardinal \p n. If the
-     * value for \p n is not within the limits an exception is thrown.
-     */
-    const std::string& symbol(size_t n) {
-      if (n < schema()->names()) {
-        return schema()->nameAt(n);
-      }
-      throw Exception("Not as many symbols");
-    }
-
-    /**
-     * Returns the cardinal for the given symbol \c symbol. If the symbol
-     * is not defined for this enum and exception is thrown.
-     */
-    size_t index(const std::string& symbol) const {
-      return index(schema(), symbol);
-    }
-
-    /**
-     * Set the value for this enum corresponding to the given symbol \c symbol.
-     */
-    size_t set(const std::string& symbol) {
-      return value_ = index(symbol);
-    }
-
-    /**
-     * Set the value for this enum corresponding to the given cardinal \c n.
-     */
-    void set(size_t n) {
-      if (n < schema()->names()) {
-        value_ = n;
-        return;
-      }
-      throw Exception("Not as many symbols");
-    }
-
-    /*Returns the cardinal for the current value of this enum.*/
-    size_t value() const {
-      return value_;
-    }
-
-    /*Returns the symbol for the current value of this enum.*/
-    const std::string& symbol() const {
-      return schema()->nameAt(value_);
-    }
-  };
-
-  /*Generic container for Avro fixed.*/
-  class GenericFixed : public GenericContainer {
-    std::vector<uint8_t> value_;
-  public:
-
-    /**
-     * Constructs a generic enum corresponding to the given schema \p schema,
-     * which should be of Avro type fixed.
-     */
-    GenericFixed(const NodePtr& schema) : GenericContainer(Type::AVRO_FIXED, schema) {
-      value_.resize(schema->fixedSize());
-    }
-
-    GenericFixed(const NodePtr& schema, const std::vector<uint8_t>& v) :
-    GenericContainer(Type::AVRO_FIXED, schema), value_(v) { }
-
-    /*Returns the contents of this fixed.*/
-    const std::vector<uint8_t>& value() const {
-      return value_;
-    }
-
-    /*Returns the reference to the contents of this fixed.*/
-    std::vector<uint8_t>& value() {
-      return value_;
-    }
-  };
-
   inline Type GenericDatum::type() const {
-    return (type_ == Type::AVRO_UNION) ?
-      boost::any_cast<GenericUnion>(&value_)->datum().type() :
-      type_;
+    return type_;
   }
 
   template<typename T> T& GenericDatum::value() {
-    return (type_ == Type::AVRO_UNION) ?
-      boost::any_cast<GenericUnion>(&value_)->datum().value<T>() :
-      *boost::any_cast<T>(&value_);
+    return *boost::any_cast<T>(&value_);
   }
 
   template<typename T> const T& GenericDatum::value() const {
-    return (type_ == Type::AVRO_UNION) ?
-      boost::any_cast<GenericUnion>(&value_)->datum().value<T>() :
-      *boost::any_cast<T>(&value_);
-  }
-
-  inline size_t GenericDatum::unionBranch() const {
-    return boost::any_cast<GenericUnion>(&value_)->currentBranch();
-  }
-
-  inline void GenericDatum::selectBranch(size_t branch) {
-    boost::any_cast<GenericUnion>(&value_)->selectBranch(branch);
+    return *boost::any_cast<T>(&value_);
   }
 
 }

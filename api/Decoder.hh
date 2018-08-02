@@ -86,54 +86,7 @@ namespace avro {
     virtual void decodeBytes(std::vector<uint8_t>& value) = 0;
 
     /* Skips bytes on the current stream*/
-    virtual void skipBytes() = 0;
-
-    /**
-     * Decodes fixed length binary from the current stream.
-     * @param[in] n The size (byte count) of the fixed being read.
-     * @return The fixed data that has been read. The size of the returned vector is guaranteed to be equal to \p n.
-     */
-    std::vector<uint8_t> decodeFixed(size_t n) {
-      std::vector<uint8_t> result;
-      decodeFixed(n, result);
-      return result;
-    }
-
-    /**
-     * Decodes a fixed from the current stream.
-     * @param[in] n The size (byte count) of the fixed being read.
-     * @param[out] value The value that receives the fixed. The vector will be size-adjusted based on the fixed's size.
-     */
-    virtual void decodeFixed(size_t n, std::vector<uint8_t>& value) = 0;
-
-    /* Skips fixed length binary on the current stream*/
-    virtual void skipFixed(size_t n) = 0;
-
-    /* Decodes enum from the current stream*/
-    virtual size_t decodeEnum() = 0;
-
-    /* Start decoding an array. Returns the number of entries in first chunk*/
-    virtual size_t arrayStart() = 0;
-
-    /* Returns the number of entries in next chunk. 0 if last*/
-    virtual size_t arrayNext() = 0;
-
-    /* Tries to skip an array. If it can, it returns 0. Otherwise it returns the number of elements to be skipped. The client should skip 
-       the individual items. In such cases, skipArray is identical to arrayStart*/
-    virtual size_t skipArray() = 0;
-
-    /* Start decoding a map. Returns the number of entries in first chunk*/
-    virtual size_t mapStart() = 0;
-
-    /* Returns the number of entries in next chunk. 0 if last*/
-    virtual size_t mapNext() = 0;
-
-    /* Tries to skip a map. If it can, it returns 0. Otherwise it returns the number of elements to be skipped. The client should skip the 
-       individual items. In such cases, skipMap is identical to mapStart*/
-    virtual size_t skipMap() = 0;
-
-    /* Decodes a branch of a union. The actual value is to follow*/
-    virtual size_t decodeUnionIndex() = 0;
+    virtual void skipBytes() = 0;   
   };
 
   /* Shared pointer to Decoder*/

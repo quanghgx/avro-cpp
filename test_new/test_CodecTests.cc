@@ -263,35 +263,13 @@ namespace avro {
           case 'b':
             sc.extractInt();
             e.encodeBytes(from_string<vector<uint8_t> >(*it++));
-            break;
-          case 'f':
-            sc.extractInt();
-            e.encodeFixed(from_string<vector<uint8_t> >(*it++));
-            break;
-          case 'e':
-            e.encodeEnum(sc.extractInt());
-            break;
-          case '[':
-            e.arrayStart();
-            break;
-          case ']':
-            e.arrayEnd();
-            break;
-          case '{':
-            e.mapStart();
-            break;
-          case '}':
-            e.mapEnd();
-            break;
+            break;          
           case 'c':
             e.setItemCount(sc.extractInt());
             break;
           case 's':
             e.startItem();
-            break;
-          case 'U':
-            e.encodeUnionIndex(sc.extractInt());
-            break;
+            break;          
           default:
             throw std::runtime_error("Unknown mnemonic");
         }
